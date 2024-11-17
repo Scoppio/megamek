@@ -1115,6 +1115,16 @@ public class BLKFile {
         return blk;
     }
 
+    public static void encode(File file, Entity t) throws EntitySavingException {
+        BuildingBlock blk = BLKFile.getBlock(t);
+        blk.writeBlockFile(file);
+    }
+
+    public static void encode(String fileName, Entity t) throws EntitySavingException {
+        File file = new File(fileName);
+        encode(file, t);
+    }
+
     private static String encodeEquipmentLine(Mounted<?> m) {
         String name = m.getType().getInternalName();
         if (m.isRearMounted()) {
@@ -1160,21 +1170,12 @@ public class BLKFile {
         } else if (m.getEntity() instanceof ProtoMek && (m.getType() instanceof AmmoType)) {
             name += " (" + m.getBaseShotsLeft() + ")";
         } else if (m.getType().isVariableSize()
-                || (m.getEntity().isSupportVehicle() && (m.getType() instanceof InfantryWeapon))) {
+            || (m.getEntity().isSupportVehicle() && (m.getType() instanceof InfantryWeapon))) {
             name += ":SIZE:" + m.getSize();
         }
         return name;
     }
 
-    public static void encode(String fileName, Entity t) throws EntitySavingException {
-        File file = new File(fileName);
-        encode(file, t);
-    }
-
-    public static void encode(File file, Entity t) throws EntitySavingException {
-        BuildingBlock blk = BLKFile.getBlock(t);
-        blk.writeBlockFile(file);
-    }
 
     protected void addTransports(Entity e) throws EntityLoadingException {
         if (dataFile.containsData("transporters")) {
