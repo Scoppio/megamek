@@ -23,14 +23,13 @@ import java.awt.event.ItemListener;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
+import megamek.client.ui.Messages;
 import megamek.common.BombType;
 import megamek.common.IBomber;
 
@@ -114,22 +113,23 @@ public class BombChoicePanel extends JPanel implements ItemListener {
 
         int columns = (maxPoints.get(INTNAME) > 0 ? 1 : 0) + (maxPoints.get(EXTNAME) > 0 ? 1 : 0);
         // Should not occur!
-        if (columns == 0){
+        if (columns == 0) {
             empty = true;
             return;
         }
+//        columns += 1; // Add a column for the dump button
 
         JPanel outer = new JPanel();
         outer.setLayout(new GridLayout(0, columns));
-        TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.blue), "Bombs");
+        TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.blue), Messages.getString("CustomMekDialog.extLblBombs"));
         Font font2 = new Font("Verdana", Font.BOLD + Font.ITALIC, 12);
         titledBorder.setTitleFont(font2);
         EmptyBorder emptyBorder = new EmptyBorder(10, 10, 10, 10);
         CompoundBorder compoundBorder = new CompoundBorder(titledBorder, emptyBorder);
         outer.setBorder(compoundBorder);
 
-        interiorPanel = initSubPanel(maxPoints.get(INTNAME) - compileBombPoints(intBombChoices), intBombChoices, INTNAME);
-        exteriorPanel = initSubPanel(maxPoints.get(EXTNAME) - compileBombPoints(extBombChoices), extBombChoices, EXTNAME);
+        interiorPanel = initSubPanel(maxPoints.get(INTNAME) - compileBombPoints(intBombChoices), intBombChoices, INTNAME, Messages.getString(INTNAME));
+        exteriorPanel = initSubPanel(maxPoints.get(EXTNAME) - compileBombPoints(extBombChoices), extBombChoices, EXTNAME, Messages.getString(EXTNAME));
 
         if (maxPoints.get(INTNAME) != 0) {
             outer.add(interiorPanel);
@@ -137,14 +137,40 @@ public class BombChoicePanel extends JPanel implements ItemListener {
         if (maxPoints.get(EXTNAME) != 0) {
             outer.add(exteriorPanel);
         }
+        if (maxPoints.get(INTNAME) != 0 || maxPoints.get(EXTNAME) != 0) {
+            outer.add(dumpAllBombs());
+        }
         add(outer);
     }
 
-    private JPanel initSubPanel(int availBombPoints, int[] bombChoices, String title){
+    private JPanel dumpAllBombs() {
+        JPanel dumpPanel = new JPanel();
+        JButton dumpButton = new JButton(Messages.getString("CustomMekDialog.btnDumpAllBombs"));
+        dumpButton.addActionListener( a -> {
+                for (int type = 0; type < BombType.B_NUM; type++) {
+                    b_choices.get(INTNAME)[type].setSelectedIndex(0);
+                    b_choices.get(EXTNAME)[type].setSelectedIndex(0);
+                }
+        });
+
+        GridBagLayout g = new GridBagLayout();
+        dumpPanel.setLayout(g);
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 0;
+        c.anchor = GridBagConstraints.WEST;
+        g.setConstraints(dumpButton, c);
+        dumpPanel.add(dumpButton);
+
+        return dumpPanel;
+    }
+
+    private JPanel initSubPanel(int availBombPoints, int[] bombChoices, String title, String localizedTitle){
 
         // Set up sub-panel
         JPanel inner = new JPanel();
-        TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.blue), title);
+        TitledBorder titledBorder = new TitledBorder(new LineBorder(Color.blue), localizedTitle);
         Font font3 = new Font("Verdana", Font.BOLD + Font.ITALIC, 10);
         titledBorder.setTitleFont(font3);
         EmptyBorder emptyBorder = new EmptyBorder(10, 10, 10, 10);
@@ -160,9 +186,9 @@ public class BombChoicePanel extends JPanel implements ItemListener {
         int row = 0;
         for (int type = 0; type < BombType.B_NUM; type++) {
             b_labels.get(title)[type] = new JLabel();
-            b_choices.get(title)[type] = new JComboBox<String>();
+            b_choices.get(title)[type] = new JComboBox<>();
 
-            int maxNumBombs = Math.round(availBombPoints / BombType.getBombCost(type)) + bombChoices[type];
+            int maxNumBombs = Math.round((float) availBombPoints / BombType.getBombCost(type)) + bombChoices[type];
 
             if (BombType.getBombCost(type) > maxSize.get(title))  {
                 maxNumBombs = 0;
