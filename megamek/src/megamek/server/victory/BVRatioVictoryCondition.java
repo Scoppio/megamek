@@ -19,7 +19,7 @@
  */
 package megamek.server.victory;
 
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Player;
 import megamek.common.Report;
 
@@ -41,12 +41,12 @@ public class BVRatioVictoryCondition implements BvVictoryCondition {
     }
 
     @Override
-    public VictoryResult checkVictory(Game game, Map<String, Object> ctx) {
+    public VictoryResult checkVictory(TWGame twGame, Map<String, Object> ctx) {
         boolean isVictory = false;
         VictoryResult victoryResult = new VictoryResult(true);
         HashSet<Integer> doneTeams = new HashSet<>();
 
-        for (Player player : game.getPlayersList()) {
+        for (Player player : twGame.getPlayersList()) {
             if (player.isObserver()) {
                 continue;
             }
@@ -57,8 +57,8 @@ public class BVRatioVictoryCondition implements BvVictoryCondition {
                 }
                 doneTeams.add(team);
             }
-            int friendlyBV = getFriendlyBV(game, player);
-            int enemyBV = getEnemyBV(game, player);
+            int friendlyBV = getFriendlyBV(twGame, player);
+            int enemyBV = getEnemyBV(twGame, player);
 
             if ((enemyBV == 0) || ((100 * friendlyBV) / enemyBV >= ratio)) {
                 Report r = new Report(7100, Report.PUBLIC);

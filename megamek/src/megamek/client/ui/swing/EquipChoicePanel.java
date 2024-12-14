@@ -585,14 +585,14 @@ public class EquipChoicePanel extends JPanel {
     private void setupMunitions() {
         GridBagLayout gbl = new GridBagLayout();
         panMunitions.setLayout(gbl);
-        Game game = clientgui.getClient().getGame();
-        AbstractOptions gameOpts = game.getOptions();
+        IGame IGame = clientgui.getClient().getGame();
+        AbstractOptions gameOpts = IGame.getOptions();
         int gameYear = gameOpts.intOption(OptionsConstants.ALLOWED_YEAR);
 
         if (entity.usesWeaponBays() || entity instanceof Dropship) {
             // Grounded dropships don't *use* weapon bays as such, but should load ammo as
             // if they did
-            panMunitions = new BayMunitionsChoicePanel(entity, game);
+            panMunitions = new BayMunitionsChoicePanel(entity, IGame);
             return;
         }
         // Small support vehicle ammo is part of the weapon, and the only munitions
@@ -628,16 +628,16 @@ public class EquipChoicePanel extends JPanel {
 
             for (AmmoType atCheck : vAllTypes) {
                 if (entity.hasETypeFlag(Entity.ETYPE_AERO)
-                        && !atCheck.canAeroUse(game.getOptions()
+                        && !atCheck.canAeroUse(IGame.getOptions()
                                 .booleanOption(OptionsConstants.ADVAERORULES_AERO_ARTILLERY_MUNITIONS))) {
                     continue;
                 }
-                SimpleTechLevel legalLevel = SimpleTechLevel.getGameTechLevel(game);
+                SimpleTechLevel legalLevel = SimpleTechLevel.getGameTechLevel(IGame);
                 boolean bTechMatch = false;
-                if (game.getOptions().booleanOption(OptionsConstants.ALLOWED_ERA_BASED)) {
+                if (IGame.getOptions().booleanOption(OptionsConstants.ALLOWED_ERA_BASED)) {
                     bTechMatch = atCheck.isLegal(gameYear, legalLevel, entity.isClan(),
                             entity.isMixedTech(),
-                            game.getOptions().booleanOption(OptionsConstants.ALLOWED_SHOW_EXTINCT));
+                            IGame.getOptions().booleanOption(OptionsConstants.ALLOWED_SHOW_EXTINCT));
                 } else {
                     bTechMatch = atCheck.getStaticTechLevel().ordinal() <= legalLevel.ordinal();
                 }

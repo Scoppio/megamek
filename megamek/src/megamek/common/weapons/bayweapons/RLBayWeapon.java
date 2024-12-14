@@ -14,7 +14,7 @@
 package megamek.common.weapons.bayweapons;
 
 import megamek.common.EquipmentTypeLookup;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.weapons.AttackHandler;
@@ -46,10 +46,10 @@ public class RLBayWeapon extends AmmoBayWeapon {
         this.toHitModifier = 1;
         this.atClass = CLASS_ROCKET_LAUNCHER;
     }
-    
+
     @Override
-    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, Game game,
+    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, TWGame twGame,
                                               TWGameManager manager) {
-        return new MissileBayWeaponHandler(toHit, waa, game, manager);
+        return new MissileBayWeaponHandler(toHit, waa, twGame, manager);
     }
 }

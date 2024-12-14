@@ -18,7 +18,7 @@ import java.util.Vector;
 import megamek.common.AmmoType;
 import megamek.common.Building;
 import megamek.common.Entity;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Report;
 import megamek.common.TargetRoll;
 import megamek.common.Targetable;
@@ -44,7 +44,7 @@ public class AR10Handler extends AmmoWeaponHandler {
      * @param g
      * @param m
      */
-    public AR10Handler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public AR10Handler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 
@@ -69,7 +69,7 @@ public class AR10Handler extends AmmoWeaponHandler {
             ae.setLastTargetDisplayName(entityTarget.getDisplayName());
         }
         // Which building takes the damage?
-        Building bldg = game.getBoard().getBuildingAt(target.getPosition());
+        Building bldg = twGame.getBoard().getBuildingAt(target.getPosition());
         String number = nweapons > 1 ? " (" + nweapons + ")" : "";
         for (int i = numAttacks; i > 0; i--) {
             // Report weapon attack and its to-hit value.
@@ -102,7 +102,7 @@ public class AR10Handler extends AmmoWeaponHandler {
 
             // Set Margin of Success/Failure and check for Direct Blows
             toHit.setMoS(roll.getIntValue() - Math.max(2, toHit.getValue()));
-            bDirect = game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_DIRECT_BLOW)
+            bDirect = twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_DIRECT_BLOW)
                     && ((toHit.getMoS() / 3) >= 1) && (entityTarget != null);
 
             //This has to be up here so that we don't screw up glancing/direct blow reports
@@ -215,7 +215,7 @@ public class AR10Handler extends AmmoWeaponHandler {
             int id = vPhaseReport.size();
             int hits = calcHits(vPhaseReport);
 
-            if (target.isAirborne() || game.getBoard().inSpace() || ae.usesWeaponBays()) {
+            if (target.isAirborne() || twGame.getBoard().inSpace() || ae.usesWeaponBays()) {
                 // if we added a line to the phase report for calc hits, remove
                 // it now
                 while (vPhaseReport.size() > id) {

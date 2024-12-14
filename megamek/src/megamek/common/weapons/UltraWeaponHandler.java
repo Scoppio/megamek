@@ -20,7 +20,7 @@ import java.util.Vector;
 import megamek.common.AmmoType;
 import megamek.common.Compute;
 import megamek.common.Entity;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Infantry;
 import megamek.common.RangeType;
 import megamek.common.Report;
@@ -43,9 +43,9 @@ public class UltraWeaponHandler extends AmmoWeaponHandler {
     // ultra AC using the unofficial "two rolls" rule. Can be final because
     // this isn't really going to change over the course of a game.
 
-    public UltraWeaponHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public UltraWeaponHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
-        twoRollsUltra = game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_UAC_TWOROLLS)
+        twoRollsUltra = twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_UAC_TWOROLLS)
                 && ((wtype.getAmmoType() == AmmoType.T_AC_ULTRA)
                         || (wtype.getAmmoType() == AmmoType.T_AC_ULTRA_THB));
     }
@@ -185,11 +185,11 @@ public class UltraWeaponHandler extends AmmoWeaponHandler {
             toReturn = applyGlancingBlowModifier(toReturn, false);
         }
 
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE)
                 && (nRange > wtype.getRanges(weapon)[RangeType.RANGE_LONG])) {
             toReturn = (int) Math.floor(toReturn * .75);
         }
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS_RANGE)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS_RANGE)
                 && (nRange > wtype.getRanges(weapon)[RangeType.RANGE_EXTREME])) {
             toReturn = (int) Math.floor(toReturn * .5);
         }
@@ -198,7 +198,7 @@ public class UltraWeaponHandler extends AmmoWeaponHandler {
 
     @Override
     protected boolean usesClusterTable() {
-        return !game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_UAC_TWOROLLS);
+        return !twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_UAC_TWOROLLS);
     }
 
     @Override

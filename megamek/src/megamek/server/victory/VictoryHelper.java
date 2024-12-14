@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.IGame;
 import megamek.common.options.BasicGameOptions;
 import megamek.common.options.OptionsConstants;
@@ -63,24 +63,24 @@ public class VictoryHelper implements Serializable {
      * Checks the various victory conditions if any lead to a game-ending result. Player-agreed /victory is always checked, other victory
      * conditions only if victory checking is at all enabled. Scripted victory and game-ending events are also always tested.
      *
-     * @param game    The Game
+     * @param twGame    The Game
      * @param context The victory context - to my knowledge, this is currently not used at all
      * @return A combined victory result giving the current victory status
      * @see VictoryResult#noResult()
      * @see VictoryResult#drawResult()
      */
-    public VictoryResult checkForVictory(Game game, Map<String, Object> context) {
+    public VictoryResult checkForVictory(TWGame twGame, Map<String, Object> context) {
         // Always check for chat-command /victory, so games without victory conditions can be completed
-        VictoryResult playerAgreedVR = playerAgreedVC.checkVictory(game, context);
+        VictoryResult playerAgreedVR = playerAgreedVC.checkVictory(twGame, context);
         if (playerAgreedVR.isVictory()) {
             return playerAgreedVR;
         }
 
-        if (gameEndsByScriptedEvent(game)) {
+        if (gameEndsByScriptedEvent(twGame)) {
             // The game does end now; therefore, test all victory events. If none are met, the game is a draw
-            for (TriggeredEvent event : game.scriptedEvents()) {
+            for (TriggeredEvent event : twGame.scriptedEvents()) {
                 if (event instanceof VictoryTriggeredEvent victoryEvent) {
-                    VictoryResult victoryResult = victoryEvent.checkVictory(game, context);
+                    VictoryResult victoryResult = victoryEvent.checkVictory(twGame, context);
                     if (victoryResult.isVictory()) {
                         return victoryResult;
                     }
@@ -90,14 +90,14 @@ public class VictoryHelper implements Serializable {
         }
 
         if (checkForVictory) {
-            VictoryResult result = checkOptionalVictoryConditions(game, context);
+            VictoryResult result = checkOptionalVictoryConditions(twGame, context);
             if (result.isVictory()) {
                 return result;
             }
 
             // Check for battlefield control; this is currently an automatic victory when VCs are checked at all
             // this could be made optional to allow the game to continue once alone if there's a use case
-            VictoryResult battlefieldControlVR = battlefieldControlVC.checkVictory(game, context);
+            VictoryResult battlefieldControlVR = battlefieldControlVC.checkVictory(twGame, context);
             if (battlefieldControlVR.isVictory()) {
                 return battlefieldControlVR;
             }
@@ -110,19 +110,19 @@ public class VictoryHelper implements Serializable {
      * @return True when the game ends right now (at the end of round victory check) through a scripted event, either a game-end
      * event or a victory event that is set to be game-ending.
      */
-    private boolean gameEndsByScriptedEvent(Game game) {
-        return game.scriptedEvents().stream()
+    private boolean gameEndsByScriptedEvent(IGame IGame) {
+        return IGame.scriptedEvents().stream()
             .filter(TriggeredEvent::isGameEnding)
-            .anyMatch(event -> event.trigger().isTriggered(game, TriggerSituation.ROUND_END));
+            .anyMatch(event -> event.trigger().isTriggered(IGame, TriggerSituation.ROUND_END));
     }
 
-    private VictoryResult checkOptionalVictoryConditions(Game game, Map<String, Object> context) {
+    private VictoryResult checkOptionalVictoryConditions(TWGame twGame, Map<String, Object> context) {
         boolean isVictory = false;
         VictoryResult combinedResult = new VictoryResult(true);
 
         // combine scores; the current score system is used to check the VC count that is achieved
         for (VictoryCondition victoryCondition : victoryConditions) {
-            VictoryResult victoryResult = victoryCondition.checkVictory(game, context);
+            VictoryResult victoryResult = victoryCondition.checkVictory(twGame, context);
             combinedResult.addReports(victoryResult.getReports());
             isVictory |= victoryResult.isVictory();
             combinedResult.addScores(victoryResult);
@@ -145,7 +145,7 @@ public class VictoryHelper implements Serializable {
 
         if (combinedResult.isVictory()) {
             return combinedResult;
-        } else if (game.gameTimerIsExpired()) {
+        } else if (twGame.gameTimerIsExpired()) {
             return VictoryResult.drawResult();
         } else {
             return combinedResult;

@@ -16,7 +16,7 @@ package megamek.common.actions;
 
 import megamek.client.ui.Messages;
 import megamek.common.Entity;
-import megamek.common.Game;
+import megamek.common.TWGame;
 
 public class SpotAction extends AbstractEntityAction {
 
@@ -36,8 +36,8 @@ public class SpotAction extends AbstractEntityAction {
     }
 
     @Override
-    public String toSummaryString(final Game game) {
-        Entity target = game.getEntity(this.getTargetId());
+    public String toSummaryString(final TWGame twGame) {
+        Entity target = twGame.getEntity(this.getTargetId());
         return Messages.getString("BoardView1.SpotAction", (target != null) ? target.getShortName() : "" );
     }
 }

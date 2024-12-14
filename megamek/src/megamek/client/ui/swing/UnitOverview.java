@@ -165,12 +165,12 @@ public class UnitOverview implements IDisplayable, IPreferenceChangeListener {
             graph.setColor(getFrameColor(e));
             graph.drawRect(x, y, ICON_WIDTH, ICON_HEIGHT);
 
-            Game game = clientgui.getClient().getGame();
-            GameTurn turn = game.getPhase().isSimultaneous(game)
-                    ? game.getTurnForPlayer(clientgui.getClient().getLocalPlayer().getId())
-                    : game.getTurn();
+            TWGame twGame = clientgui.getClient().getGame();
+            GameTurn turn = twGame.getPhase().isSimultaneous(twGame)
+                    ? twGame.getTurnForPlayer(clientgui.getClient().getLocalPlayer().getId())
+                    : twGame.getTurn();
 
-            if ((turn != null) && turn.isValidEntity(e, game)) {
+            if ((turn != null) && turn.isValidEntity(e, twGame)) {
                 Color oldColor = graph.getColor();
                 graph.setColor(GUIP.getUnitValidColor());
                 graph.drawRect(x - 1, y - 1, ICON_WIDTH + 2, ICON_HEIGHT + 2);
@@ -178,7 +178,7 @@ public class UnitOverview implements IDisplayable, IPreferenceChangeListener {
             }
 
             Entity se = clientgui.getDisplayedUnit();
-            if ((e == se) && (game.getTurn() != null) && game.getTurn().isValidEntity(e, game)) {
+            if ((e == se) && (twGame.getTurn() != null) && twGame.getTurn().isValidEntity(e, twGame)) {
                 Color oldColor = graph.getColor();
                 graph.setColor(GUIP.getUnitSelectedColor());
                 graph.drawRect(x - 1, y - 1, ICON_WIDTH + 2, ICON_HEIGHT + 2);

@@ -74,15 +74,7 @@ import megamek.client.ui.swing.util.MegaMekController;
 import megamek.client.ui.swing.util.StringDrawer;
 import megamek.client.ui.swing.util.UIUtil;
 import megamek.client.ui.swing.util.UIUtil.FixedYPanel;
-import megamek.common.Board;
-import megamek.common.Building;
-import megamek.common.Configuration;
-import megamek.common.Coords;
-import megamek.common.Game;
-import megamek.common.Hex;
-import megamek.common.MapSettings;
-import megamek.common.Terrain;
-import megamek.common.Terrains;
+import megamek.common.*;
 import megamek.common.annotations.Nullable;
 import megamek.common.util.BoardUtilities;
 import megamek.common.util.ImageUtil;
@@ -232,8 +224,8 @@ public class BoardEditor extends JPanel implements ItemListener, ListSelectionLi
 
     // Components
     private final JFrame frame = new JFrame();
-    private final Game game = new Game();
-    private Board board = game.getBoard();
+    private final TWGame twGame = new TWGame();
+    private Board board = twGame.getBoard();
     private BoardView bv;
     boolean isDragging = false;
     private Component bvc;
@@ -365,11 +357,11 @@ public class BoardEditor extends JPanel implements ItemListener, ListSelectionLi
     public BoardEditor(MegaMekController c) {
         controller = c;
         try {
-            bv = new BoardView(game, controller, null);
+            bv = new BoardView(twGame, controller, null);
             bv.addOverlay(new KeyBindingsOverlay(bv));
             bv.setUseLosTool(false);
             bv.setDisplayInvalidFields(true);
-            bv.setTooltipProvider(new BoardEditorTooltip(game, bv));
+            bv.setTooltipProvider(new BoardEditorTooltip(twGame, bv));
             bvc = bv.getComponent(true);
         } catch (IOException e) {
             JOptionPane.showMessageDialog(frame,
@@ -1098,7 +1090,7 @@ public class BoardEditor extends JPanel implements ItemListener, ListSelectionLi
         scrCenterPanel.getVerticalScrollBar().setUnitIncrement(16);
         add(scrCenterPanel, BorderLayout.CENTER);
         add(panButtons, BorderLayout.PAGE_END);
-        minimapW = Minimap.createMinimap(frame, bv, game, null);
+        minimapW = Minimap.createMinimap(frame, bv, twGame, null);
         minimapW.setVisible(guip.getMinimapEnabled());
     }
 
@@ -1446,7 +1438,7 @@ public class BoardEditor extends JPanel implements ItemListener, ListSelectionLi
             board = BoardUtilities.generateRandom(mapSettings);
             // "Initialize" all hexes to add internally handled terrains
             correctExits();
-            game.setBoard(board);
+            twGame.setBoard(board);
             curBoardFile = null;
             choTheme.setSelectedItem(mapSettings.getTheme());
             setupUiFreshBoard();
@@ -1464,9 +1456,9 @@ public class BoardEditor extends JPanel implements ItemListener, ListSelectionLi
             int north = emd.getExpandNorth();
             int east = emd.getExpandEast();
             int south = emd.getExpandSouth();
-            board = implantOldBoard(game, west, north, east, south);
+            board = implantOldBoard(twGame, west, north, east, south);
 
-            game.setBoard(board);
+            twGame.setBoard(board);
             curBoardFile = null;
             setupUiFreshBoard();
         }
@@ -1474,8 +1466,8 @@ public class BoardEditor extends JPanel implements ItemListener, ListSelectionLi
 
     // When we resize a board, implant the old board's hexes where they should be in
     // the new board
-    public Board implantOldBoard(Game game, int west, int north, int east, int south) {
-        Board oldBoard = game.getBoard();
+    public Board implantOldBoard(IGame IGame, int west, int north, int east, int south) {
+        Board oldBoard = IGame.getBoard();
         for (int x = 0; x < oldBoard.getWidth(); x++) {
             for (int y = 0; y < oldBoard.getHeight(); y++) {
                 int newX = x + west;
@@ -1531,7 +1523,7 @@ public class BoardEditor extends JPanel implements ItemListener, ListSelectionLi
             // for the background image to work in the BoardEditor
             board = BoardUtilities.combine(board.getWidth(), board.getHeight(), 1, 1,
                     new Board[] { board }, Collections.singletonList(false), MapSettings.MEDIUM_GROUND);
-            game.setBoard(board);
+            twGame.setBoard(board);
             // BoardUtilities.combine does not preserve tags, so add them back
             for (String tag : boardTags) {
                 board.addTag(tag);

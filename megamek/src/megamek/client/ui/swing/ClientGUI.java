@@ -3194,8 +3194,8 @@ public class ClientGUI extends AbstractClientGUI implements BoardViewListener,
     private void toggleFleeZone() {
         showFleeZone = !showFleeZone;
         if (showFleeZone && unitDisplay.getCurrentEntity() != null) {
-            Game game = client.getGame();
-            fleeZoneSpriteHandler.renewSprites(game.getFleeZone(unitDisplay.getCurrentEntity()).getCoords(game.getBoard()));
+            TWGame twGame = client.getGame();
+            fleeZoneSpriteHandler.renewSprites(twGame.getFleeZone(unitDisplay.getCurrentEntity()).getCoords(twGame.getBoard()));
         } else {
             fleeZoneSpriteHandler.clear();
         }

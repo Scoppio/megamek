@@ -40,7 +40,7 @@ public class TankTrailerHitch implements Transporter {
      * The entity being towed by this hitch.
      */
     protected int towed = Entity.NONE;
-    private transient Game game;
+    private transient TWGame twGame;
 
     /**
      * The <code>String</code> reported when the hitch is in use.
@@ -139,7 +139,7 @@ public class TankTrailerHitch implements Transporter {
         // Return a list of our carried troopers.
         Vector<Entity> units = new Vector<>(1);
         if (towed != Entity.NONE) {
-            Entity entity = game.getEntity(towed);
+            Entity entity = twGame.getEntity(towed);
 
             if (entity != null) {
                 units.addElement(entity);
@@ -159,7 +159,7 @@ public class TankTrailerHitch implements Transporter {
     @Override
     public final boolean unload(Entity unit) {
         // Are we carrying the unit?
-        Entity trailer = game.getEntity(towed);
+        Entity trailer = twGame.getEntity(towed);
         if ((trailer == null) || !trailer.equals(unit)) {
             // Nope.
             return false;
@@ -235,14 +235,14 @@ public class TankTrailerHitch implements Transporter {
      */
     @Override
     public final Entity getExteriorUnitAt(int loc, boolean isRear) {
-        return game.getEntity(towed);
+        return twGame.getEntity(towed);
     }
 
     @Override
     public final List<Entity> getExternalUnits() {
         ArrayList<Entity> rv = new ArrayList<>(1);
         if (towed != Entity.NONE) {
-            rv.add(game.getEntity(towed));
+            rv.add(twGame.getEntity(towed));
         }
         return Collections.unmodifiableList(rv);
     }
@@ -258,7 +258,7 @@ public class TankTrailerHitch implements Transporter {
     }
 
     @Override
-    public void setGame(Game game) {
-        this.game = game;
+    public void setGame(TWGame twGame) {
+        this.twGame = twGame;
     }
 }

@@ -31,21 +31,21 @@ public class PushAttackAction extends DisplacementAttackAction {
         super(entityId, targetType, targetId, targetPos);
     }
 
-    public ToHitData toHit(Game game) {
-        return toHit(game, getEntityId(), game.getTarget(getTargetType(), getTargetId()));
+    public ToHitData toHit(TWGame twGame) {
+        return toHit(twGame, getEntityId(), twGame.getTarget(getTargetType(), getTargetId()));
     }
 
     /**
      * pushes are impossible when physical attacks are impossible, or a
      * retractable blade is extended
      *
-     * @param game   The current {@link Game}
+     * @param IGame   The current {@link TWGame}
      * @param ae
      * @param target
      * @return
      */
-    protected static String toHitIsImpossible(Game game, Entity ae, Targetable target) {
-        String physicalImpossible = PhysicalAttackAction.toHitIsImpossible(game, ae, target);
+    protected static String toHitIsImpossible(IGame IGame, Entity ae, Targetable target) {
+        String physicalImpossible = PhysicalAttackAction.toHitIsImpossible(IGame, ae, target);
 
         if (physicalImpossible != null) {
             return physicalImpossible;
@@ -72,8 +72,8 @@ public class PushAttackAction extends DisplacementAttackAction {
     /**
      * To-hit number for the mek to push another mek
      */
-    public static ToHitData toHit(Game game, int attackerId, Targetable target) {
-        final Entity ae = game.getEntity(attackerId);
+    public static ToHitData toHit(TWGame twGame, int attackerId, Targetable target) {
+        final Entity ae = twGame.getEntity(attackerId);
 
         int targetId = Entity.NONE;
         Entity te = null;
@@ -89,8 +89,8 @@ public class PushAttackAction extends DisplacementAttackAction {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "You can't target a null entity!");
         }
 
-        Hex attHex = game.getBoard().getHex(ae.getPosition());
-        Hex targHex = game.getBoard().getHex(te.getPosition());
+        Hex attHex = twGame.getBoard().getHex(ae.getPosition());
+        Hex targHex = twGame.getBoard().getHex(te.getPosition());
 
         if (attHex == null) {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "Entity #" + ae.getId() + " does not know its position.");
@@ -102,11 +102,11 @@ public class PushAttackAction extends DisplacementAttackAction {
         final int attackerElevation = ae.getElevation() + attHex.getLevel();
         final int targetElevation = target.getElevation() + targHex.getLevel();
 
-        boolean inSameBuilding = Compute.isInSameBuilding(game, ae, te);
-        final boolean targetInBuilding = Compute.isInBuilding(game, te);
+        boolean inSameBuilding = Compute.isInSameBuilding(twGame, ae, te);
+        final boolean targetInBuilding = Compute.isInBuilding(twGame, te);
         Building bldg = null;
         if (targetInBuilding) {
-            bldg = game.getBoard().getBuildingAt(te.getPosition());
+            bldg = twGame.getBoard().getBuildingAt(te.getPosition());
         }
         ToHitData toHit;
 
@@ -219,9 +219,9 @@ public class PushAttackAction extends DisplacementAttackAction {
 
         // Can't target units in buildings (from the outside).
         if (targetInBuilding) {
-            if (!Compute.isInBuilding(game, ae)) {
+            if (!Compute.isInBuilding(twGame, ae)) {
                 return new ToHitData(TargetRoll.IMPOSSIBLE, "Target is inside building");
-            } else if (!game.getBoard().getBuildingAt(ae.getPosition()).equals(bldg)) {
+            } else if (!twGame.getBoard().getBuildingAt(ae.getPosition()).equals(bldg)) {
                 return new ToHitData(TargetRoll.IMPOSSIBLE, "Target is inside different building");
             }
         }
@@ -240,7 +240,7 @@ public class PushAttackAction extends DisplacementAttackAction {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "Invalid attack");
         }
 
-        String otherImpossible = toHitIsImpossible(game, ae, target);
+        String otherImpossible = toHitIsImpossible(twGame, ae, target);
         if (otherImpossible != null) {
             return new ToHitData(TargetRoll.IMPOSSIBLE, otherImpossible);
         }
@@ -252,16 +252,16 @@ public class PushAttackAction extends DisplacementAttackAction {
         toHit.addModifier(-1, "Push");
 
         // attacker movement
-        toHit.append(Compute.getAttackerMovementModifier(game, attackerId));
+        toHit.append(Compute.getAttackerMovementModifier(twGame, attackerId));
 
         // target movement
-        toHit.append(Compute.getTargetMovementModifier(game, targetId));
+        toHit.append(Compute.getTargetMovementModifier(twGame, targetId));
 
         // attacker terrain
-        toHit.append(Compute.getAttackerTerrainModifier(game, attackerId));
+        toHit.append(Compute.getAttackerTerrainModifier(twGame, attackerId));
 
         // target terrain
-        toHit.append(Compute.getTargetTerrainModifier(game, te, 0, inSameBuilding));
+        toHit.append(Compute.getTargetTerrainModifier(twGame, te, 0, inSameBuilding));
 
         // damaged or missing actuators
         if (!ae.hasWorkingSystem(Mek.ACTUATOR_SHOULDER, Mek.LOC_RARM)) {
@@ -285,14 +285,14 @@ public class PushAttackAction extends DisplacementAttackAction {
         // target immobile
         toHit.append(Compute.getImmobileMod(te));
 
-        Compute.modifyPhysicalBTHForAdvantages(ae, te, toHit, game);
+        Compute.modifyPhysicalBTHForAdvantages(ae, te, toHit, twGame);
 
         // evading
         if (te.isEvading()) {
             toHit.addModifier(te.getEvasionBonus(), "target is evading");
         }
 
-        toHit.append(nightModifiers(game, target, null, ae, false));
+        toHit.append(nightModifiers(twGame, target, null, ae, false));
         // side and elevation shouldn't matter
 
         // If it has a torso-mounted cockpit and two head sensor hits or three
@@ -309,7 +309,7 @@ public class PushAttackAction extends DisplacementAttackAction {
         }
 
         // Attacking Weight Class Modifier.
-        if (game.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_PHYSICAL_ATTACK_PSR)) {
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_PHYSICAL_ATTACK_PSR)) {
             if (ae.getWeightClass() == EntityWeightClass.WEIGHT_LIGHT) {
                 toHit.addModifier(-2, "Weight Class Attack Modifier");
             } else if (ae.getWeightClass() == EntityWeightClass.WEIGHT_MEDIUM) {
@@ -326,8 +326,8 @@ public class PushAttackAction extends DisplacementAttackAction {
     }
 
     @Override
-    public String toSummaryString(final Game game) {
-        final String roll = this.toHit(game).getValueAsString();
+    public String toSummaryString(final TWGame twGame) {
+        final String roll = this.toHit(twGame).getValueAsString();
         return Messages.getString("BoardView1.PushAttackAction", roll);
     }
 }

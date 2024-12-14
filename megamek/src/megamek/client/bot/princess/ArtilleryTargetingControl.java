@@ -78,19 +78,19 @@ public class ArtilleryTargetingControl {
      * @param damage
      * @param hex
      * @param shooter
-     * @param game
+     * @param twGame
      * @param owner
      * @return
      */
-    public double calculateDamageValue(int damage, HexTarget hex, Entity shooter, Game game, Princess owner) {
+    public double calculateDamageValue(int damage, HexTarget hex, Entity shooter, TWGame twGame, Princess owner) {
         // For leading shots, this will be the computed end point. Might contain
         // friendlies. For non-leading shots, this is the original target hex.
-        double totalDamage = calculateDamageValue(damage, hex.getPosition(), shooter, game, owner);
+        double totalDamage = calculateDamageValue(damage, hex.getPosition(), shooter, twGame, owner);
 
         if (null != hex.getOriginalTarget()) {
             // For leading shots, the expected damage is based on the units in and around
             // the _current_ location, which is stored as the "getOriginalTarget".
-            totalDamage += calculateDamageValue(damage, hex.getOriginalTarget().getPosition(), shooter, game, owner);
+            totalDamage += calculateDamageValue(damage, hex.getOriginalTarget().getPosition(), shooter, twGame, owner);
         }
         return totalDamage;
     }
@@ -104,10 +104,10 @@ public class ArtilleryTargetingControl {
      * @param damage
      * @param coords
      * @param shooter
-     * @param game    The current {@link Game}
+     * @param twGame    The current {@link TWGame}
      * @param owner   the {@link Princess} bot to calculate for
      */
-    public double calculateDamageValue(int damage, Coords coords, Entity shooter, Game game,
+    public double calculateDamageValue(int damage, Coords coords, Entity shooter, TWGame twGame,
             Princess owner) {
         if (getDamageValue(damage, coords) != null) {
             return getDamageValue(damage, coords);
@@ -120,7 +120,7 @@ public class ArtilleryTargetingControl {
         // it's not correct for cruise missiles, but I don't think the bot will be using
         // those.
         int blastRadius = (int) Math.ceil(damage / 10.0) - 1;
-        double totalDamage = calculateDamageValueForHex(damage, coords, shooter, game, owner);
+        double totalDamage = calculateDamageValueForHex(damage, coords, shooter, twGame, owner);
 
         // loop around each concentric hex centered on the given coords
         for (int distanceFromCenter = 1; distanceFromCenter <= blastRadius; distanceFromCenter++) {
@@ -128,7 +128,7 @@ public class ArtilleryTargetingControl {
             int currentDamage = damage - distanceFromCenter * 10;
 
             for (Coords currentCoords : coords.allAtDistance(distanceFromCenter)) {
-                totalDamage += calculateDamageValueForHex(currentDamage, currentCoords, shooter, game, owner);
+                totalDamage += calculateDamageValueForHex(currentDamage, currentCoords, shooter, twGame, owner);
             }
         }
 
@@ -144,12 +144,12 @@ public class ArtilleryTargetingControl {
      * @param damage  How much damage will we do
      * @param coords  Coordinates to hit
      * @param shooter Entity doing the shooting
-     * @param game    The current {@link Game}
+     * @param twGame    The current {@link TWGame}
      */
-    private double calculateDamageValueForHex(int damage, Coords coords, Entity shooter, Game game, Princess owner) {
+    private double calculateDamageValueForHex(int damage, Coords coords, Entity shooter, TWGame twGame, Princess owner) {
         double value = 0;
 
-        for (Entity entity : game.getEntitiesVector(coords, true)) {
+        for (Entity entity : twGame.getEntitiesVector(coords, true)) {
             // ignore aircraft for now, and also transported entities
             if (entity.isAirborne() || entity.isAirborneVTOLorWIGE() || entity.getTransportId() != Entity.NONE) {
                 continue;
@@ -258,15 +258,15 @@ public class ArtilleryTargetingControl {
      * and within the max radius of all strategic targets.
      *
      * @param shooter Entity doing the shooting
-     * @param game    The current {@link Game}
+     * @param twGame    The current {@link TWGame}
      * @param owner   Bot pointer
      */
-    private void buildTargetList(Entity shooter, Game game, Princess owner) {
+    private void buildTargetList(Entity shooter, TWGame twGame, Princess owner) {
         targetSet = new HashSet<>();
         boolean adaAvailable = getADAAvailable(shooter);
         boolean homingAvailable = getHomingAvailable(shooter);
 
-        for (Iterator<Entity> enemies = game.getAllEnemyEntities(shooter); enemies.hasNext();) {
+        for (Iterator<Entity> enemies = twGame.getAllEnemyEntities(shooter); enemies.hasNext();) {
             Entity e = enemies.next();
 
             // Given how accurate and long-ranged ADA missiles are, prioritize airborne
@@ -288,12 +288,12 @@ public class ArtilleryTargetingControl {
                 HexTarget hex = new HexTarget(e.getPosition(), Targetable.TYPE_HEX_ARTILLERY);
 
                 // Add leading hex for standard rounds
-                HexTarget leadHex = new HexTarget(Compute.calculateArtilleryLead(game, shooter, e, false),
+                HexTarget leadHex = new HexTarget(Compute.calculateArtilleryLead(twGame, shooter, e, false),
                         Targetable.TYPE_HEX_ARTILLERY);
                 leadHex.setOriginalTarget(hex);
 
                 // Add leading hex for homing rounds
-                HexTarget homingHex = new HexTarget(Compute.calculateArtilleryLead(game, shooter, e, homingAvailable),
+                HexTarget homingHex = new HexTarget(Compute.calculateArtilleryLead(twGame, shooter, e, homingAvailable),
                         Targetable.TYPE_HEX_ARTILLERY);
                 homingHex.setOriginalTarget(hex);
 
@@ -313,11 +313,11 @@ public class ArtilleryTargetingControl {
 
                 // while we're here, consider shooting at hexes within "MAX_BLAST_RADIUS"
                 // of the final target.
-                addHexDonuts(hex.getPosition(), targetSet, game);
+                addHexDonuts(hex.getPosition(), targetSet, twGame);
             }
         }
 
-        for (Entity enemy : game.getAllOffboardEnemyEntities(shooter.getOwner())) {
+        for (Entity enemy : twGame.getAllOffboardEnemyEntities(shooter.getOwner())) {
             if (enemy.isOffBoardObserved(shooter.getOwner().getTeam())) {
                 targetSet.add(enemy);
             }
@@ -328,7 +328,7 @@ public class ArtilleryTargetingControl {
 
             // while we're here, consider shooting at hexes within "MAX_BLAST_RADIUS"
             // of the strategic targets.
-            addHexDonuts(coords, targetSet, game);
+            addHexDonuts(coords, targetSet, twGame);
         }
     }
 
@@ -338,15 +338,15 @@ public class ArtilleryTargetingControl {
      *
      * @param coords     Center coordinates
      * @param targetList List of target hexes
-     * @param game       The current {@link Game}
+     * @param IGame       The current {@link TWGame}
      */
-    private void addHexDonuts(Coords coords, Set<Targetable> targetList, Game game) {
+    private void addHexDonuts(Coords coords, Set<Targetable> targetList, IGame IGame) {
         // while we're here, consider shooting at hexes within "MAX_BLAST_RADIUS"
         // of the designated coordinates
         for (int radius = 1; radius <= MAX_ARTILLERY_BLAST_RADIUS; radius++) {
             for (Coords donutHex : coords.allAtDistance(radius)) {
                 // don't bother adding off-board donuts.
-                if (game.getBoard().contains(donutHex)) {
+                if (IGame.getBoard().contains(donutHex)) {
                     targetList.add(new HexTarget(donutHex, Targetable.TYPE_HEX_ARTILLERY));
                 }
             }
@@ -358,23 +358,23 @@ public class ArtilleryTargetingControl {
      * possibility of rotating the turret.
      *
      * @param shooter Entity doing the shooting
-     * @param game    The current {@link Game}
+     * @param twGame    The current {@link TWGame}
      * @param owner   Princess pointer
      * @return Firing plan
      */
-    public FiringPlan calculateIndirectArtilleryPlan(Entity shooter, Game game, Princess owner) {
-        return calculateIndirectArtilleryPlan(shooter, game, owner, 0);
+    public FiringPlan calculateIndirectArtilleryPlan(Entity shooter, TWGame twGame, Princess owner) {
+        return calculateIndirectArtilleryPlan(shooter, twGame, owner, 0);
     }
 
     /**
      * Put together an indirect artillery "fire plan".
      *
      * @param shooter Entity doing the shooting
-     * @param game    The current {@link Game}
+     * @param twGame    The current {@link TWGame}
      * @param owner   Princess pointer
      * @return Firing plan
      */
-    private FiringPlan calculateIndirectArtilleryPlan(Entity shooter, Game game, Princess owner, int facingChange) {
+    private FiringPlan calculateIndirectArtilleryPlan(Entity shooter, TWGame twGame, Princess owner, int facingChange) {
         FiringPlan returnValue = new FiringPlan();
         FiringPlan TAGPlan = new FiringPlan();
 
@@ -396,7 +396,7 @@ public class ArtilleryTargetingControl {
         // potential target list is the same regardless of the entity doing the shooting
         // TODO: allow for counter-battery fire on spotted off-board shooters.
         if (targetSet == null) {
-            buildTargetList(shooter, game, owner);
+            buildTargetList(shooter, twGame, owner);
             // If we decided not to shoot this phase, no reason to continue calculating.
             if (targetSet == null) {
                 return returnValue;
@@ -431,7 +431,7 @@ public class ArtilleryTargetingControl {
                             damageValue = damage;
                         } else {
                             if (!(isADA || isSmoke)) {
-                                damageValue = calculateDamageValue(damage, (HexTarget) target, shooter, game, owner);
+                                damageValue = calculateDamageValue(damage, (HexTarget) target, shooter, twGame, owner);
                             } else if (isSmoke) {
                                 damageValue = 0;
                             } else {
@@ -442,7 +442,7 @@ public class ArtilleryTargetingControl {
 
                         // ADA attacks should be handled as Direct Fire but we'll calc hits here for
                         // comparison.
-                        wfi = new WeaponFireInfo(shooter, target, currentWeapon, ammo, game, false, owner);
+                        wfi = new WeaponFireInfo(shooter, target, currentWeapon, ammo, twGame, false, owner);
 
                         // factor the chance to hit when picking a target - if we've got a spotted hex
                         // or an auto-hit hex
@@ -514,7 +514,7 @@ public class ArtilleryTargetingControl {
                     }
                 }
             } else if (currentWeapon.getType().hasFlag(WeaponType.F_TAG)) {
-                WeaponFireInfo tagInfo = getTAGInfo(currentWeapon, shooter, game, owner);
+                WeaponFireInfo tagInfo = getTAGInfo(currentWeapon, shooter, twGame, owner);
 
                 if (tagInfo != null) {
                     TAGPlan.add(tagInfo);
@@ -546,18 +546,18 @@ public class ArtilleryTargetingControl {
      * TAG being fired.
      *
      * @param shooter
-     * @param game    The current {@link Game}
+     * @param twGame    The current {@link TWGame}
      * @param owner
      * @return
      */
-    private WeaponFireInfo getTAGInfo(WeaponMounted weapon, Entity shooter, Game game, Princess owner) {
+    private WeaponFireInfo getTAGInfo(WeaponMounted weapon, Entity shooter, TWGame twGame, Princess owner) {
         WeaponFireInfo returnValue = null;
         double hitOdds = 0.0;
 
         // pretty simple logic here: take the best shot that you have
-        for (Targetable target : FireControl.getAllTargetableEnemyEntities(owner.getLocalPlayer(), game,
+        for (Targetable target : FireControl.getAllTargetableEnemyEntities(owner.getLocalPlayer(), twGame,
                 owner.getFireControlState())) {
-            WeaponFireInfo wfi = new WeaponFireInfo(shooter, target, weapon, null, game, false, owner);
+            WeaponFireInfo wfi = new WeaponFireInfo(shooter, target, weapon, null, twGame, false, owner);
             if (wfi.getProbabilityToHit() > hitOdds) {
                 hitOdds = wfi.getProbabilityToHit();
                 returnValue = wfi;

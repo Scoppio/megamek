@@ -233,16 +233,16 @@ public class ClubAttackAction extends PhysicalAttackAction {
         return zweihandering;
     }
 
-    public ToHitData toHit(Game game) {
-        return ClubAttackAction.toHit(game, getEntityId(),
-                game.getTarget(getTargetType(), getTargetId()), getClub(),
+    public ToHitData toHit(TWGame twGame) {
+        return ClubAttackAction.toHit(twGame, getEntityId(),
+                twGame.getTarget(getTargetType(), getTargetId()), getClub(),
                 aiming, zweihandering);
     }
 
     /**
      * To-hit number for the specified club to hit
      *
-     * @param game          The current {@link Game}
+     * @param twGame          The current {@link TWGame}
      * @param attackerId    - attacker id
      * @param target        <code>Targetable</code> of the target
      * @param club          - <code>Mounted</code> of the weapon
@@ -251,9 +251,9 @@ public class ClubAttackAction extends PhysicalAttackAction {
      *                      zweihandering (using both hands)
      * @return
      */
-    public static ToHitData toHit(Game game, int attackerId,
-            Targetable target, Mounted<?> club, int aimTable, boolean zweihandering) {
-        final Entity ae = game.getEntity(attackerId);
+    public static ToHitData toHit(TWGame twGame, int attackerId,
+                                  Targetable target, Mounted<?> club, int aimTable, boolean zweihandering) {
+        final Entity ae = twGame.getEntity(attackerId);
         MiscType clubType;
         // arguments legal?
         if (ae == null) {
@@ -273,7 +273,7 @@ public class ClubAttackAction extends PhysicalAttackAction {
             clubType = (MiscType) club.getType();
         }
 
-        String impossible = PhysicalAttackAction.toHitIsImpossible(game, ae,
+        String impossible = PhysicalAttackAction.toHitIsImpossible(twGame, ae,
                 target);
         if (impossible != null) {
             return new ToHitData(TargetRoll.IMPOSSIBLE, impossible);
@@ -323,8 +323,8 @@ public class ClubAttackAction extends PhysicalAttackAction {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "impossible");
         }
 
-        Hex attHex = game.getBoard().getHex(ae.getPosition());
-        Hex targHex = game.getBoard().getHex(target.getPosition());
+        Hex attHex = twGame.getBoard().getHex(ae.getPosition());
+        Hex targHex = twGame.getBoard().getHex(target.getPosition());
         final int attackerElevation = ae.getElevation() + attHex.getLevel();
         final int attackerHeight = attackerElevation + ae.height();
         final int targetElevation = target.getElevation()
@@ -482,7 +482,7 @@ public class ClubAttackAction extends PhysicalAttackAction {
         toHit = new ToHitData(base, "base");
         toHit.addModifier(getHitModFor(clubType), clubType.getName());
 
-        PhysicalAttackAction.setCommonModifiers(toHit, game, ae, target);
+        PhysicalAttackAction.setCommonModifiers(toHit, twGame, ae, target);
 
         // damaged or missing actuators
         if (bothArms) {
@@ -525,7 +525,7 @@ public class ClubAttackAction extends PhysicalAttackAction {
         }
 
         // elevation
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_CLUBS_PUNCH)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_CLUBS_PUNCH)
                 && (target instanceof Mek)) {
             toHit.setHitTable(ToHitData.HIT_PUNCH);
             if ((attackerHeight == targetElevation) && !ae.isHullDown()) {
@@ -578,8 +578,8 @@ public class ClubAttackAction extends PhysicalAttackAction {
     }
 
     @Override
-    public String toSummaryString(final Game game) {
-        final String roll = this.toHit(game).getValueAsString();
+    public String toSummaryString(final TWGame twGame) {
+        final String roll = this.toHit(twGame).getValueAsString();
         final String club = this.getClub().getName();
         return Messages.getString("BoardView1.ClubAttackAction", club, roll);
     }

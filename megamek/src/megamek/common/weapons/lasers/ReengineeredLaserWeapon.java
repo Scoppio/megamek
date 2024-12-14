@@ -14,7 +14,7 @@
  */
 package megamek.common.weapons.lasers;
 
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.weapons.AttackHandler;
@@ -26,10 +26,10 @@ public abstract class ReengineeredLaserWeapon extends PulseLaserWeapon {
     private static final long serialVersionUID = 2113437667446946251L;
 
     @Override
-    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, Game game, TWGameManager manager) {
-        return new ReengineeredLaserWeaponHandler(toHit, waa, game, manager);
+    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, TWGame twGame, TWGameManager manager) {
+        return new ReengineeredLaserWeaponHandler(toHit, waa, twGame, manager);
     }
-    
+
     @Override
     public int getBattleForceClass() {
         return BFCLASS_REL;

@@ -39,15 +39,8 @@ import javax.swing.JTextArea;
 
 import megamek.client.ui.Messages;
 import megamek.client.ui.SharedUtility;
-import megamek.common.Coords;
-import megamek.common.Entity;
-import megamek.common.Game;
-import megamek.common.Infantry;
-import megamek.common.Mek;
-import megamek.common.Mounted;
-import megamek.common.QuadMek;
-import megamek.common.Targetable;
-import megamek.common.WeaponType;
+import megamek.common.*;
+import megamek.common.TWGame;
 import megamek.common.actions.TriggerBPodAction;
 
 /**
@@ -283,7 +276,7 @@ public class TriggerBPodDialog extends JDialog implements ActionListener {
      *            - the <code>Coords</code> containing targets.
      */
     private Entity chooseTarget(Coords pos) {
-        final Game game = clientgui.getClient().getGame();
+        final TWGame twGame = clientgui.getClient().getGame();
         // Assume that we have *no* choice.
         Entity choice = null;
 
@@ -291,8 +284,8 @@ public class TriggerBPodDialog extends JDialog implements ActionListener {
 
         // Convert the choices into a List of targets.
         List<Targetable> targets = new ArrayList<>();
-        for (Entity ent : game.getEntitiesVector(pos)) {
-            if (!game.getEntity(entityId).equals(choice)
+        for (Entity ent : twGame.getEntitiesVector(pos)) {
+            if (!twGame.getEntity(entityId).equals(choice)
                     && (choice instanceof Infantry)) {
                 targets.add(ent);
             }

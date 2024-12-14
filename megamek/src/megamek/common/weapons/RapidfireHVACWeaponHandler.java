@@ -32,7 +32,7 @@ import megamek.server.SmokeCloud;
 public class RapidfireHVACWeaponHandler extends RapidfireACWeaponHandler {
     private static final long serialVersionUID = 7326881584091651519L;
 
-    public RapidfireHVACWeaponHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public RapidfireHVACWeaponHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 
@@ -45,13 +45,13 @@ public class RapidfireHVACWeaponHandler extends RapidfireACWeaponHandler {
      */
     @Override
     public boolean handle(GamePhase phase, Vector<Report> vPhaseReport) {
-        PlanetaryConditions conditions = game.getPlanetaryConditions();
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_START_FIRE)
+        PlanetaryConditions conditions = twGame.getPlanetaryConditions();
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_START_FIRE)
                 && !conditions.getAtmosphere().isVacuum()) {
             int rear = (ae.getFacing() + 3 + (weapon.isMekTurretMounted() ? weapon.getFacing() : 0)) % 6;
             Coords src = ae.getPosition();
             Coords rearCoords = src.translated(rear);
-            Board board = game.getBoard();
+            Board board = twGame.getBoard();
             Hex currentHex = board.getHex(src);
 
             if (!board.contains(rearCoords)) {

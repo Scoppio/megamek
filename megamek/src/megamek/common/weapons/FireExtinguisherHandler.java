@@ -26,7 +26,7 @@ import java.util.Vector;
 public class FireExtinguisherHandler extends WeaponHandler {
     private static final long serialVersionUID = -7047033962986081773L;
 
-    public FireExtinguisherHandler(ToHitData toHit, WeaponAttackAction waa, Game g, TWGameManager m) {
+    public FireExtinguisherHandler(ToHitData toHit, WeaponAttackAction waa, TWGame g, TWGameManager m) {
         super(toHit, waa, g, m);
     }
 
@@ -43,9 +43,9 @@ public class FireExtinguisherHandler extends WeaponHandler {
                 r.add(target.getPosition().getBoardNum());
                 r.indent(3);
                 vPhaseReport.add(r);
-                game.getBoard().getHex(target.getPosition()).removeTerrain(Terrains.FIRE);
+                twGame.getBoard().getHex(target.getPosition()).removeTerrain(Terrains.FIRE);
                 gameManager.sendChangedHex(target.getPosition());
-                game.getBoard().removeInfernoFrom(target.getPosition());
+                twGame.getBoard().removeInfernoFrom(target.getPosition());
             } else if (target instanceof Entity) {
                 if (entityTarget.infernos.isStillBurning()
                         || (target instanceof Tank && ((Tank) target).isOnFire())) {

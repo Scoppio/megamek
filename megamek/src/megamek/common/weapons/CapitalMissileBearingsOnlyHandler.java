@@ -59,7 +59,7 @@ public class CapitalMissileBearingsOnlyHandler extends AmmoBayWeaponHandler {
         super();
     }
 
-    public CapitalMissileBearingsOnlyHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public CapitalMissileBearingsOnlyHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 
@@ -130,11 +130,11 @@ public class CapitalMissileBearingsOnlyHandler extends AmmoBayWeaponHandler {
             return true;
         }
         Entity entityTarget = (aaa.getTargetType() == Targetable.TYPE_ENTITY) ? (Entity) aaa
-                .getTarget(game) : null;
-        if (game.getPhase().isFiring() && entityTarget == null) {
+                .getTarget(twGame) : null;
+        if (twGame.getPhase().isFiring() && entityTarget == null) {
             convertHexTargetToEntityTarget(vPhaseReport);
             entityTarget = (aaa.getTargetType() == Targetable.TYPE_ENTITY) ? (Entity) aaa
-                    .getTarget(game) : null;
+                    .getTarget(twGame) : null;
         }
 
         // Report weapon attack and its to-hit value.
@@ -164,7 +164,7 @@ public class CapitalMissileBearingsOnlyHandler extends AmmoBayWeaponHandler {
 
         // Set Margin of Success/Failure and check for Direct Blows
         toHit.setMoS(roll.getIntValue() - Math.max(2, toHit.getValue()));
-        bDirect = game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_DIRECT_BLOW)
+        bDirect = twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_DIRECT_BLOW)
                 && ((toHit.getMoS() / 3) >= 1) && (entityTarget != null);
 
         // This has to be up here so that we don't screw up glancing/direct blow reports
@@ -282,7 +282,7 @@ public class CapitalMissileBearingsOnlyHandler extends AmmoBayWeaponHandler {
             reportMiss(vPhaseReport);
         }
         // Aero Sanity Handling
-        if (game.getOptions().booleanOption(OptionsConstants.ADVAERORULES_AERO_SANITY) && !bMissed) {
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVAERORULES_AERO_SANITY) && !bMissed) {
             // New toHit data to hold our bay auto hit. We want to be able to get
             // glacing/direct blow
             // data from the 'real' toHit data of this bay handler
@@ -296,7 +296,7 @@ public class CapitalMissileBearingsOnlyHandler extends AmmoBayWeaponHandler {
                         replaceReport = vPhaseReport.size();
                         WeaponAttackAction bayWaa = new WeaponAttackAction(waa.getEntityId(), waa.getTargetType(),
                                 waa.getTargetId(), bayWAmmo.getEquipmentNum());
-                        AttackHandler bayWHandler = ((Weapon) bayWType).getCorrectHandler(autoHit, bayWaa, game,
+                        AttackHandler bayWHandler = ((Weapon) bayWType).getCorrectHandler(autoHit, bayWaa, twGame,
                                 gameManager);
                         bayWHandler.setAnnouncedEntityFiring(false);
                         // This should always be true. Maybe there's a better way to write this?
@@ -346,7 +346,7 @@ public class CapitalMissileBearingsOnlyHandler extends AmmoBayWeaponHandler {
                 toHit.setSideTable(entityTarget.sideTable(aaa.getOldTargetCoords()));
             }
         }
-        if (target.isAirborne() || game.getBoard().inSpace() || ae.usesWeaponBays()) {
+        if (target.isAirborne() || twGame.getBoard().inSpace() || ae.usesWeaponBays()) {
             // if we added a line to the phase report for calc hits, remove
             // it now
             while (vPhaseReport.size() > id) {
@@ -364,7 +364,7 @@ public class CapitalMissileBearingsOnlyHandler extends AmmoBayWeaponHandler {
         // Bearings-only missiles shouldn't be able to target buildings, being
         // space-only weapons
         // but if these two things aren't defined, handleEntityDamage() doesn't work.
-        Building bldg = game.getBoard().getBuildingAt(target.getPosition());
+        Building bldg = twGame.getBoard().getBuildingAt(target.getPosition());
         int bldgAbsorbs = 0;
 
         // We have to adjust the reports on a miss, so they line up
@@ -414,7 +414,7 @@ public class CapitalMissileBearingsOnlyHandler extends AmmoBayWeaponHandler {
         Vector<Aero> targets = new Vector<>();
 
         // get all entities on the opposing side
-        for (Iterator<Entity> enemies = game.getAllEnemyEntities(ae); enemies.hasNext();) {
+        for (Iterator<Entity> enemies = twGame.getAllEnemyEntities(ae); enemies.hasNext();) {
             Entity e = enemies.next();
             // Narrow the list to small craft and larger
             if (((e.getEntityType() & (Entity.ETYPE_SMALL_CRAFT)) != 0)) {
@@ -616,7 +616,7 @@ public class CapitalMissileBearingsOnlyHandler extends AmmoBayWeaponHandler {
         }
 
         // is the target at zero velocity
-        if ((targetship.getCurrentVelocity() == 0) && !(targetship.isSpheroid() && !game.getBoard().inSpace())) {
+        if ((targetship.getCurrentVelocity() == 0) && !(targetship.isSpheroid() && !twGame.getBoard().inSpace())) {
             toHit.addModifier(-2, "target is not moving");
         }
 
@@ -629,12 +629,12 @@ public class CapitalMissileBearingsOnlyHandler extends AmmoBayWeaponHandler {
         }
 
         if (target.isAirborne() && target.isAero()) {
-            if (!(((IAero) target).isSpheroid() && !game.getBoard().inSpace())) {
+            if (!(((IAero) target).isSpheroid() && !twGame.getBoard().inSpace())) {
                 // get mods for direction of attack
                 int side = toHit.getSideTable();
                 // if this is an aero attack using advanced movement rules then
                 // determine side differently
-                if (game.useVectorMove()) {
+                if (twGame.useVectorMove()) {
                     boolean usePrior = false;
                     side = ((Entity) target).chooseSide(targetCoords, usePrior);
                 }
@@ -648,7 +648,7 @@ public class CapitalMissileBearingsOnlyHandler extends AmmoBayWeaponHandler {
         }
 
         // Space ECM
-        if (game.getBoard().inSpace() && game.getOptions().booleanOption(OptionsConstants.ADVAERORULES_STRATOPS_ECM)) {
+        if (twGame.getBoard().inSpace() && twGame.getOptions().booleanOption(OptionsConstants.ADVAERORULES_STRATOPS_ECM)) {
             int ecm = ComputeECM.getLargeCraftECM(ae, targetCoords, target.getPosition());
             ecm = Math.min(4, ecm);
             if (ecm > 0) {

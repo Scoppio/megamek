@@ -13,7 +13,7 @@
  */
 package megamek.common.weapons;
 
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.server.totalwarfare.TWGameManager;
@@ -27,7 +27,7 @@ public class PrototypeRLHandler extends RLHandler {
      * @param g
      * @param m
      */
-    public PrototypeRLHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public PrototypeRLHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
         nSalvoBonus = -1;
     }

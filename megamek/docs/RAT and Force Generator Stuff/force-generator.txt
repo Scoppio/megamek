@@ -8,7 +8,7 @@ era in the BT universe. For most Inner Sphere factions the largest formation gen
 infantry, conventional armor, and aerospace support. Federated Suns and FedCom-era Lyran forces can be
 built as RCTs, and SLDF forces can be built up to an army in size, though this takes a long time and is
 of questionable value. Clan forces can be generated up to a full Touman. The resulting force can be exported
-to a MUL file or added to the current game in whole or in part.
+to a MUL file or added to the current TWGame in whole or in part.
 
 The force structure for each faction is based primarily on data from the field manual sourcebooks, with some
 additional information coming from technical readouts and certain other sourcebooks. The sources are
@@ -24,8 +24,8 @@ an additional level of force organization between individual units and company a
 II. User Interface
 
 The formation generator is available as a tab in the random army dialog, accessed by a button in the chat
-lounge or via file menu during a game.
-Year: The game year
+lounge or via file menu during a twGame.
+Year: The TWGame year
 Faction: The faction the force belongs to. Some minor factions have no data specific to them, and serve as
          convenient aliases to Periphery or IS generic.
 Subfaction: Most major factions have a number of subcommands, which may affect either the type of units
@@ -67,11 +67,11 @@ Export to MUL: Writes the entire generated force to a MUL file. A portion of the
                independently by right-clicking on a node on the force tree and selecting export. This will
                create a MUL of that force and any subforces.
 Clear Force: Removes the generated force. The force remains in memory until cleared, another force is generated,
-             or MegaMek is closed. This makes it available to use for reinforcements during the game. If
+             or MegaMek is closed. This makes it available to use for reinforcements during the twGame. If
              not needed it can be cleared to free memory.
 Chosen Units: A table of units that have been selected from the generated force. Units can be added to the
-              table by right-clicking on a node on the force tree and choosing "Add to game". The chosen units
-              will be added to game under the current player or selected bot when the user clicks OK.
+              table by right-clicking on a node on the force tree and choosing "Add to TWGame". The chosen units
+              will be added to TWGame under the current player or selected bot when the user clicks OK.
               Units can be removed by selecting and either pressing the delete key or right click > Remove.
 
 III. Notes about specific formation rules
@@ -85,7 +85,7 @@ A. Field Manual: Warden Clans states the Clan Steel Viper uses one fighter per P
 B. According to Field Manual: Crusader Clans, Clan Jade Falcon does not deploy combat vehicles. The history given
    for Clan vehicles in the technical readouts makes it clear that they did use them in earlier eras, so this
    was not always the case and it is unclear when they allegedly stopped using vehicles or whether that
-   persisted or for how long. Field Manual: Updates, with an in-game date less than a decade later, does
+   persisted or for how long. Field Manual: Updates, with an in-TWGame date less than a decade later, does
    give random assignment tables for Jade Falcon vehicles. I chose to interpret the statement in FM:CC,
    attributed to the Clan Loremaster in the context, to be a statement that could be claimed to be technically
    true but is actually intended to mislead. A more precise statement would have been that as a general

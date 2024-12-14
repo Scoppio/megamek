@@ -14,7 +14,7 @@
 package megamek.common.weapons;
 
 import megamek.common.AmmoType;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Report;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
@@ -34,13 +34,13 @@ public class PrototypeISUltraWeaponHandler extends UltraWeaponHandler {
      * @param w
      * @param g
      */
-    public PrototypeISUltraWeaponHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public PrototypeISUltraWeaponHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.UltraWeaponHandler#doChecks(java.util.Vector)
      */
     @Override
@@ -50,7 +50,7 @@ public class PrototypeISUltraWeaponHandler extends UltraWeaponHandler {
         } else if (ae.isConventionalInfantry()) {
             return false;
         }
-        
+
         if (((roll.getIntValue() <= 4) && (howManyShots == 2))
                 || ((roll.getIntValue() == 2) && (howManyShots == 1))) {
             Report r = new Report();

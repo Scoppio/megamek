@@ -21,14 +21,8 @@ package megamek.common.weapons;
 
 import java.util.Vector;
 
-import megamek.common.Building;
-import megamek.common.Entity;
-import megamek.common.EquipmentType;
-import megamek.common.Game;
-import megamek.common.Mek;
-import megamek.common.Report;
-import megamek.common.TargetRoll;
-import megamek.common.ToHitData;
+import megamek.common.*;
+import megamek.common.TWGame;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.equipment.ArmorType;
 import megamek.server.totalwarfare.TWGameManager;
@@ -36,7 +30,7 @@ import megamek.server.totalwarfare.TWGameManager;
 public class PlasmaMFUKWeaponHandler extends EnergyWeaponHandler {
     private static final long serialVersionUID = -6816799343788643259L;
 
-    public PlasmaMFUKWeaponHandler(ToHitData toHit, WeaponAttackAction waa, Game g, TWGameManager m) {
+    public PlasmaMFUKWeaponHandler(ToHitData toHit, WeaponAttackAction waa, TWGame g, TWGameManager m) {
         super(toHit, waa, g, m);
     }
 

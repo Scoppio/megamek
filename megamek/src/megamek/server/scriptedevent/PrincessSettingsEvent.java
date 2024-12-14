@@ -20,6 +20,7 @@ package megamek.server.scriptedevent;
 
 import megamek.client.bot.princess.BehaviorSettings;
 import megamek.common.Player;
+import megamek.common.TWGame;
 import megamek.common.jacksonadapters.PrincessSettingsBuilder;
 import megamek.common.net.enums.PacketCommand;
 import megamek.common.net.packets.Packet;
@@ -27,7 +28,6 @@ import megamek.server.totalwarfare.TWGameManager;
 import megamek.server.IGameManager;
 import megamek.server.trigger.Trigger;
 import org.apache.logging.log4j.LogManager;
-import megamek.common.Game;
 
 public class PrincessSettingsEvent implements TriggeredActiveEvent {
 
@@ -43,7 +43,7 @@ public class PrincessSettingsEvent implements TriggeredActiveEvent {
      * @param trigger The trigger that activates this event
      * @param playerName The Princess player to change
      * @param settingsBuilder The new settings for Princess to use
-     * @see Game#getBotSettings()
+     * @see TWGame#getBotSettings()
      */
     public PrincessSettingsEvent(Trigger trigger, String playerName, PrincessSettingsBuilder settingsBuilder) {
         this.trigger = trigger;

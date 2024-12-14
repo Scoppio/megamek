@@ -40,8 +40,8 @@ public class UnitNumberTurn extends GameTurn {
      * @return true if the specified entity is a valid one to use for this turn.
      */
     @Override
-    public boolean isValidEntity(Entity entity, Game game, boolean useValidNonInfantryCheck) {
-        return super.isValidEntity(entity, game, useValidNonInfantryCheck)
+    public boolean isValidEntity(Entity entity, TWGame twGame, boolean useValidNonInfantryCheck) {
+        return super.isValidEntity(entity, twGame, useValidNonInfantryCheck)
                 && (unitNumber == entity.getUnitNumber());
     }
 }

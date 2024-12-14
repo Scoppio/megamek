@@ -34,7 +34,7 @@ public class LBXHandler extends AmmoWeaponHandler {
      * @param g
      * @param m
      */
-    public LBXHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public LBXHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
         sSalvoType = " pellet(s) ";
     }
@@ -92,16 +92,16 @@ public class LBXHandler extends AmmoWeaponHandler {
 
         if (allShotsHit()) {
             shotsHit = wtype.getRackSize();
-            if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE)
+            if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE)
                 && (nRange > wtype.getRanges(weapon)[RangeType.RANGE_LONG])) {
                 shotsHit = (int) Math.ceil(shotsHit * .75);
             }
-            if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS_RANGE)
+            if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS_RANGE)
                     && (nRange > wtype.getRanges(weapon)[RangeType.RANGE_EXTREME])) {
                 shotsHit = (int) Math.ceil(shotsHit * .5);
             }
         } else {
-            PlanetaryConditions conditions = game.getPlanetaryConditions();
+            PlanetaryConditions conditions = twGame.getPlanetaryConditions();
             shotsHit = Compute.missilesHit(wtype.getRackSize(), nHitsModifier, conditions.getEMI().isEMI());
         }
 

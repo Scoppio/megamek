@@ -83,8 +83,8 @@ public class PunchAttackAction extends PhysicalAttackAction {
         return false;
     }
 
-    public ToHitData toHit(Game game) {
-        return PunchAttackAction.toHit(game, getEntityId(), game.getTarget(getTargetType(),
+    public ToHitData toHit(TWGame twGame) {
+        return PunchAttackAction.toHit(twGame, getEntityId(), twGame.getTarget(getTargetType(),
                 getTargetId()), getArm(), isZweihandering());
     }
 
@@ -92,20 +92,20 @@ public class PunchAttackAction extends PhysicalAttackAction {
      * punches are impossible when physical attacks are impossible, or a
      * retractable blade is extended
      *
-     * @param game   The current {@link Game}
+     * @param IGame   The current {@link TWGame}
      * @param ae
      * @param target
      * @return
      */
-    protected static String toHitIsImpossible(Game game, Entity ae,
-            Targetable target, int arm) {
+    protected static String toHitIsImpossible(IGame IGame, Entity ae,
+                                              Targetable target, int arm) {
         String physicalImpossible = PhysicalAttackAction.toHitIsImpossible(
-                game, ae, target);
+                IGame, ae, target);
         if (physicalImpossible != null) {
             return physicalImpossible;
         }
-        Hex attHex = game.getBoard().getHex(ae.getPosition());
-        Hex targHex = game.getBoard().getHex(target.getPosition());
+        Hex attHex = IGame.getBoard().getHex(ae.getPosition());
+        Hex targHex = IGame.getBoard().getHex(target.getPosition());
         int attackerHeight = ae.relHeight() + attHex.getLevel(); // The absolute level of the attacker's arms
         if (ae.isHullDown()) {
             attackerHeight--;
@@ -179,9 +179,9 @@ public class PunchAttackAction extends PhysicalAttackAction {
     /**
      * To-hit number for the specified arm to punch
      */
-    public static ToHitData toHit(Game game, int attackerId,
-            Targetable target, int arm, boolean zweihandering) {
-        final Entity ae = game.getEntity(attackerId);
+    public static ToHitData toHit(TWGame twGame, int attackerId,
+                                  Targetable target, int arm, boolean zweihandering) {
+        final Entity ae = twGame.getEntity(attackerId);
         if (ae == null) {
             logger.error("Attacker not valid");
             return new ToHitData(TargetRoll.IMPOSSIBLE, "Attacker not valid");
@@ -190,13 +190,13 @@ public class PunchAttackAction extends PhysicalAttackAction {
             logger.error("target not valid");
             return new ToHitData(TargetRoll.IMPOSSIBLE, "target not valid");
         }
-        String impossible = PunchAttackAction.toHitIsImpossible(game, ae, target, arm);
+        String impossible = PunchAttackAction.toHitIsImpossible(twGame, ae, target, arm);
         if (impossible != null) {
             return new ToHitData(TargetRoll.IMPOSSIBLE, impossible);
         }
 
-        Hex attHex = game.getBoard().getHex(ae.getPosition());
-        Hex targHex = game.getBoard().getHex(target.getPosition());
+        Hex attHex = twGame.getBoard().getHex(ae.getPosition());
+        Hex targHex = twGame.getBoard().getHex(target.getPosition());
         final int attackerHeight = ae.relHeight() + attHex.getLevel(); // The absolute level of the attacker's arms
         final int targetElevation = target.getElevation()
                 + targHex.getLevel(); // The absolute level of the target's arms
@@ -217,7 +217,7 @@ public class PunchAttackAction extends PhysicalAttackAction {
 
         toHit.addModifier(0, "Punch");
 
-        PhysicalAttackAction.setCommonModifiers(toHit, game, ae, target);
+        PhysicalAttackAction.setCommonModifiers(toHit, twGame, ae, target);
 
         // Prone Meks can only punch vehicles in the same hex.
         if (ae.isProne()) {
@@ -387,30 +387,30 @@ public class PunchAttackAction extends PhysicalAttackAction {
     }
 
     @Override
-    public String toSummaryString(final Game game) {
+    public String toSummaryString(final TWGame twGame) {
         String buffer;
         String rollLeft;
         String rollRight;
         final int arm = this.getArm();
         switch (arm) {
             case PunchAttackAction.BOTH:
-                rollLeft = PunchAttackAction.toHit(game, this.getEntityId(),
-                        game.getTarget(this.getTargetType(), this.getTargetId()), PunchAttackAction.LEFT, false)
+                rollLeft = PunchAttackAction.toHit(twGame, this.getEntityId(),
+                        twGame.getTarget(this.getTargetType(), this.getTargetId()), PunchAttackAction.LEFT, false)
                         .getValueAsString();
-                rollRight = PunchAttackAction.toHit(game, this.getEntityId(),
-                        game.getTarget(this.getTargetType(), this.getTargetId()), PunchAttackAction.RIGHT, false)
+                rollRight = PunchAttackAction.toHit(twGame, this.getEntityId(),
+                        twGame.getTarget(this.getTargetType(), this.getTargetId()), PunchAttackAction.RIGHT, false)
                         .getValueAsString();
                 buffer = Messages.getString("BoardView1.punchBoth", rollLeft, rollRight);
                 break;
             case PunchAttackAction.LEFT:
-                rollLeft = PunchAttackAction.toHit(game, this.getEntityId(),
-                        game.getTarget(this.getTargetType(), this.getTargetId()), PunchAttackAction.LEFT, false)
+                rollLeft = PunchAttackAction.toHit(twGame, this.getEntityId(),
+                        twGame.getTarget(this.getTargetType(), this.getTargetId()), PunchAttackAction.LEFT, false)
                         .getValueAsString();
                 buffer = Messages.getString("BoardView1.punchLeft", rollLeft);
                 break;
             case PunchAttackAction.RIGHT:
-                rollRight = PunchAttackAction.toHit(game, this.getEntityId(),
-                        game.getTarget(this.getTargetType(), this.getTargetId()), PunchAttackAction.RIGHT, false)
+                rollRight = PunchAttackAction.toHit(twGame, this.getEntityId(),
+                        twGame.getTarget(this.getTargetType(), this.getTargetId()), PunchAttackAction.RIGHT, false)
                         .getValueAsString();
                 buffer = Messages.getString("BoardView1.punchRight", rollRight);
                 break;

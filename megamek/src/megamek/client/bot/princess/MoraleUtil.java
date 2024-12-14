@@ -26,12 +26,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import megamek.common.Compute;
-import megamek.common.Entity;
-import megamek.common.Game;
-import megamek.common.Infantry;
-import megamek.common.Player;
-import megamek.common.ProtoMek;
+import megamek.common.*;
+import megamek.common.TWGame;
 import megamek.logging.MMLogger;
 
 /**
@@ -71,15 +67,15 @@ public class MoraleUtil {
      * @param selfPreservation The index of the selfPreservation setting in
      *                         {@link BehaviorSettings}.
      * @param player           The {@link Player} of the Princess bot.
-     * @param game             The current {@link Game}
+     * @param twGame             The current {@link TWGame}
      */
     public void checkMorale(boolean forcedWithdrawal, int bravery, int selfPreservation,
-            Player player, Game game) {
+            Player player, TWGame twGame) {
         StringBuilder logMsg = new StringBuilder("Starting morale checks for ").append(player.getName());
 
         try {
             // These mods don't vary by unit.
-            int bvMod = calcBvRatioMod(player, game, logMsg);
+            int bvMod = calcBvRatioMod(player, twGame, logMsg);
             logMsg.append(" (").append(bvMod >= 0 ? "+" : "").append(bvMod).append(")");
 
             int braveryMod = calcBehaviorMod(bravery);
@@ -91,7 +87,7 @@ public class MoraleUtil {
                     .append(selfPreservationMod >= 0 ? "+" : "").append(selfPreservationMod).append(")");
 
             // Loop through all the units controlled by this player.
-            for (Entity unit : game.getPlayerEntities(player, true)) {
+            for (Entity unit : twGame.getPlayerEntities(player, true)) {
 
                 logMsg.append("\n\tUnit ").append(unit.getDisplayName());
 
@@ -177,12 +173,12 @@ public class MoraleUtil {
         return Compute.d6(2);
     }
 
-    private int calcBvRatioMod(Player player, Game game, StringBuilder logMsg) {
+    private int calcBvRatioMod(Player player, TWGame twGame, StringBuilder logMsg) {
         int friendlyBv = 0;
         int enemyBv = 0;
 
         // Loop through every entity in the game.
-        List<Entity> allEntities = game.getEntitiesVector();
+        List<Entity> allEntities = twGame.getEntitiesVector();
         for (Entity entity : allEntities) {
 
             // Ignore units not on the board.

@@ -84,7 +84,7 @@ public class Client extends AbstractClient {
      * updated. A
      * reference can therefore be cached by other objects.
      */
-    protected final Game game = new Game();
+    protected final TWGame twGame = new TWGame();
 
     private Set<BoardDimensions> availableSizes = new TreeSet<>();
     private Vector<Coords> artilleryAutoHitHexes = null;
@@ -98,14 +98,14 @@ public class Client extends AbstractClient {
         super(name, host, port);
         setSkillGenerator(new ModifiedTotalWarfareSkillGenerator());
         try {
-            tilesetManager = new TilesetManager(game);
+            tilesetManager = new TilesetManager(twGame);
         } catch (IOException e) {
             logger.error(e, "Unknown Exception");
         }
     }
 
-    public Game getGame() {
-        return game;
+    public TWGame getGame() {
+        return twGame;
     }
 
     /**
@@ -116,7 +116,7 @@ public class Client extends AbstractClient {
     }
 
     public Entity getEntity(int id) {
-        return game.getEntity(id);
+        return twGame.getEntity(id);
     }
 
     /**
@@ -124,60 +124,60 @@ public class Client extends AbstractClient {
      * selection criteria.
      */
     public Iterator<Entity> getSelectedEntities(EntitySelector selector) {
-        return game.getSelectedEntities(selector);
+        return twGame.getSelectedEntities(selector);
     }
 
     /**
      * Returns the number of first selectable entity
      */
     public int getFirstEntityNum() {
-        return game.getFirstEntityNum(getMyTurn());
+        return twGame.getFirstEntityNum(getMyTurn());
     }
 
     /**
      * Returns the number of the next selectable entity after the one given
      */
     public int getNextEntityNum(int entityId) {
-        return game.getNextEntityNum(getMyTurn(), entityId);
+        return twGame.getNextEntityNum(getMyTurn(), entityId);
     }
 
     /**
      * Returns the number of the previous selectable entity after the one given
      */
     public int getPrevEntityNum(int entityId) {
-        return game.getPrevEntityNum(getMyTurn(), entityId);
+        return twGame.getPrevEntityNum(getMyTurn(), entityId);
     }
 
     /**
      * Returns the number of the first deployable entity
      */
     public int getFirstDeployableEntityNum() {
-        return game.getFirstDeployableEntityNum(getMyTurn());
+        return twGame.getFirstDeployableEntityNum(getMyTurn());
     }
 
     /**
      * Returns the number of the next deployable entity
      */
     public int getNextDeployableEntityNum(int entityId) {
-        return game.getNextDeployableEntityNum(getMyTurn(), entityId);
+        return twGame.getNextDeployableEntityNum(getMyTurn(), entityId);
     }
 
     /**
      * Shortcut to game.board
      */
     public Board getBoard() {
-        return game.getBoard();
+        return twGame.getBoard();
     }
 
     /**
      * Returns an enumeration of the entities in game.entities
      */
     public List<Entity> getEntitiesVector() {
-        return game.getEntitiesVector();
+        return twGame.getEntitiesVector();
     }
 
     public MapSettings getMapSettings() {
-        return game.getMapSettings();
+        return twGame.getMapSettings();
     }
 
     /**
@@ -207,16 +207,16 @@ public class Client extends AbstractClient {
     @Override
     public boolean isMyTurn() {
         if (getGame().getPhase().isSimultaneous(getGame())) {
-            return game.getTurnForPlayer(localPlayerNumber) != null;
+            return twGame.getTurnForPlayer(localPlayerNumber) != null;
         }
-        return (game.getTurn() != null) && game.getTurn().isValid(localPlayerNumber, game);
+        return (twGame.getTurn() != null) && twGame.getTurn().isValid(localPlayerNumber, twGame);
     }
 
     public GameTurn getMyTurn() {
         if (getGame().getPhase().isSimultaneous(getGame())) {
-            return game.getTurnForPlayer(localPlayerNumber);
+            return twGame.getTurnForPlayer(localPlayerNumber);
         }
-        return game.getTurn();
+        return twGame.getTurn();
     }
 
     /**
@@ -224,15 +224,15 @@ public class Client extends AbstractClient {
      */
     @SuppressWarnings("unchecked")
     protected void receiveTurns(Packet packet) {
-        game.setTurnVector((List<GameTurn>) packet.getObject(0));
+        twGame.setTurnVector((List<GameTurn>) packet.getObject(0));
     }
 
     /**
      * Can I unload entities stranded on immobile transports?
      */
     public boolean canUnloadStranded() {
-        return (game.getTurn() instanceof UnloadStrandedTurn)
-                && game.getTurn().isValid(localPlayerNumber, game);
+        return (twGame.getTurn() instanceof UnloadStrandedTurn)
+                && twGame.getTurn().isValid(localPlayerNumber, twGame);
     }
 
     /**
@@ -490,11 +490,11 @@ public class Client extends AbstractClient {
         Forces forces = (Forces) c.getObject(2);
         // Replace the entities in the game.
         if (forces != null) {
-            game.setForces(forces);
+            twGame.setForces(forces);
         }
-        game.setEntitiesVector(newEntities);
+        twGame.setEntitiesVector(newEntities);
         if (newOutOfGame != null) {
-            game.setOutOfGameEntitiesVector(newOutOfGame);
+            twGame.setOutOfGameEntitiesVector(newOutOfGame);
             for (Entity e : newOutOfGame) {
                 cacheImgTag(e);
             }
@@ -502,11 +502,11 @@ public class Client extends AbstractClient {
         // cache the image data for the entities and set force for entities
         for (Entity e : newEntities) {
             cacheImgTag(e);
-            e.setForceId(game.getForces().getForceId(e));
+            e.setForceId(twGame.getForces().getForceId(e));
         }
 
         if (GUIPreferences.getInstance().getMiniReportShowSprites() &&
-                game.getOptions().booleanOption(OptionsConstants.ADVANCED_DOUBLE_BLIND) &&
+                twGame.getOptions().booleanOption(OptionsConstants.ADVANCED_DOUBLE_BLIND) &&
                 iconCache != null && !iconCache.containsKey(Report.HIDDEN_ENTITY_NUM)) {
             ImageUtil.createDoubleBlindHiddenImage(iconCache);
         }
@@ -536,7 +536,7 @@ public class Client extends AbstractClient {
     protected void receiveForcesDelete(Packet c) {
         @SuppressWarnings("unchecked")
         Collection<Integer> forceIds = (Collection<Integer>) c.getObject(0);
-        Forces forces = game.getForces();
+        Forces forces = twGame.getForces();
 
         // Gather the forces and entities to be deleted
         Set<Force> delForces = new HashSet<>();
@@ -552,7 +552,7 @@ public class Client extends AbstractClient {
         forces.deleteForces(delForces);
 
         for (Entity entity : delEntities) {
-            game.removeEntity(entity.getId(), IEntityRemovalConditions.REMOVE_NEVER_JOINED);
+            twGame.removeEntity(entity.getId(), IEntityRemovalConditions.REMOVE_NEVER_JOINED);
         }
     }
 
@@ -587,18 +587,18 @@ public class Client extends AbstractClient {
         List<Force> forces = (List<Force>) packet.getObject(2);
         // create a final image for the entity
         for (int id : entityIds) {
-            cacheImgTag(game.getEntity(id));
+            cacheImgTag(twGame.getEntity(id));
         }
         for (Force force : forces) {
-            game.getForces().replace(force.getId(), force);
+            twGame.getForces().replace(force.getId(), force);
         }
         // Move the unit to its final resting place.
-        game.removeEntities(entityIds, condition);
+        twGame.removeEntities(entityIds, condition);
     }
 
     @SuppressWarnings("unchecked")
     protected void receiveEntityVisibilityIndicator(Packet packet) {
-        Entity e = game.getEntity(packet.getIntValue(0));
+        Entity e = twGame.getEntity(packet.getIntValue(0));
         if (e != null) { // we may not have this entity due to double blind
             e.setEverSeenByEnemy(packet.getBooleanValue(1));
             e.setVisibleToEnemy(packet.getBooleanValue(2));
@@ -607,37 +607,37 @@ public class Client extends AbstractClient {
             e.setWhoCanDetect((Vector<Player>) packet.getObject(5));
             // this next call is only needed sometimes, but we'll just
             // call it everytime
-            game.processGameEvent(new GameEntityChangeEvent(this, e));
+            twGame.processGameEvent(new GameEntityChangeEvent(this, e));
         }
     }
 
     @SuppressWarnings("unchecked")
     protected void receiveUpdateGroundObjects(Packet packet) {
-        game.setGroundObjects((Map<Coords, List<ICarryable>>) packet.getObject(0));
-        game.processGameEvent(new GameBoardChangeEvent(this));
+        twGame.setGroundObjects((Map<Coords, List<ICarryable>>) packet.getObject(0));
+        twGame.processGameEvent(new GameBoardChangeEvent(this));
     }
 
     @SuppressWarnings("unchecked")
     protected void receiveDeployMinefields(Packet packet) {
-        game.addMinefields((Vector<Minefield>) packet.getObject(0));
+        twGame.addMinefields((Vector<Minefield>) packet.getObject(0));
     }
 
     @SuppressWarnings("unchecked")
     protected void receiveSendingMinefields(Packet packet) {
-        game.setMinefields((Vector<Minefield>) packet.getObject(0));
+        twGame.setMinefields((Vector<Minefield>) packet.getObject(0));
     }
 
     @SuppressWarnings("unchecked")
     protected void receiveIlluminatedHexes(Packet p) {
-        game.setIlluminatedPositions((HashSet<Coords>) p.getObject(0));
+        twGame.setIlluminatedPositions((HashSet<Coords>) p.getObject(0));
     }
 
     protected void receiveRevealMinefield(Packet packet) {
-        game.addMinefield((Minefield) packet.getObject(0));
+        twGame.addMinefield((Minefield) packet.getObject(0));
     }
 
     protected void receiveRemoveMinefield(Packet packet) {
-        game.removeMinefield((Minefield) packet.getObject(0));
+        twGame.removeMinefield((Minefield) packet.getObject(0));
     }
 
     @SuppressWarnings("unchecked")
@@ -651,18 +651,18 @@ public class Client extends AbstractClient {
         }
 
         if (!newMines.isEmpty()) {
-            game.resetMinefieldDensity(newMines);
+            twGame.resetMinefieldDensity(newMines);
         }
     }
 
     @SuppressWarnings("unchecked")
     protected void receiveBuildingUpdate(Packet packet) {
-        game.getBoard().updateBuildings((Vector<Building>) packet.getObject(0));
+        twGame.getBoard().updateBuildings((Vector<Building>) packet.getObject(0));
     }
 
     @SuppressWarnings("unchecked")
     protected void receiveBuildingCollapse(Packet packet) {
-        game.getBoard().collapseBuilding((Vector<Coords>) packet.getObject(0));
+        twGame.getBoard().collapseBuilding((Vector<Coords>) packet.getObject(0));
     }
 
     /**
@@ -675,16 +675,16 @@ public class Client extends AbstractClient {
         boolean addAction = true;
         for (EntityAction ea : vector) {
             int entityId = ea.getEntityId();
-            if ((ea instanceof TorsoTwistAction) && game.hasEntity(entityId)) {
+            if ((ea instanceof TorsoTwistAction) && twGame.hasEntity(entityId)) {
                 TorsoTwistAction tta = (TorsoTwistAction) ea;
-                Entity entity = game.getEntity(entityId);
+                Entity entity = twGame.getEntity(entityId);
                 entity.setSecondaryFacing(tta.getFacing());
-            } else if ((ea instanceof FlipArmsAction) && game.hasEntity(entityId)) {
+            } else if ((ea instanceof FlipArmsAction) && twGame.hasEntity(entityId)) {
                 FlipArmsAction faa = (FlipArmsAction) ea;
-                Entity entity = game.getEntity(entityId);
+                Entity entity = twGame.getEntity(entityId);
                 entity.setArmsFlipped(faa.getIsFlipped());
-            } else if ((ea instanceof DodgeAction) && game.hasEntity(entityId)) {
-                Entity entity = game.getEntity(entityId);
+            } else if ((ea instanceof DodgeAction) && twGame.hasEntity(entityId)) {
+                Entity entity = twGame.getEntity(entityId);
                 entity.dodging = true;
                 addAction = false;
             } else if (ea instanceof ClubAttackAction clubAttackAction) {
@@ -695,9 +695,9 @@ public class Client extends AbstractClient {
             if (addAction) {
                 // track in the appropriate list
                 if (!isCharge) {
-                    game.addAction(ea);
+                    twGame.addAction(ea);
                 } else {
-                    game.addCharge((AttackAction) ea);
+                    twGame.addCharge((AttackAction) ea);
                 }
             }
         }
@@ -764,7 +764,7 @@ public class Client extends AbstractClient {
             }
 
             if (entityID != -1 && crewID != -1) {
-                Entity e = game.getEntityFromAllSources(entityID);
+                Entity e = twGame.getEntityFromAllSources(entityID);
 
                 if (e != null) {
                     Crew crew = e.getCrew();
@@ -882,7 +882,7 @@ public class Client extends AbstractClient {
                 }
                 break;
             case PRINCESS_SETTINGS:
-                game.setBotSettings((Map<String, BehaviorSettings>) packet.getObject(0));
+                twGame.setBotSettings((Map<String, BehaviorSettings>) packet.getObject(0));
                 break;
             case ENTITY_UPDATE:
                 receiveEntityUpdate(packet);
@@ -909,7 +909,7 @@ public class Client extends AbstractClient {
                 receiveIlluminatedHexes(packet);
                 break;
             case CLEAR_ILLUM_HEXES:
-                game.clearIlluminatedPositions();
+                twGame.clearIlluminatedPositions();
                 break;
             case UPDATE_MINEFIELDS:
                 receiveUpdateMinefields(packet);
@@ -928,15 +928,15 @@ public class Client extends AbstractClient {
                 break;
             case ADD_SMOKE_CLOUD:
                 SmokeCloud cloud = (SmokeCloud) packet.getObject(0);
-                game.addSmokeCloud(cloud);
+                twGame.addSmokeCloud(cloud);
                 break;
             case CHANGE_HEX:
-                game.getBoard().setHex((Coords) packet.getObject(0), (Hex) packet.getObject(1));
+                twGame.getBoard().setHex((Coords) packet.getObject(0), (Hex) packet.getObject(1));
                 break;
             case CHANGE_HEXES:
                 List<Coords> coords = new ArrayList<>((Set<Coords>) packet.getObject(0));
                 List<Hex> hexes = new ArrayList<>((Set<Hex>) packet.getObject(1));
-                game.getBoard().setHexes(coords, hexes);
+                twGame.getBoard().setHexes(coords, hexes);
                 break;
             case BLDG_UPDATE:
                 receiveBuildingUpdate(packet);
@@ -954,26 +954,26 @@ public class Client extends AbstractClient {
             case SENDING_REPORTS_TACTICAL_GENIUS:
                 phaseReport = receiveReport((List<Report>) packet.getObject(0));
                 if (keepGameLog()) {
-                    if ((log == null) && (game.getRoundCount() == 1)) {
+                    if ((log == null) && (twGame.getRoundCount() == 1)) {
                         initGameLog();
                     }
                     if (log != null) {
                         log.append(phaseReport);
                     }
                 }
-                game.addReports((List<Report>) packet.getObject(0));
-                roundReport = receiveReport(game.getReports(game.getRoundCount()));
+                twGame.addReports((List<Report>) packet.getObject(0));
+                roundReport = receiveReport(twGame.getReports(twGame.getRoundCount()));
                 if (packet.getCommand().isSendingReportsTacticalGenius()) {
-                    game.processGameEvent(new GameReportEvent(this, roundReport));
+                    twGame.processGameEvent(new GameReportEvent(this, roundReport));
                 }
                 break;
             case SENDING_REPORTS_SPECIAL:
-                game.processGameEvent(new GameReportEvent(this,
+                twGame.processGameEvent(new GameReportEvent(this,
                         receiveReport((List<Report>) packet.getObject(0))));
                 break;
             case SENDING_REPORTS_ALL:
                 var allReports = (List<List<Report>>) packet.getObject(0);
-                game.setAllReports(allReports);
+                twGame.setAllReports(allReports);
                 if (keepGameLog()) {
                     // Re-write gamelog.txt from scratch
                     initGameLog();
@@ -983,7 +983,7 @@ public class Client extends AbstractClient {
                         }
                     }
                 }
-                roundReport = receiveReport(game.getReports(game.getRoundCount()));
+                roundReport = receiveReport(twGame.getReports(twGame.getRoundCount()));
                 // We don't really have a copy of the phase report at
                 // this point, so I guess we'll just use the round report
                 // until the next phase actually completes.
@@ -996,41 +996,41 @@ public class Client extends AbstractClient {
                 changeTurnIndex(packet.getIntValue(0), packet.getIntValue(1));
                 break;
             case SENDING_GAME_SETTINGS:
-                game.setOptions((GameOptions) packet.getObject(0));
+                twGame.setOptions((GameOptions) packet.getObject(0));
                 break;
             case SENDING_MAP_SETTINGS:
                 MapSettings mapSettings = (MapSettings) packet.getObject(0);
-                game.setMapSettings(mapSettings);
+                twGame.setMapSettings(mapSettings);
                 GameSettingsChangeEvent evt = new GameSettingsChangeEvent(this);
                 evt.setMapSettingsOnlyChange(true);
-                game.processGameEvent(evt);
+                twGame.processGameEvent(evt);
                 break;
             case SENDING_PLANETARY_CONDITIONS:
-                game.setPlanetaryConditions((PlanetaryConditions) packet.getObject(0));
-                game.processGameEvent(new GameSettingsChangeEvent(this));
+                twGame.setPlanetaryConditions((PlanetaryConditions) packet.getObject(0));
+                twGame.processGameEvent(new GameSettingsChangeEvent(this));
                 break;
             case SENDING_TAG_INFO:
                 Vector<TagInfo> vti = (Vector<TagInfo>) packet.getObject(0);
                 for (TagInfo ti : vti) {
-                    game.addTagInfo(ti);
+                    twGame.addTagInfo(ti);
                 }
                 break;
             case RESET_TAG_INFO:
-                game.resetTagInfo();
+                twGame.resetTagInfo();
                 break;
             case END_OF_GAME:
                 String sEntityStatus = (String) packet.getObject(0);
-                game.end(packet.getIntValue(1), packet.getIntValue(2));
+                twGame.end(packet.getIntValue(1), packet.getIntValue(2));
                 // save victory report
                 saveEntityStatus(sEntityStatus);
                 break;
             case SENDING_ARTILLERY_ATTACKS:
                 Vector<ArtilleryAttackAction> v = (Vector<ArtilleryAttackAction>) packet.getObject(0);
-                game.setArtilleryVector(v);
+                twGame.setArtilleryVector(v);
                 break;
             case SENDING_FLARES:
                 Vector<Flare> v2 = (Vector<Flare>) packet.getObject(0);
-                game.setFlares(v2);
+                twGame.setFlares(v2);
                 break;
             case SEND_SAVEGAME:
                 String sFinalFile = (String) packet.getObject(0);
@@ -1070,13 +1070,13 @@ public class Client extends AbstractClient {
                 }
                 break;
             case SENDING_SPECIAL_HEX_DISPLAY:
-                game.getBoard().setSpecialHexDisplayTable(
+                twGame.getBoard().setSpecialHexDisplayTable(
                         (Hashtable<Coords, Collection<SpecialHexDisplay>>) packet.getObject(0));
-                game.processGameEvent(new GameBoardChangeEvent(this));
+                twGame.processGameEvent(new GameBoardChangeEvent(this));
                 break;
             case SENDING_AVAILABLE_MAP_SIZES:
                 availableSizes = (Set<BoardDimensions>) packet.getObject(0);
-                game.processGameEvent(new GameSettingsChangeEvent(this));
+                twGame.processGameEvent(new GameSettingsChangeEvent(this));
                 break;
             case ENTITY_NOVA_NETWORK_CHANGE:
                 receiveEntityNovaNetworkModeChange(packet);
@@ -1113,11 +1113,11 @@ public class Client extends AbstractClient {
                     default:
                         break;
                 }
-                game.processGameEvent(cfrEvt);
+                twGame.processGameEvent(cfrEvt);
                 break;
             case GAME_VICTORY_EVENT:
-                GameVictoryEvent gve = new GameVictoryEvent(this, game);
-                game.processGameEvent(gve);
+                GameVictoryEvent gve = new GameVictoryEvent(this, twGame);
+                twGame.processGameEvent(gve);
                 break;
             default:
                 return false;
@@ -1134,7 +1134,7 @@ public class Client extends AbstractClient {
         try {
             int entityId = c.getIntValue(0);
             String networkID = c.getObject(1).toString();
-            Entity e = game.getEntity(entityId);
+            Entity e = twGame.getEntity(entityId);
             if (e != null) {
                 e.setNewRoundNovaNetworkString(networkID);
             }
@@ -1180,7 +1180,7 @@ public class Client extends AbstractClient {
         final List<Entity> updatedEntities = new ArrayList<>();
         synchronized (unitNameTracker) {
             for (int id : ids) {
-                Entity removedEntity = game.getEntity(id);
+                Entity removedEntity = twGame.getEntity(id);
                 if (removedEntity == null) {
                     continue;
                 }
@@ -1285,7 +1285,7 @@ public class Client extends AbstractClient {
      * Change whose turn it is.
      */
     protected void changeTurnIndex(int index, int prevPlayerId) {
-        game.setTurnIndex(index, prevPlayerId);
+        twGame.setTurnIndex(index, prevPlayerId);
     }
 
     /**
@@ -1364,7 +1364,7 @@ public class Client extends AbstractClient {
                 gzi = is;
             }
 
-            game.reset();
+            twGame.reset();
             send(new Packet(PacketCommand.LOAD_GAME, SerializationHelper.getLoadSaveGameXStream().fromXML(gzi)));
         } catch (Exception ex) {
             String message = String.format("Can't find the local savegame %s", f);

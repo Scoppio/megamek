@@ -14,7 +14,7 @@
 package megamek.common.weapons;
 
 import megamek.common.Compute;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.server.totalwarfare.TWGameManager;
@@ -32,7 +32,7 @@ public class NailRivetGunHandler extends AmmoWeaponHandler {
      * @param g
      * @param m
      */
-    public NailRivetGunHandler(ToHitData t, WeaponAttackAction w, Game g,
+    public NailRivetGunHandler(ToHitData t, WeaponAttackAction w, TWGame g,
             TWGameManager m) {
         super(t, w, g, m);
         damageType = DamageType.NAIL_RIVET;
@@ -40,7 +40,7 @@ public class NailRivetGunHandler extends AmmoWeaponHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#calcDamagePerHit()
      */
     @Override

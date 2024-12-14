@@ -31,7 +31,7 @@ public class PopUpMineLauncherHandler extends AmmoWeaponHandler {
      * @param g
      */
     public PopUpMineLauncherHandler(ToHitData toHit, WeaponAttackAction waa,
-            Game g, TWGameManager m) {
+                                    TWGame g, TWGameManager m) {
         super(toHit, waa, g, m);
         sSalvoType = " mine(s) ";
     }

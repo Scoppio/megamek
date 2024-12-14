@@ -65,26 +65,26 @@ public abstract class AbstractAttackAction extends AbstractEntityAction implemen
         this.targetId = targetId;
     }
 
-    public @Nullable Targetable getTarget(final Game game) {
-        return game.getTarget(getTargetType(), getTargetId());
+    public @Nullable Targetable getTarget(final TWGame twGame) {
+        return twGame.getTarget(getTargetType(), getTargetId());
     }
 
     /**
      * Gets the entity associated with this attack action, using the passed-in game
      * object.
-     * 
+     *
      * @return the entity even if it was destroyed or fled.
      */
-    public @Nullable Entity getEntity(Game g) {
+    public @Nullable Entity getEntity(TWGame g) {
         return getEntity(g, getEntityId());
     }
 
     /**
      * Gets an entity with the given ID, using the passed-in game object.
-     * 
+     *
      * @return the entity even if it was destroyed or fled.
      */
-    public @Nullable Entity getEntity(Game g, int entityID) {
+    public @Nullable Entity getEntity(TWGame g, int entityID) {
         Entity e = g.getEntity(entityID);
         // if we have an artyattack, we might need to get an out-of-game entity if it
         // died or fled
@@ -95,21 +95,21 @@ public abstract class AbstractAttackAction extends AbstractEntityAction implemen
      * used by the toHit of derived classes atype may be null if not using an
      * ammo based weapon
      *
-     * @param game The current {@link Game}
+     * @param twGame The current {@link TWGame}
      */
-    public static ToHitData nightModifiers(Game game, Targetable target, AmmoType atype,
-            Entity attacker, boolean isWeapon) {
+    public static ToHitData nightModifiers(TWGame twGame, Targetable target, AmmoType atype,
+                                           Entity attacker, boolean isWeapon) {
         Entity te = (target.getTargetType() == Targetable.TYPE_ENTITY) ? (Entity) target : null;
         ToHitData toHit = new ToHitData();
 
-        PlanetaryConditions conditions = game.getPlanetaryConditions();
+        PlanetaryConditions conditions = twGame.getPlanetaryConditions();
         if (conditions.getLight().isDay()) {
             // It's the day, so just return
             return toHit;
         }
 
         // The base night penalty
-        final IlluminationLevel hexIllumLvl = IlluminationLevel.determineIlluminationLevel(game,
+        final IlluminationLevel hexIllumLvl = IlluminationLevel.determineIlluminationLevel(twGame,
                 target.getPosition());
         int night_modifier = conditions.getLightHitPenalty(isWeapon);
         toHit.addModifier(night_modifier, conditions.getLight().toString());
@@ -119,11 +119,11 @@ public abstract class AbstractAttackAction extends AbstractEntityAction implemen
             illuminated = te.isIlluminated();
             // hack for unresolved actions so client shows right BTH
             if (!illuminated) {
-                for (Enumeration<EntityAction> actions = game.getActions(); actions.hasMoreElements();) {
+                for (Enumeration<EntityAction> actions = twGame.getActions(); actions.hasMoreElements();) {
                     EntityAction a = actions.nextElement();
                     if (a instanceof SearchlightAttackAction) {
                         SearchlightAttackAction saa = (SearchlightAttackAction) a;
-                        if (saa.willIlluminate(game, te)) {
+                        if (saa.willIlluminate(twGame, te)) {
                             illuminated = true;
                             break;
                         }
@@ -182,7 +182,7 @@ public abstract class AbstractAttackAction extends AbstractEntityAction implemen
                 // Unfortunately, we can't just check weapons fired by the target
                 // because isUsedThisRound() is not valid if the attacker declared first.
                 // therefore, enumerate WeaponAttackActions...
-                for (Enumeration<EntityAction> actions = game.getActions(); actions.hasMoreElements();) {
+                for (Enumeration<EntityAction> actions = twGame.getActions(); actions.hasMoreElements();) {
                     EntityAction a = actions.nextElement();
                     if (a instanceof WeaponAttackAction) {
                         WeaponAttackAction waa = (WeaponAttackAction) a;

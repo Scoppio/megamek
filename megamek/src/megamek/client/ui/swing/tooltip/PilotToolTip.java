@@ -15,7 +15,6 @@ package megamek.client.ui.swing.tooltip;
 
 import static megamek.client.ui.swing.tooltip.TipUtil.getOptionList;
 import static megamek.client.ui.swing.tooltip.TipUtil.htmlSpacer;
-import static megamek.client.ui.swing.util.UIUtil.*;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -30,12 +29,7 @@ import javax.imageio.ImageIO;
 import megamek.client.ui.Messages;
 import megamek.client.ui.swing.GUIPreferences;
 import megamek.client.ui.swing.util.UIUtil;
-import megamek.common.Configuration;
-import megamek.common.Crew;
-import megamek.common.Entity;
-import megamek.common.Game;
-import megamek.common.InGameObject;
-import megamek.common.MekWarrior;
+import megamek.common.*;
 import megamek.common.alphaStrike.AlphaStrikeElement;
 import megamek.common.options.OptionsConstants;
 import megamek.common.util.CrewSkillSummaryUtil;
@@ -121,9 +115,9 @@ public final class PilotToolTip {
 
     private static StringBuilder crewInfoLine(final Entity entity) {
         Crew crew = entity.getCrew();
-        Game game = entity.getGame();
+        IGame IGame = entity.getGame();
         // Effective entity skill for the whole crew
-        boolean rpg_skills = game.getOptions().booleanOption(OptionsConstants.RPG_RPG_GUNNERY);
+        boolean rpg_skills = IGame.getOptions().booleanOption(OptionsConstants.RPG_RPG_GUNNERY);
         String col = CrewSkillSummaryUtil.getSkillNames(entity) + ": " + crew.getSkillsAsString(rpg_skills);
         col = UIUtil.tag("TD", "", col);
         String row = UIUtil.tag("TR", "", col);
@@ -135,7 +129,7 @@ public final class PilotToolTip {
     /** Returns a tooltip part with names and skills of the crew. */
     private static StringBuilder crewInfoCell(final Entity entity) {
         Crew crew = entity.getCrew();
-        Game game = entity.getGame();
+        IGame IGame = entity.getGame();
         String result = "";
 
         // Name / Callsign and Status for each crew member
@@ -167,7 +161,7 @@ public final class PilotToolTip {
         }
 
         // Effective entity skill for the whole crew
-        boolean rpg_skills = game.getOptions().booleanOption(OptionsConstants.RPG_RPG_GUNNERY);
+        boolean rpg_skills = IGame.getOptions().booleanOption(OptionsConstants.RPG_RPG_GUNNERY);
         result += CrewSkillSummaryUtil.getSkillNames(entity) + ": " + crew.getSkillsAsString(rpg_skills);
         String fontSizeAttr = String.format("class=%s", GUIP.getUnitToolTipFontSizeMod());
         result = UIUtil.tag("span", fontSizeAttr, result);
@@ -178,9 +172,9 @@ public final class PilotToolTip {
 
     /** Returns a tooltip part with any pilots picked up by this unit. */
     private static StringBuilder crewPickedUpCell(final Entity entity) {
-        Game game = entity.getGame();
+        TWGame twGame = entity.getGame();
 
-        String pickedUp = game.getEntitiesVector().stream()
+        String pickedUp = twGame.getEntitiesVector().stream()
                 .filter(e -> (e.isDeployed()
                         && ((e instanceof MekWarrior) && ((MekWarrior) e).getPickedUpById() == entity.getId())))
                 .map(e -> e.getCrew().getName())

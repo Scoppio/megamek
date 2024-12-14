@@ -21,12 +21,12 @@ import megamek.common.options.OptionsConstants;
 import megamek.server.totalwarfare.TWGameManager;
 
 /**
- * Weaponhandler for the Centurion Weapon System weapon, 
+ * Weaponhandler for the Centurion Weapon System weapon,
  * which is found in Jihad Conspiracies Interstellar Players 2, pg 127.
- * 
+ *
  * @author arlith
  * Created on Sept 5, 2005
- */ 
+ */
 public class CenturionWeaponSystemHandler extends EnergyWeaponHandler {
     private static final long serialVersionUID = -5226841653686213141L;
 
@@ -36,13 +36,13 @@ public class CenturionWeaponSystemHandler extends EnergyWeaponHandler {
      * @param g
      * @param m
      */
-    public CenturionWeaponSystemHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public CenturionWeaponSystemHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.EnergyWeaponHandler#calcDamagePerHit()
      */
     @Override
@@ -71,7 +71,7 @@ public class CenturionWeaponSystemHandler extends EnergyWeaponHandler {
             vPhaseReport.add(r);
             return;
         }
-        
+
         // If the Entity is shutdown, it will remain shutdown next turn
         if (entityTarget.isShutDown()) {
             r = new Report(7511);
@@ -83,7 +83,7 @@ public class CenturionWeaponSystemHandler extends EnergyWeaponHandler {
                 entityTarget.setTaserShutdownRounds(1);
             }
         } else { // Otherwise, there's a shutdown check
-            boolean mtHeat = game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_HEAT);
+            boolean mtHeat = twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_HEAT);
             int hotDogMod = 0;
             if (entityTarget.hasAbility(OptionsConstants.PILOT_HOT_DOG)) {
                 hotDogMod = 1;
@@ -133,7 +133,7 @@ public class CenturionWeaponSystemHandler extends EnergyWeaponHandler {
                     // TODO: fix for salvage purposes
                     entityTarget.destroyLocation(hit.getLocation());
                     // Check to see if the squad has been eliminated
-                    if (entityTarget.getTransferLocation(hit).getLocation() == 
+                    if (entityTarget.getTransferLocation(hit).getLocation() ==
                             Entity.LOC_DESTROYED) {
                         vPhaseReport.addAll(gameManager.destroyEntity(entityTarget,
                                 "all troopers eliminated", false));
@@ -141,7 +141,7 @@ public class CenturionWeaponSystemHandler extends EnergyWeaponHandler {
                 } else {
                     entityTarget.setShutDown(true);
                 }
-            }            
+            }
         }
     }
 }

@@ -39,8 +39,8 @@ public interface EntityAction {
 
     /**
      * @return The ID of the acting game unit. Note that when an entity is destroyed, it may no longer be
-     * available from {@link Game#getEntity(int)} but rather only from {@link Game#getOutOfGameEntity(int)}
-     * or {@link Game#getEntityFromAllSources(int)}.
+     * available from {@link TWGame#getEntity(int)} but rather only from {@link TWGame#getOutOfGameEntity(int)}
+     * or {@link TWGame#getEntityFromAllSources(int)}.
      * As this can happen in the middle of resolving complicated situations in the GameManager, this
      * is a potential cause for bugs.
      * <BR>Note that this is not restricted to {@link Entity}; it can be used for all {@link InGameObject}s
@@ -65,12 +65,12 @@ public interface EntityAction {
      * Returns a short one-line description of the action that is used in the UI, e.g. on attack arrows
      * in the BoardView and in the action summary in {@link TurnDetailsOverlay}.
      *
-     * @param game The game object to get information from
+     * @param twGame The game object to get information from
      * @return A short String describing the action
      * @see EntityActionLog
      * @see TurnDetailsOverlay
      */
-    default String toSummaryString(Game game) {
+    default String toSummaryString(TWGame twGame) {
         String typeName = this.getClass().getTypeName();
         return typeName.substring(typeName.lastIndexOf('.') + 1);
     }

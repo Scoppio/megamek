@@ -19,7 +19,7 @@
  */
 package megamek.common.weapons;
 
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.HitData;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
@@ -34,7 +34,7 @@ public class SRMAXHandler extends SRMHandler {
     @Serial
     private static final long serialVersionUID = 8049199984294733124L;
 
-    public SRMAXHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public SRMAXHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
         sSalvoType = " acid-head missile(s) ";
         nSalvoBonus = -2;

@@ -35,7 +35,6 @@ import megamek.client.ui.swing.HeatEffects;
 import megamek.client.ui.swing.Slider;
 import megamek.client.ui.swing.lobby.LobbyUtility;
 import megamek.client.ui.swing.tooltip.UnitToolTip;
-import megamek.client.ui.swing.util.UIUtil;
 import megamek.client.ui.swing.widget.BackGroundDrawer;
 import megamek.client.ui.swing.widget.PMUtil;
 import megamek.client.ui.swing.widget.PicMap;
@@ -45,8 +44,6 @@ import megamek.common.*;
 import megamek.common.enums.GamePhase;
 import megamek.common.options.GameOptions;
 import megamek.common.options.OptionsConstants;
-import megamek.common.preference.IPreferenceChangeListener;
-import megamek.common.preference.PreferenceChangeEvent;
 import megamek.common.util.fileUtils.MegaMekFile;
 
 /**
@@ -364,10 +361,10 @@ class ExtraPanel extends PicMap implements ActionListener, ItemListener {
         // can't be more teams than players.
         StringBuffer buff;
         if (clientgui != null) {
-            Game game = clientgui.getClient().getGame();
-            GameOptions gameOptions = game.getOptions();
+            IGame IGame = clientgui.getClient().getGame();
+            GameOptions gameOptions = IGame.getOptions();
 
-            for (Player player : game.getPlayersList()) {
+            for (Player player : IGame.getPlayersList()) {
                 int team = player.getTeam();
                 if (en.isNarcedBy(team) && !player.isObserver()) {
                     buff = new StringBuffer(Messages.getString("MekDisplay.NARCedBy"));

@@ -39,12 +39,12 @@ public class MovePath implements Cloneable, Serializable {
     private final transient Object COORD_SET_LOCK = new Object();
     private transient CachedEntityState cachedEntityState;
 
-    public Game getGame() {
-        return game;
+    public TWGame getGame() {
+        return twGame;
     }
 
-    public void setGame(Game game) {
-        this.game = game;
+    public void setGame(TWGame twGame) {
+        this.twGame = twGame;
     }
 
     public void setEntity(Entity entity) {
@@ -102,7 +102,7 @@ public class MovePath implements Cloneable, Serializable {
 
     private Vector<MoveStep> steps = new Vector<>();
 
-    private transient Game game;
+    private transient TWGame twGame;
     private transient Entity entity;
 
     // holds the types of steps present in this movement
@@ -122,14 +122,14 @@ public class MovePath implements Cloneable, Serializable {
     /**
      * Generates a new, empty, movement path object.
      */
-    public MovePath(final Game game, final Entity entity) {
+    public MovePath(final TWGame twGame, final Entity entity) {
         this.setEntity(entity);
-        this.setGame(game);
+        this.setGame(twGame);
         // Do we care about gravity when adding steps?
-        gravity = game.getPlanetaryConditions().getGravity();
+        gravity = twGame.getPlanetaryConditions().getGravity();
         gravityConcern = ((gravity > 1.0F && cachedEntityState.getJumpMPNoGravity() > 0
                 || (gravity < 1.0F && cachedEntityState.getRunMP() > cachedEntityState.getRunMPNoGravity()))
-                && game.getBoard().onGround() && !entity.isAirborne());
+                && twGame.getBoard().onGround() && !entity.isAirborne());
     }
 
     public Entity getEntity() {
@@ -243,7 +243,7 @@ public class MovePath implements Cloneable, Serializable {
                         && ((getEntity() instanceof BipedMek)
                                 || ((getEntity() instanceof VTOL)
                                         && (getMpUsed() <= getCachedEntityState().getWalkMP()))))
-                || (game.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_VEHICLE_ADVANCED_MANEUVERS)
+                || (twGame.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_VEHICLE_ADVANCED_MANEUVERS)
                         && getEntity() instanceof Tank
                         && (getEntity().getMovementMode() == EntityMovementMode.VTOL
                                 || getEntity().getMovementMode() == EntityMovementMode.HOVER))
@@ -323,8 +323,8 @@ public class MovePath implements Cloneable, Serializable {
         }
 
         // jumping into heavy woods is danger
-        if (game.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_PSR_JUMP_HEAVY_WOODS)) {
-            Hex hex = game.getBoard().getHex(step.getPosition());
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_PSR_JUMP_HEAVY_WOODS)) {
+            Hex hex = twGame.getBoard().getHex(step.getPosition());
             if ((hex != null) && isJumping() && step.isEndPos(this)) {
                 PilotingRollData psr = entity.checkLandingInHeavyWoods(step.getMovementType(false), hex);
                 if (psr.getValue() != PilotingRollData.CHECK_FALSE) {
@@ -386,7 +386,7 @@ public class MovePath implements Cloneable, Serializable {
                 if (s.getMovementType(false) == EntityMovementType.MOVE_ILLEGAL) {
                     break;
                 }
-                s.setDanger(s.isDanger() || Compute.isPilotingSkillNeeded(game, entity.getId(),
+                s.setDanger(s.isDanger() || Compute.isPilotingSkillNeeded(twGame, entity.getId(),
                         prevStep.getPosition(), s.getPosition(), lastStep.getMovementType(true),
                         prevStep.isTurning(), prevStep.isPavementStep(), prevStep.getElevation(),
                         s.getElevation(), s));
@@ -453,7 +453,7 @@ public class MovePath implements Cloneable, Serializable {
             // if we're jumping without a mechanical jump booster (?)
             // or we're acting like a spheroid DropShip in the atmosphere
             if ((isJumping() && (getEntity().getJumpType() != Mek.JUMP_BOOSTER)) ||
-                    (Compute.useSpheroidAtmosphere(game, getEntity()) && (step.getType() != MoveStepType.HOVER))) {
+                    (Compute.useSpheroidAtmosphere(twGame, getEntity()) && (step.getType() != MoveStepType.HOVER))) {
                 int distance = start.distance(land);
 
                 if (step.isThisStepBackwards() || (step.getDistance() > distance)) {
@@ -471,7 +471,7 @@ public class MovePath implements Cloneable, Serializable {
         }
 
         // If JumpShips turn, they can't do anything else
-        if (game.getBoard().inSpace()
+        if (twGame.getBoard().inSpace()
                 && (entity instanceof Jumpship)
                 && !(entity instanceof Warship)
                 && !step.isFirstStep()
@@ -544,7 +544,7 @@ public class MovePath implements Cloneable, Serializable {
         if (containsLateralShift() && getEntity().isUsingManAce()
                 && (getEntity() instanceof VTOL)
                 && getMpUsed() > getCachedEntityState().getWalkMP()
-                && !game.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_VEHICLE_ADVANCED_MANEUVERS)) {
+                && !twGame.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_VEHICLE_ADVANCED_MANEUVERS)) {
             step.setMovementType(EntityMovementType.MOVE_ILLEGAL);
             return;
         }
@@ -566,7 +566,7 @@ public class MovePath implements Cloneable, Serializable {
 
         // If using TacOps reverse gear option, cannot mix forward and backward movement
         // in the same round except VTOLs.
-        if (game.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_REVERSE_GEAR)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_REVERSE_GEAR)
                 && ((entity instanceof Tank && !(entity instanceof VTOL))
                         || (entity instanceof QuadVee
                                 && entity.getConversionMode() == QuadVee.CONV_MODE_VEHICLE))) {
@@ -592,11 +592,11 @@ public class MovePath implements Cloneable, Serializable {
         }
     }
 
-    public void compile(final Game g, final Entity en) {
+    public void compile(final TWGame g, final Entity en) {
         compile(g, en, true);
     }
 
-    public void compile(final Game g, final Entity en, boolean clip) {
+    public void compile(final TWGame g, final Entity en, boolean clip) {
         setGame(g);
         setEntity(en);
         final Vector<MoveStep> temp = new Vector<>(steps);
@@ -1297,7 +1297,7 @@ public class MovePath implements Cloneable, Serializable {
     public void findPathTo(final Coords dest, final MoveStepType type) {
         final int timeLimit = PreferenceManager.getClientPreferences().getMaxPathfinderTime();
 
-        ShortestPathFinder pf = ShortestPathFinder.newInstanceOfAStar(dest, type, game);
+        ShortestPathFinder pf = ShortestPathFinder.newInstanceOfAStar(dest, type, twGame);
 
         AbstractPathFinder.StopConditionTimeout<MovePath> timeoutCondition = new AbstractPathFinder.StopConditionTimeout<>(
                 timeLimit);
@@ -1316,7 +1316,7 @@ public class MovePath implements Cloneable, Serializable {
              */
             MovePath bestMp = Collections.min(pf.getAllComputedPaths().values(),
                     new ShortestPathFinder.MovePathGreedyComparator(dest));
-            pf = ShortestPathFinder.newInstanceOfGreedy(dest, type, game);
+            pf = ShortestPathFinder.newInstanceOfGreedy(dest, type, twGame);
             pf.run(bestMp);
             finPath = pf.getComputedPath(dest);
             // If no path could be found, use the best one returned by A*
@@ -1326,7 +1326,7 @@ public class MovePath implements Cloneable, Serializable {
         }
 
         if (finPath != null) {
-            finPath.compile(game, entity, false);
+            finPath.compile(twGame, entity, false);
             this.steps = finPath.steps;
         } else {
             logger.error("Unable to find a path to the destination hex! \tMoving "
@@ -1751,15 +1751,15 @@ public class MovePath implements Cloneable, Serializable {
      * @return Whether the entire path is submerged. A unit is only considered
      *         submerged when entirely undewater.
      */
-    public boolean isAllUnderwater(Game game) {
+    public boolean isAllUnderwater(IGame IGame) {
         for (MoveStep step : steps) {
-            Hex hex = game.getBoard().getHex(step.getPosition());
+            Hex hex = IGame.getBoard().getHex(step.getPosition());
             if (!hex.containsTerrain(Terrains.WATER)
                     || (step.getElevation() >= -entity.height())) {
                 return false;
             }
         }
-        return game.getBoard().getHex(entity.getPosition()).containsTerrain(Terrains.WATER)
+        return IGame.getBoard().getHex(entity.getPosition()).containsTerrain(Terrains.WATER)
                 && entity.relHeight() < 0;
     }
 
@@ -1956,7 +1956,7 @@ public class MovePath implements Cloneable, Serializable {
      * @return
      */
     public boolean nextForwardStepOffBoard() {
-        return !game.getBoard().contains(getFinalCoords().translated(getFinalFacing()));
+        return !twGame.getBoard().contains(getFinalCoords().translated(getFinalFacing()));
     }
 
     /**

@@ -16,7 +16,7 @@ package megamek.common.weapons;
 import java.util.Vector;
 
 import megamek.common.Building;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.RangeType;
 import megamek.common.Report;
 import megamek.common.TargetRoll;
@@ -37,7 +37,7 @@ public class ACFlechetteHandler extends AmmoWeaponHandler {
      * @param w
      * @param g
      */
-    public ACFlechetteHandler(ToHitData t, WeaponAttackAction w, Game g,
+    public ACFlechetteHandler(ToHitData t, WeaponAttackAction w, TWGame g,
                               TWGameManager m) {
         super(t, w, g, m);
         damageType = DamageType.FLECHETTE;
@@ -55,17 +55,17 @@ public class ACFlechetteHandler extends AmmoWeaponHandler {
         if (bDirect) {
             toReturn += toHit.getMoS() / 3;
         }
-        
+
         toReturn = applyGlancingBlowModifier(toReturn, false);
 
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE)
             && (nRange > wtype.getRanges(weapon)[RangeType.RANGE_LONG])) {
             toReturn = (int) Math.floor(toReturn * .75);
         }
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS_RANGE)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS_RANGE)
                 && (nRange > wtype.getRanges(weapon)[RangeType.RANGE_EXTREME])) {
             toReturn = (int) Math.floor(toReturn * .5);
-        }        
+        }
 
         return (int) Math.ceil(toReturn);
     }

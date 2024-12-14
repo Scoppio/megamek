@@ -26,34 +26,34 @@ import org.junit.jupiter.api.Test;
 
 import megamek.server.victory.VictoryResult;
 
-class GameTest {
+class TWGameTest {
 
     @Test
     void testCancelVictory() {
         // Default test
-        Game game = new Game();
-        game.cancelVictory();
-        assertFalse(game.isForceVictory());
-        assertSame(Player.PLAYER_NONE, game.getVictoryPlayerId());
-        assertSame(Player.TEAM_NONE, game.getVictoryTeam());
+        TWGame twGame = new TWGame();
+        twGame.cancelVictory();
+        assertFalse(twGame.isForceVictory());
+        assertSame(Player.PLAYER_NONE, twGame.getVictoryPlayerId());
+        assertSame(Player.TEAM_NONE, twGame.getVictoryTeam());
 
         // Test with members set to specific values
-        Game game2 = new Game();
-        game2.setVictoryPlayerId(10);
-        game2.setVictoryTeam(10);
-        game2.setForceVictory(true);
+        TWGame twGame2 = new TWGame();
+        TWGame2.setVictoryPlayerId(10);
+        TWGame2.setVictoryTeam(10);
+        TWGame2.setForceVictory(true);
 
-        game2.cancelVictory();
-        assertFalse(game.isForceVictory());
-        assertSame(Player.PLAYER_NONE, game.getVictoryPlayerId());
-        assertSame(Player.TEAM_NONE, game.getVictoryTeam());
+        TWGame2.cancelVictory();
+        assertFalse(twGame.isForceVictory());
+        assertSame(Player.PLAYER_NONE, twGame.getVictoryPlayerId());
+        assertSame(Player.TEAM_NONE, twGame.getVictoryTeam());
     }
 
     @Test
     void testGetVictoryReport() {
-        Game game = new Game();
-        game.createVictoryConditions();
-        VictoryResult victoryResult = game.getVictoryResult();
+        TWGame twGame = new TWGame();
+        twGame.createVictoryConditions();
+        VictoryResult victoryResult = twGame.getVictoryResult();
         assertNotNull(victoryResult);
 
         // Note: this accessors are tested in VictoryResultTest
@@ -64,12 +64,12 @@ class GameTest {
         int winningTeam = 5;
 
         // Test an actual scenario
-        Game game2 = new Game();
-        game2.setVictoryTeam(winningTeam);
-        game2.setVictoryPlayerId(winningPlayer);
-        game2.setForceVictory(true);
-        game2.createVictoryConditions();
-        VictoryResult victoryResult2 = game2.getVictoryResult();
+        TWGame twGame2 = new TWGame();
+        TWGame2.setVictoryTeam(winningTeam);
+        TWGame2.setVictoryPlayerId(winningPlayer);
+        TWGame2.setForceVictory(true);
+        TWGame2.createVictoryConditions();
+        VictoryResult victoryResult2 = TWGame2.getVictoryResult();
 
         assertSame(winningPlayer, victoryResult2.getWinningPlayer());
         assertSame(winningTeam, victoryResult2.getWinningTeam());

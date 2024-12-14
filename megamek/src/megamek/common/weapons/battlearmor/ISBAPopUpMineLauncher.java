@@ -15,7 +15,7 @@ package megamek.common.weapons.battlearmor;
 
 import megamek.common.AmmoType;
 import megamek.common.BattleArmor;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.weapons.AttackHandler;
@@ -64,15 +64,15 @@ public class ISBAPopUpMineLauncher extends Weapon {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * megamek.common.weapons.Weapon#getCorrectHandler(megamek.common.ToHitData,
      * megamek.common.actions.WeaponAttackAction, megamek.common.Game,
      * megamek.server.Server)
      */
     @Override
-    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, Game game,
+    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, TWGame twGame,
                                               TWGameManager manager) {
-        return new PopUpMineLauncherHandler(toHit, waa, game, manager);
+        return new PopUpMineLauncherHandler(toHit, waa, twGame, manager);
     }
 }

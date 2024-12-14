@@ -13,12 +13,9 @@
  */
 package megamek.common.weapons.gaussrifles;
 
-import megamek.common.AmmoType;
+import megamek.common.*;
 import megamek.common.alphaStrike.AlphaStrikeElement;
-import megamek.common.Compute;
-import megamek.common.Game;
-import megamek.common.SimpleTechLevel;
-import megamek.common.ToHitData;
+import megamek.common.TWGame;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.weapons.AttackHandler;
 import megamek.common.weapons.LBXHandler;
@@ -82,9 +79,9 @@ public class ISSilverBulletGauss extends GaussWeapon {
      * megamek.common.actions.WeaponAttackAction, megamek.common.Game)
      */
     @Override
-    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, Game game,
+    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, TWGame twGame,
                                               TWGameManager manager) {
-        return new LBXHandler(toHit, waa, game, manager);
+        return new LBXHandler(toHit, waa, twGame, manager);
     }
 
     @Override

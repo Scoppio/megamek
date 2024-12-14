@@ -619,8 +619,8 @@ public class TargetingPhaseDisplay extends AttackPhaseDisplay implements ListSel
 
         WeaponAttackAction waa = new WeaponAttackAction(currentEntity, target.getTargetType(),
                 target.getId(), weaponNum);
-        Game game = clientgui.getClient().getGame();
-        int distance = Compute.effectiveDistance(game, waa.getEntity(game), waa.getTarget(game));
+        TWGame twGame = clientgui.getClient().getGame();
+        int distance = Compute.effectiveDistance(twGame, waa.getEntity(twGame), waa.getTarget(twGame));
         if ((mounted.getType().hasFlag(WeaponType.F_ARTILLERY))
                 || (mounted.isInBearingsOnlyMode()
                         && distance >= RangeType.RANGE_BEARINGS_ONLY_MINIMUM)
@@ -840,8 +840,8 @@ public class TargetingPhaseDisplay extends AttackPhaseDisplay implements ListSel
             clientgui.getUnitDisplay().wPan.setTarget(target, null);
             clientgui.getUnitDisplay().wPan.wRangeR.setText(String.format("%d %s", targetDistance, flightTimeText));
 
-            Game game = clientgui.getClient().getGame();
-            int distance = Compute.effectiveDistance(game, ce(), target);
+            IGame IGame = clientgui.getClient().getGame();
+            int distance = Compute.effectiveDistance(IGame, ce(), target);
             if (m.isUsedThisRound()) {
                 clientgui.getUnitDisplay().wPan.setToHit(
                         Messages.getString("TargetingPhaseDisplay.alreadyFired"));

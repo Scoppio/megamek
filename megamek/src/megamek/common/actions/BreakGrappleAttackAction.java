@@ -13,13 +13,7 @@
  */
 package megamek.common.actions;
 
-import megamek.common.Entity;
-import megamek.common.Game;
-import megamek.common.Mek;
-import megamek.common.ProtoMek;
-import megamek.common.TargetRoll;
-import megamek.common.Targetable;
-import megamek.common.ToHitData;
+import megamek.common.*;
 import megamek.common.options.OptionsConstants;
 
 /**
@@ -39,26 +33,26 @@ public class BreakGrappleAttackAction extends PhysicalAttackAction {
     /**
      * Generates the to hit data for this action.
      *
-     * @param game The current {@link Game}
+     * @param twGame The current {@link TWGame}
      * @return the to hit data object for this action.
-     * @see #toHit(Game, int, Targetable)
+     * @see #toHit(IGame, int, Targetable)
      */
-    public ToHitData toHit(Game game) {
-        return toHit(game, getEntityId(), game.getTarget(getTargetType(), getTargetId()));
+    public ToHitData toHit(TWGame twGame) {
+        return toHit(twGame, getEntityId(), twGame.getTarget(getTargetType(), getTargetId()));
     }
 
     /**
      * To-hit number
-     * 
-     * @param game The current {@link Game}
+     *
+     * @param twGame The current {@link TWGame}
      */
-    public static ToHitData toHit(Game game, int attackerId, Targetable target) {
-        final Entity ae = game.getEntity(attackerId);
+    public static ToHitData toHit(TWGame twGame, int attackerId, Targetable target) {
+        final Entity ae = twGame.getEntity(attackerId);
         if (ae == null) {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "You can't attack from a null entity!");
         }
 
-        if (!game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_GRAPPLING)) {
+        if (!twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_GRAPPLING)) {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "grappling attack not allowed");
         }
 
@@ -67,7 +61,7 @@ public class BreakGrappleAttackAction extends PhysicalAttackAction {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "Cannot grapple while airborne");
         }
 
-        String impossible = toHitIsImpossible(game, ae, target);
+        String impossible = toHitIsImpossible(twGame, ae, target);
         if ((impossible != null) && !impossible.equals("Locked in Grapple")) {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "impossible");
         }
@@ -94,14 +88,14 @@ public class BreakGrappleAttackAction extends PhysicalAttackAction {
         // Start the To-Hit
         toHit = new ToHitData(base, "base");
 
-        PhysicalAttackAction.setCommonModifiers(toHit, game, ae, target);
+        PhysicalAttackAction.setCommonModifiers(toHit, twGame, ae, target);
 
         if (ae.isGrappleAttacker()) {
             toHit.addModifier(TargetRoll.AUTOMATIC_SUCCESS, "original attacker");
             return toHit;
         }
 
-        setCommonModifiers(toHit, game, ae, target);
+        setCommonModifiers(toHit, twGame, ae, target);
 
         if (ae instanceof Mek) {
             // damaged or missing actuators

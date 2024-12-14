@@ -21,13 +21,9 @@ import java.util.List;
 import java.util.Map;
 
 import megamek.client.bot.princess.AeroPathUtil;
-import megamek.common.Coords;
-import megamek.common.Entity;
-import megamek.common.Game;
-import megamek.common.IAero;
-import megamek.common.MovePath;
+import megamek.common.*;
+import megamek.common.TWGame;
 import megamek.common.MovePath.MoveStepType;
-import megamek.common.MoveStep;
 import megamek.common.pathfinder.AbstractPathFinder.Filter;
 import megamek.logging.MMLogger;
 
@@ -55,12 +51,12 @@ public class AeroGroundPathFinder {
         return 3;
     }
 
-    protected Game game;
+    protected TWGame twGame;
     private List<MovePath> aeroGroundPaths;
     protected int maxThrust;
 
-    protected AeroGroundPathFinder(Game game) {
-        this.game = game;
+    protected AeroGroundPathFinder(TWGame twGame) {
+        this.twGame = twGame;
     }
 
     public Collection<MovePath> getAllComputedPathsUncategorized() {
@@ -114,8 +110,8 @@ public class AeroGroundPathFinder {
         }
     }
 
-    public static AeroGroundPathFinder getInstance(Game game) {
-        return new AeroGroundPathFinder(game);
+    public static AeroGroundPathFinder getInstance(TWGame twGame) {
+        return new AeroGroundPathFinder(twGame);
     }
 
     /**
@@ -308,7 +304,7 @@ public class AeroGroundPathFinder {
 
         boolean firstTurn = true;
         while (mp.length() < STACK_DEPTH && straightLine.getFinalVelocityLeft() > 0 &&
-                game.getBoard().contains(straightLine.getFinalCoords())) {
+                twGame.getBoard().contains(straightLine.getFinalCoords())) {
 
             // little dirty hack to get around the problem where if this is the first step
             // of a path
@@ -325,7 +321,7 @@ public class AeroGroundPathFinder {
             // ("early" turns before the "free turn" use thrust, so if we go over max
             // thrust, it's an illegal move
             // and thus not worth evaluating further)
-            if (currentStep.canAeroTurn(game) &&
+            if (currentStep.canAeroTurn(twGame) &&
                     currentStep.getMpUsed() <= mp.getEntity().getRunMP() - turnCost) {
                 MovePath tiltedPath = straightLine.clone();
                 tiltedPath.addStep(stepType);
@@ -373,7 +369,7 @@ public class AeroGroundPathFinder {
             if (mp.nextForwardStepOffBoard()
                     && (mp.getEntity().getDamageLevel() != Entity.DMG_CRIPPLED)) {
                 final MoveStep lastStep = mp.getLastStep(); // using to prevent unnecessary computation
-                if ((lastStep != null) && lastStep.canAeroTurn(game)) {
+                if ((lastStep != null) && lastStep.canAeroTurn(twGame)) {
                     // we want to generate a path that looks like this:
                     // ||
                     // ||

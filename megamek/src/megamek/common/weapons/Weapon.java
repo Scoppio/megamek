@@ -1,14 +1,14 @@
 /*
  * MegaMek - Copyright (C) 2004, 2005 Ben Mazur (bmazur@sev.org)
  *
- * This program is free software; you can redistribute it and/or modify it 
- * under the terms of the GNU General Public License as published by the Free 
- * Software Foundation; either version 2 of the License, or (at your option) 
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
  * any later version.
  *
- * This program is distributed in the hope that it will be useful, but 
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  */
 package megamek.common.weapons;
@@ -26,7 +26,7 @@ import java.io.Serializable;
 
 /**
  * A class representing a weapon.
- * @author Andrew Hunter 
+ * @author Andrew Hunter
  * @since May 10, 2004
  */
 public abstract class Weapon extends WeaponType implements Serializable {
@@ -36,34 +36,34 @@ public abstract class Weapon extends WeaponType implements Serializable {
         this.ammoType = AmmoType.T_NA;
         this.minimumRange = WEAPON_NA;
     }
-    
+
     //Mode text tokens
     public static final String MODE_FLAMER_DAMAGE = "Damage";
     public static final String MODE_FLAMER_HEAT = "Heat";
-    
+
     public static final String MODE_AMS_ON = "On";
     public static final String MODE_AMS_OFF = "Off";
     public static final String MODE_AMS_MANUAL = "Use as Weapon";
-    
+
     public static final String MODE_CAP_LASER_AAA = "AAA";
-    
+
     public static final String MODE_CAPITAL_BRACKET_80 = "Bracket 80%";
     public static final String MODE_CAPITAL_BRACKET_60 = "Bracket 60%";
     public static final String MODE_CAPITAL_BRACKET_40 = "Bracket 40%";
-    
+
     public static final String MODE_CAP_MISSILE_WAYPOINT_BEARING_EXT = "Waypoint Launch Bearings-Only Extreme Detection Range";
     public static final String MODE_CAP_MISSILE_WAYPOINT_BEARING_LONG = "Waypoint Launch Bearings-Only Long Detection Range";
     public static final String MODE_CAP_MISSILE_WAYPOINT_BEARING_MED = "Waypoint Launch Bearings-Only Medium Detection Range";
     public static final String MODE_CAP_MISSILE_WAYPOINT_BEARING_SHORT = "Waypoint Launch Bearings-Only Short Detection Range";
     public static final String MODE_CAP_MISSILE_WAYPOINT = "Waypoint Launch";
-    
+
     public static final String MODE_CAP_MISSILE_BEARING_EXT = "Bearings-Only Extreme Detection Range";
     public static final String MODE_CAP_MISSILE_BEARING_LONG = "Bearings-Only Long Detection Range";
     public static final String MODE_CAP_MISSILE_BEARING_MED = "Bearings-Only Medium Detection Range";
     public static final String MODE_CAP_MISSILE_BEARING_SHORT = "Bearings-Only Short Detection Range";
-    
+
     public static final String MODE_CAP_MISSILE_TELE_OPERATED = "Tele-Operated";
-    
+
     public static final String MODE_AC_RAPID = "Rapid";
     public static final String MODE_AC_SINGLE = "Single";
     public static final String MODE_UAC_ULTRA = "Ultra";
@@ -72,40 +72,40 @@ public abstract class Weapon extends WeaponType implements Serializable {
     public static final String MODE_RAC_FOUR_SHOT = "4-shot";
     public static final String MODE_RAC_FIVE_SHOT = "5-shot";
     public static final String MODE_RAC_SIX_SHOT = "6-shot";
-    
+
     public static final String MODE_GAUSS_POWERED_DOWN = "Powered Down";
-    
+
     public static final String MODE_MISSILE_INDIRECT = "Indirect";
     public static final String MODE_INDIRECT_HEAT = "Indirect/Heat";
-    
-    public static final String MODE_PPC_CHARGE = "Charge";
-    
-    public static final String MODE_POINT_DEFENSE = "Point Defense";
-    
-    public static final String MODE_NORMAL = "Normal";
-    
 
-    public @Nullable AttackHandler fire(WeaponAttackAction waa, Game game, TWGameManager gameManager) {
-        ToHitData toHit = waa.toHit(game);
+    public static final String MODE_PPC_CHARGE = "Charge";
+
+    public static final String MODE_POINT_DEFENSE = "Point Defense";
+
+    public static final String MODE_NORMAL = "Normal";
+
+
+    public @Nullable AttackHandler fire(WeaponAttackAction waa, TWGame twGame, TWGameManager gameManager) {
+        ToHitData toHit = waa.toHit(twGame);
         // FIXME: SUPER DUPER EVIL HACK: swarm missile handlers must be returned even
         // if the have an impossible to hit, because there might be other targets
         // someone else please please figure out how to do this nice
-        AttackHandler ah = getCorrectHandler(toHit, waa, game, gameManager);
+        AttackHandler ah = getCorrectHandler(toHit, waa, twGame, gameManager);
         return (ah instanceof LRMSwarmHandler) ? ah
                 : (toHit.getValue() == TargetRoll.IMPOSSIBLE) ? null : ah;
     }
 
     protected AttackHandler getCorrectHandler(ToHitData toHit,
-            WeaponAttackAction waa, Game game, TWGameManager gameManager) {
-        return new WeaponHandler(toHit, waa, game, gameManager);
+                                              WeaponAttackAction waa, TWGame twGame, TWGameManager gameManager) {
+        return new WeaponHandler(toHit, waa, twGame, gameManager);
     }
-    
+
     /**
      * Adapt the weapon type to the Game Options such as
      * PPC Field Inhibitors or Dial Down Damage, usually
      * adding or removing modes. <B><I>When overriding this in a
      * weapon subclass, call super()!</I></B>
-     * 
+     *
      * @param gOp The GameOptions (game.getOptions())
      * @author Simon (Juliez)
      */
@@ -121,7 +121,7 @@ public abstract class Weapon extends WeaponType implements Serializable {
                 removeMode(MODE_FLAMER_HEAT);
             }
         }
-        
+
         // Capital weapons are spread out over all sorts of weapons.
         if (isCapital()) {
             if ((getAtClass() != WeaponType.CLASS_CAPITAL_MISSILE)
@@ -159,7 +159,7 @@ public abstract class Weapon extends WeaponType implements Serializable {
                     addMode(MODE_NORMAL);
                     addMode(MODE_CAP_MISSILE_TELE_OPERATED);
                 }
-                
+
                 if (gOp.booleanOption(OptionsConstants.ADVAERORULES_STRATOPS_WAYPOINT_LAUNCH)) {
                     setInstantModeSwitch(true);
                     addMode(MODE_NORMAL);

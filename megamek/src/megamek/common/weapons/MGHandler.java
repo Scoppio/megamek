@@ -15,14 +15,8 @@ package megamek.common.weapons;
 
 import java.util.Vector;
 
-import megamek.common.AmmoType;
-import megamek.common.Compute;
-import megamek.common.Game;
-import megamek.common.Infantry;
-import megamek.common.RangeType;
-import megamek.common.Report;
-import megamek.common.TargetRoll;
-import megamek.common.ToHitData;
+import megamek.common.*;
+import megamek.common.TWGame;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.options.OptionsConstants;
 import megamek.server.totalwarfare.TWGameManager;
@@ -42,14 +36,14 @@ public class MGHandler extends AmmoWeaponHandler {
      * @param g
      * @param m
      */
-    public MGHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public MGHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
         damageType = DamageType.ANTI_INFANTRY;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#calcDamagePerHit()
      */
     @Override
@@ -59,7 +53,7 @@ public class MGHandler extends AmmoWeaponHandler {
             // Check for rapid fire Option. Only MGs can be rapidfire.
             // nDamPerHit was already set in useAmmo
             toReturn = applyGlancingBlowModifier(toReturn, false);
-            
+
             if (bDirect) {
                 toReturn = Math.min(toReturn + (toHit.getMoS() / 3),
                                     toReturn * 2);
@@ -71,7 +65,7 @@ public class MGHandler extends AmmoWeaponHandler {
                         wtype.getInfantryDamageClass(),
                         ((Infantry) target).isMechanized(),
                         toHit.getThruBldg() != null, ae.getId(), calcDmgPerHitReport);
-                
+
                 toReturn = applyGlancingBlowModifier(toReturn, true);
             } else {
                 toReturn = wtype.getDamage();
@@ -79,16 +73,16 @@ public class MGHandler extends AmmoWeaponHandler {
                     toReturn = Math.min(toReturn + (toHit.getMoS() / 3),
                                         toReturn * 2);
                 }
-                
+
                 toReturn = applyGlancingBlowModifier(toReturn, false);
             }
         }
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE)
             && (nRange > wtype.getRanges(weapon)[RangeType.RANGE_LONG])) {
             toReturn *= .75;
             toReturn = (int) Math.floor(toReturn);
         }
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS_RANGE)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS_RANGE)
                 && (nRange > wtype.getRanges(weapon)[RangeType.RANGE_EXTREME])) {
             toReturn = (int) Math.floor(toReturn * .5);
         }
@@ -99,7 +93,7 @@ public class MGHandler extends AmmoWeaponHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#addHeat()
      */
     @Override
@@ -115,7 +109,7 @@ public class MGHandler extends AmmoWeaponHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#reportMiss(java.util.Vector)
      */
     @Override
@@ -135,7 +129,7 @@ public class MGHandler extends AmmoWeaponHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#useAmmo()
      */
     @Override

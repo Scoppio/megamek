@@ -19,7 +19,7 @@ public class BattleArmorHandlesTank extends BattleArmorHandles {
 
     @Override
     public final boolean isWeaponBlockedAt(int loc, boolean isRear) {
-        Entity carriedBA = game.getEntity(carriedUnit);
+        Entity carriedBA = twGame.getEntity(carriedUnit);
         if (carriedBA == null) {
             return false;
         } else {

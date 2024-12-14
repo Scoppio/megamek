@@ -41,7 +41,7 @@ public final class InfantryCompartment implements Transporter {
      */
     double currentSpace;
 
-    transient Game game;
+    transient TWGame twGame;
 
     /**
      * The default constructor is only for serialization.
@@ -124,7 +124,7 @@ public final class InfantryCompartment implements Transporter {
         Vector<Entity> loaded = new Vector<>();
         for (Map.Entry<Integer, Double> entry : troops.entrySet()) {
             int key = entry.getKey();
-            Entity entity = game.getEntity(key);
+            Entity entity = twGame.getEntity(key);
 
             if (entity != null) {
                 loaded.add(entity);
@@ -237,8 +237,8 @@ public final class InfantryCompartment implements Transporter {
     }
 
     @Override
-    public void setGame(Game game) {
-        this.game = game;
+    public void setGame(TWGame twGame) {
+        this.twGame = twGame;
     }
 
     @Override

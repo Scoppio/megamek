@@ -1872,12 +1872,12 @@ public class Infantry extends Entity {
      * Determines if there is valid cover for an infantry unit to utilize the
      * Using Non-Infantry as Cover rules (TO pg 108).
      *
-     * @param game      The current {@link Game}
+     * @param twGame      The current {@link TWGame}
      * @param pos       The hex coords
      * @param elevation The elevation (flying or in building)
      * @return True when this infantry has valid conver
      */
-    public static boolean hasValidCover(Game game, Coords pos, int elevation) {
+    public static boolean hasValidCover(TWGame twGame, Coords pos, int elevation) {
         // Can't do anything if we don't have a position
         // If elevation > 0, we're either flying, or in a building
         // In either case, we shouldn't be allowed to take cover
@@ -1886,7 +1886,7 @@ public class Infantry extends Entity {
         }
         boolean hasMovedEntity = false;
         // First, look for ground untis in the same hex that have already moved
-        for (Entity e : game.getEntitiesVector(pos)) {
+        for (Entity e : twGame.getEntitiesVector(pos)) {
             if (e.isDone() && !(e instanceof Infantry) && (e.getElevation() == elevation)) {
                 hasMovedEntity = true;
                 break;
@@ -1895,7 +1895,7 @@ public class Infantry extends Entity {
         // If we didn't find anything, check for wrecks
         // The rules don't explicitly cover this, but it makes sense
         if (!hasMovedEntity) {
-            Enumeration<Entity> wrecks = game.getWreckedEntities();
+            Enumeration<Entity> wrecks = twGame.getWreckedEntities();
             while (wrecks.hasMoreElements()) {
                 Entity e = wrecks.nextElement();
                 if (pos.equals(e.getPosition()) && !(e instanceof Infantry)) {

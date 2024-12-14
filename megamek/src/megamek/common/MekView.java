@@ -526,9 +526,9 @@ public class MekView {
             }
         }
 
-        Game game = entity.getGame();
+        IGame IGame = entity.getGame();
 
-        if ((game == null) || game.getOptions().booleanOption(OptionsConstants.ADVANCED_STRATOPS_QUIRKS)) {
+        if ((IGame == null) || IGame.getOptions().booleanOption(OptionsConstants.ADVANCED_STRATOPS_QUIRKS)) {
             List<String> activeUnitQuirksNames = entity.getQuirks().activeQuirks().stream()
                     .map(IOption::getDisplayableNameWithValue)
                     .collect(Collectors.toList());

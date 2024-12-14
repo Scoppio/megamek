@@ -52,8 +52,8 @@ class ForceDisplayMekCellFormatter {
      */
     static String formatUnitCompact(Entity entity, ClientGUI clientGUI) {
         Client client = clientGUI.getClient();
-        Game game = client.getGame();
-        GameOptions options = game.getOptions();
+        IGame IGame = client.getGame();
+        GameOptions options = IGame.getOptions();
         Player localPlayer = client.getLocalPlayer();
         Player owner = entity.getOwner();
         boolean showAsUnknown = owner.isEnemyOf(localPlayer)
@@ -106,7 +106,7 @@ class ForceDisplayMekCellFormatter {
         result.append(UIUtil.fontHTML(GUIP.getUnitToolTipHighlightColor()) + id + "</FONT>");
 
         // Done
-        if (!game.getPhase().isReport()) {
+        if (!IGame.getPhase().isReport()) {
             String done = "";
             if (!entity.isDone()) {
                 done = "\u2610 ";
@@ -266,7 +266,7 @@ class ForceDisplayMekCellFormatter {
                 msg_vel += aero.getCurrentVelocity();
                 String msg_alt = "";
                 String msg_fuel = "";
-                if (!game.getBoard().inSpace()) {
+                if (!IGame.getBoard().inSpace()) {
                     msg_alt = ", " + Messages.getString("ChatLounge.compact.altitude") + ": ";
                     msg_alt += aero.getAltitude();
                 }
@@ -305,10 +305,10 @@ class ForceDisplayMekCellFormatter {
 
     private static String formatForce(Force force, ClientGUI clientGUI) {
         Client client = clientGUI.getClient();
-        Game game = client.getGame();
+        IGame IGame = client.getGame();
         Player localPlayer = client.getLocalPlayer();
-        int ownerId = game.getForces().getOwnerId(force);
-        Player owner = game.getPlayer(ownerId);
+        int ownerId = IGame.getForces().getOwnerId(force);
+        Player owner = IGame.getPlayer(ownerId);
 
         // Get the my / ally / enemy color
         Color color = GUIP.getEnemyUnitColor();
@@ -346,7 +346,7 @@ class ForceDisplayMekCellFormatter {
         }
 
         // BV
-        List<Entity> fullEntities = ForceAssignable.filterToEntityList(game.getForces().getFullEntities(force));
+        List<Entity> fullEntities = ForceAssignable.filterToEntityList(IGame.getForces().getFullEntities(force));
         result.append(DOT_SPACER);
         int totalBv = fullEntities.stream().filter(e -> !e.isPartOfFighterSquadron()).mapToInt(Entity::calculateBattleValue).sum();
 

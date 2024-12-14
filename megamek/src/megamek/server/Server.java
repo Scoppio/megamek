@@ -51,7 +51,6 @@ import megamek.SuiteConstants;
 import megamek.Version;
 import megamek.client.ui.swing.util.PlayerColour;
 import megamek.codeUtilities.StringUtility;
-import megamek.common.Game;
 import megamek.common.IGame;
 import megamek.common.Player;
 import megamek.common.Roll;
@@ -941,7 +940,7 @@ public class Server implements Runnable {
         String message = String.format("s: Loading saved game file '%s'", f.getAbsolutePath());
         logger.info(message);
 
-        Game newGame;
+        IGame newIGame;
         try (InputStream is = new FileInputStream(f)) {
             InputStream gzi;
 
@@ -952,14 +951,14 @@ public class Server implements Runnable {
             }
 
             XStream xStream = SerializationHelper.getLoadSaveGameXStream();
-            newGame = (Game) xStream.fromXML(gzi);
+            newIGame = (IGame) xStream.fromXML(gzi);
         } catch (Exception e) {
             message = String.format("Unable to load file: %s", f);
             logger.error(e, message);
             return false;
         }
 
-        setGame(newGame);
+        setGame(newIGame);
 
         if (!sendInfo) {
             return true;
@@ -1345,7 +1344,7 @@ public class Server implements Runnable {
             case LOAD_GAME:
                 try {
                     sendServerChat(getPlayer(connId).getName() + " loaded a new game.");
-                    setGame((Game) packet.getObject(0));
+                    setGame((IGame) packet.getObject(0));
                     for (AbstractConnection conn : connections) {
                         sendCurrentInfo(conn.getId());
                     }

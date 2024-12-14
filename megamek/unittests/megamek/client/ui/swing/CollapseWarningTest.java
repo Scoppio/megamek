@@ -29,13 +29,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import megamek.common.*;
 import org.junit.jupiter.api.Test;
 
-import megamek.common.Board;
-import megamek.common.Building;
-import megamek.common.Coords;
-import megamek.common.Entity;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.enums.GamePhase;
 
 class CollapseWarningTest {
@@ -96,7 +93,7 @@ class CollapseWarningTest {
     @Test
     void testConstructionFactorWarningFindMovementWarnings() {
         // Test happy path for finding a building collapse warning.
-        Game g = mock(Game.class);
+        TWGame g = mock(twGame.class);
 
         Entity e = createMockEntityWith(new Coords(3, 3), 4, 6, 45.0, true, false);
 
@@ -114,7 +111,7 @@ class CollapseWarningTest {
     @Test
     void testConstructionFactorWarningFindMovementWarningsOffBoard() {
         // Test where entity is an off board entity, should not create a warning.
-        Game g = mock(Game.class);
+        TWGame g = mock(twGame.class);
 
         // Set off board status to true.
         Entity e = createMockEntityWith(new Coords(3, 3), 5, 3, 45.0, true, true);
@@ -133,7 +130,7 @@ class CollapseWarningTest {
     @Test
     void testConstructionFactorWarningFindMovementWarningsNullEntityPos() {
         // Test happy path for finding a Building collapse warning.
-        Game g = mock(Game.class);
+        TWGame g = mock(twGame.class);
 
         // Set entity position to null coordinate.
         Entity e = createMockEntityWith(null, 5, 3, 45.0, true, false);
@@ -152,7 +149,7 @@ class CollapseWarningTest {
     @Test
     void testConstructionFactorWarningFindMovementWarningsLightEntity() {
         // Test where the unit is lighter than the building CF
-        Game g = mock(Game.class);
+        TWGame g = mock(twGame.class);
 
         // Set entity to happy path - building CF will be set to larger value.
         Entity e = createMockEntityWith(new Coords(3, 5), 5, 3, 45.0, true, false);
@@ -172,7 +169,7 @@ class CollapseWarningTest {
     void testConstructionFactorWarningFindMovementWarningsExceptionPath() {
         // Test an internal null condition that should be caught and return an empty
         // list.
-        Game g = null;
+        TWGame g = null;
 
         // Set entity to happy path.
         Entity e = createMockEntityWith(new Coords(3, 5), 5, 3, 45.0, true, false);
@@ -205,7 +202,7 @@ class CollapseWarningTest {
         when(b.getBuildings()).thenReturn(buildings.elements());
         when(b.isLegalDeployment(expectedHex, e)).thenReturn(true);
 
-        Game g = mock(Game.class);
+        TWGame g = mock(twGame.class);
 
         List<Coords> warnList = CollapseWarning.findCFWarningsDeployment(g, e, b);
 
@@ -231,7 +228,7 @@ class CollapseWarningTest {
         // This is not a legal deployment hex for the selected entity - no warning.
         when(b.isLegalDeployment(expectedHex, e)).thenReturn(false);
 
-        Game g = mock(Game.class);
+        TWGame g = mock(twGame.class);
 
         List<Coords> warnList = CollapseWarning.findCFWarningsDeployment(g, e, b);
 
@@ -257,7 +254,7 @@ class CollapseWarningTest {
         when(b.getBuildings()).thenReturn(buildings.elements());
         when(b.isLegalDeployment(expectedHex, e)).thenReturn(true);
 
-        Game g = mock(Game.class);
+        TWGame g = mock(twGame.class);
 
         List<Coords> warnList = CollapseWarning.findCFWarningsDeployment(g, e, b);
 
@@ -285,7 +282,7 @@ class CollapseWarningTest {
         when(b.getBuildings()).thenReturn(buildings.elements());
         when(b.isLegalDeployment(expectedHex, e)).thenReturn(true);
 
-        Game g = mock(Game.class);
+        TWGame g = mock(twGame.class);
 
         List<Coords> warnList = CollapseWarning.findCFWarningsDeployment(g, e, b);
 
@@ -328,7 +325,7 @@ class CollapseWarningTest {
         double entityWeight = 35.0;
         double onBuildingWeight = 25.0;
 
-        Game g = mock(Game.class);
+        TWGame g = mock(twGame.class);
         Entity e = createMockEntityWith(new Coords(3, 3), 5, 3, entityWeight, true, false);
 
         // Mock a 25 ton entity already on the building hex.
@@ -350,7 +347,7 @@ class CollapseWarningTest {
         // are already accounting for our own weigh as the selected entity)
         double entityWeight = 35.0;
 
-        Game g = mock(Game.class);
+        TWGame g = mock(twGame.class);
         Entity e = createMockEntityWith(new Coords(3, 3), 5, 3, entityWeight, true, false);
 
         // The selected entity will show up in the entities vector for the building.
@@ -369,7 +366,7 @@ class CollapseWarningTest {
         // This tests a VTOL flying over a building the selected entity could enter.
         double entityWeight = 35.0;
 
-        Game g = mock(Game.class);
+        TWGame g = mock(twGame.class);
         Entity e = createMockEntityWith(new Coords(3, 3), 5, 3, entityWeight, true, false);
         Entity vtol = createMockEntityWith(new Coords(3, 7), 10, 10, 20.0, true, false);
         when(vtol.isAirborneVTOLorWIGE()).thenReturn(true);
@@ -392,7 +389,7 @@ class CollapseWarningTest {
         // This tests a VTOL flying over a building the selected entity could enter.
         double entityWeight = 35.0;
 
-        Game g = mock(Game.class);
+        TWGame g = mock(twGame.class);
         Entity e = createMockEntityWith(new Coords(3, 3), 5, 3, entityWeight, true, false);
         // Say isGround() is false. (same as isAerospace()).
         Entity aero = createMockEntityWith(new Coords(3, 7), 10, 10, 50.0, false, false);

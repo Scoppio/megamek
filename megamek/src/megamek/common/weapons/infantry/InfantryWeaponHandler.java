@@ -1,7 +1,7 @@
 /*
  * MegaMek - Copyright (C) 2004,2005 Ben Mazur (bmazur@sev.org)
  * Copyright (c) 2024 - The MegaMek Team. All Rights Reserved.
- * 
+ *
  * This file is part of MegaMek.
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -40,7 +40,7 @@ public class InfantryWeaponHandler extends WeaponHandler {
      * @param w
      * @param g
      */
-    public InfantryWeaponHandler(ToHitData t, WeaponAttackAction w, Game g,
+    public InfantryWeaponHandler(ToHitData t, WeaponAttackAction w, TWGame g,
             TWGameManager m) {
         super(t, w, g, m);
         bSalvo = true;
@@ -100,7 +100,7 @@ public class InfantryWeaponHandler extends WeaponHandler {
             damage += 0.14;
         }
         int damageDealt = (int) Math.round(damage * troopersHit);
-        
+
         // beast-mounted infantry get range 0 bonus damage per platoon
         if ((ae instanceof Infantry) && (nRange == 0)) {
             InfantryMount mount = ((Infantry) ae).getMount();

@@ -233,7 +233,7 @@ public class ChatLounge extends AbstractPhaseDisplay implements
     boolean resetAvailBoardSelection = false;
     boolean resetSelectedBoards = true;
     private ClientDialog boardPreviewW;
-    private Game boardPreviewGame = new Game();
+    private TWGame boardPreviewTWGame = new TWGame();
     private transient BoardView previewBV;
     Dimension currentMapButtonSize = new Dimension(0, 0);
     private final JCheckBox showPlayerDeployment = new JCheckBox(Messages.getString("ChatLounge.showPlayerDeployment"));
@@ -794,11 +794,11 @@ public class ChatLounge extends AbstractPhaseDisplay implements
         boardPreviewW.setLocationRelativeTo(clientgui.getFrame());
 
         try {
-            boardPreviewGame.setPhase(GamePhase.LOUNGE);
-            previewBV = new BoardView(boardPreviewGame, null, null);
+            boardPreviewtwGame.setPhase(GamePhase.LOUNGE);
+            previewBV = new BoardView(boardPreviewtwGame, null, null);
             previewBV.setDisplayInvalidFields(false);
             previewBV.setUseLosTool(false);
-            previewBV.setTooltipProvider(new TWBoardViewTooltip(boardPreviewGame, clientgui, previewBV));
+            previewBV.setTooltipProvider(new TWBoardViewTooltip(boardPreviewtwGame, clientgui, previewBV));
 
             showPlayerDeployment.setSelected(true);
             showPlayerDeployment.addActionListener(e -> previewGameBoard());
@@ -820,7 +820,7 @@ public class ChatLounge extends AbstractPhaseDisplay implements
 
             Ruler.color1 = GUIP.getRulerColor1();
             Ruler.color2 = GUIP.getRulerColor2();
-            Ruler ruler = new Ruler(clientgui.getFrame(), client(), previewBV, boardPreviewGame);
+            Ruler ruler = new Ruler(clientgui.getFrame(), client(), previewBV, boardPreviewTWGame);
             ruler.setLocation(GUIP.getRulerPosX(), GUIP.getRulerPosY());
             ruler.setSize(GUIP.getRulerSizeHeight(), GUIP.getRulerSizeWidth());
             ruler.setAlwaysOnTop(true);
@@ -1215,17 +1215,17 @@ public class ChatLounge extends AbstractPhaseDisplay implements
 
     public void previewGameBoard() {
         Board newBoard = ServerBoardHelper.getPossibleGameBoard(mapSettings, false);
-        boardPreviewGame.setBoard(newBoard);
+        boardPreviewtwGame.setBoard(newBoard);
         previewBV.setLocalPlayer(client().getLocalPlayer());
         final GameOptions gOpts = game().getOptions();
-        boardPreviewGame.setOptions(gOpts);
+        boardPreviewtwGame.setOptions(gOpts);
         previewBV.setShowLobbyPlayerDeployment(showPlayerDeployment.isSelected());
 
-        for (Player player : boardPreviewGame.getPlayersList()) {
-            boardPreviewGame.removePlayer(player.getId());
+        for (Player player : boardPreviewtwGame.getPlayersList()) {
+            boardPreviewtwGame.removePlayer(player.getId());
         }
         for (Player player : game().getPlayersList()) {
-            boardPreviewGame.setPlayer(player.getId(), player.copy());
+            boardPreviewtwGame.setPlayer(player.getId(), player.copy());
         }
         boardPreviewW.setVisible(true);
     }
@@ -2220,12 +2220,12 @@ public class ChatLounge extends AbstractPhaseDisplay implements
     @Override
     public void ready() {
         final Client client = clientgui.getClient();
-        final Game game = client.getGame();
-        final GameOptions gOpts = game.getOptions();
+        final TWGame twGame = client.getGame();
+        final GameOptions gOpts = twGame.getOptions();
 
         // enforce exclusive deployment zones in double blind
         for (Player player : client.getGame().getPlayersList()) {
-            if (!isValidStartPos(game, player)) {
+            if (!isValidStartPos(twGame, player)) {
                 clientgui.doAlertDialog(Messages.getString("ChatLounge.OverlapDeploy.title"),
                         Messages.getString("ChatLounge.OverlapDeploy.msg"));
                 return;
@@ -2235,14 +2235,14 @@ public class ChatLounge extends AbstractPhaseDisplay implements
         // Make sure player has a commander if Commander killed victory is on
         if (gOpts.booleanOption(OptionsConstants.VICTORY_COMMANDER_KILLED)) {
             java.util.List<String> players = new ArrayList<>();
-            if ((game.getLiveCommandersOwnedBy(localPlayer()) < 1)
-                    && (game.getEntitiesOwnedBy(localPlayer()) > 0)) {
+            if ((twGame.getLiveCommandersOwnedBy(localPlayer()) < 1)
+                    && (twGame.getEntitiesOwnedBy(localPlayer()) > 0)) {
                 players.add(client.getLocalPlayer().getName());
             }
 
             for (AbstractClient bc : clientgui.getLocalBots().values()) {
-                if ((game.getLiveCommandersOwnedBy(bc.getLocalPlayer()) < 1)
-                        && (game.getEntitiesOwnedBy(bc.getLocalPlayer()) > 0)) {
+                if ((twGame.getLiveCommandersOwnedBy(bc.getLocalPlayer()) < 1)
+                        && (twGame.getEntitiesOwnedBy(bc.getLocalPlayer()) > 0)) {
                     players.add(bc.getLocalPlayer().getName());
                 }
             }
@@ -3617,7 +3617,7 @@ public class ChatLounge extends AbstractPhaseDisplay implements
         }
     };
 
-    Game game() {
+    TWGame game() {
         return clientgui.getClient().getGame();
     }
 

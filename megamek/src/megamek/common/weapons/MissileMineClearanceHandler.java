@@ -32,7 +32,7 @@ public class MissileMineClearanceHandler extends AmmoWeaponHandler {
 
     private static final long serialVersionUID = 2753652169368638804L;
 
-    public MissileMineClearanceHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public MissileMineClearanceHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 
@@ -123,7 +123,7 @@ public class MissileMineClearanceHandler extends AmmoWeaponHandler {
         int missileDamage = (wtype instanceof LRMWeapon) ? 1 : 2;
         int mineDamage = wtype.getRackSize() * missileDamage;
         boolean updateMinefields = false;
-        for (Minefield mf : game.getMinefields(targetPos)) {
+        for (Minefield mf : twGame.getMinefields(targetPos)) {
             int density = mf.getDensity() - mineDamage;
             if (density > 0) {
                 mf.setDensity(density);
@@ -163,7 +163,7 @@ public class MissileMineClearanceHandler extends AmmoWeaponHandler {
         Vector<Report> newReports;
 
         // Damage building directly
-        Building bldg = game.getBoard().getBuildingAt(targetPos);
+        Building bldg = twGame.getBoard().getBuildingAt(targetPos);
         if (bldg != null) {
             newReports = gameManager.damageBuilding(bldg, damage, " receives ", targetPos);
             adjustReports(newReports);
@@ -171,7 +171,7 @@ public class MissileMineClearanceHandler extends AmmoWeaponHandler {
         }
 
         // Damage Terrain if applicable
-        Hex h = game.getBoard().getHex(targetPos);
+        Hex h = twGame.getBoard().getHex(targetPos);
         newReports = new Vector<>();
         if ((h != null) && h.hasTerrainFactor()) {
             r = new Report(3384);
@@ -187,7 +187,7 @@ public class MissileMineClearanceHandler extends AmmoWeaponHandler {
         adjustReports(newReports);
         vPhaseReport.addAll(newReports);
 
-        for (Entity target : game.getEntitiesVector(targetPos)) {
+        for (Entity target : twGame.getEntitiesVector(targetPos)) {
             // Ignore airborne units
             if (target.isAirborne() || target.isAirborneVTOLorWIGE()) {
                 continue;
@@ -197,7 +197,7 @@ public class MissileMineClearanceHandler extends AmmoWeaponHandler {
             // The rules don't state this, but I'm going to treat mine clearance
             // munitions like airburst mortars for purposes of units in
             // buildings
-            if (Compute.isInBuilding(game, target, targetPos)) {
+            if (Compute.isInBuilding(twGame, target, targetPos)) {
                 Player tOwner = target.getOwner();
                 String colorcode = tOwner.getColour().getHexString(0x00F0F0F0);
                 newReports = gameManager.damageBuilding(bldg, damage, " shields "

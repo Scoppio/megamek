@@ -30,7 +30,7 @@ public class PlasmaCannonHandler extends AmmoWeaponHandler {
      * @param waa
      * @param g
      */
-    public PlasmaCannonHandler(ToHitData toHit, WeaponAttackAction waa, Game g, TWGameManager m) {
+    public PlasmaCannonHandler(ToHitData toHit, WeaponAttackAction waa, TWGame g, TWGameManager m) {
         super(toHit, waa, g, m);
         generalDamageType = HitData.DAMAGE_ENERGY;
     }
@@ -154,7 +154,7 @@ public class PlasmaCannonHandler extends AmmoWeaponHandler {
         } else if (damageableCoverType == LosEffects.DAMAGABLE_COVER_BUILDING) {
             // Normal damage
             Targetable origTarget = target;
-            target = new BuildingTarget(coverLoc, game.getBoard(), false);
+            target = new BuildingTarget(coverLoc, twGame.getBoard(), false);
             hits = calcHits(vPhaseReport);
             // Plasma Cannons do double damage per-hit to buildings
             int nDamage = 2 * hits;

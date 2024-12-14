@@ -14,7 +14,7 @@
 package megamek.common.weapons.defensivepods;
 
 import megamek.common.AmmoType;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Mounted;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
@@ -60,8 +60,8 @@ public abstract class MPodWeapon extends AmmoWeapon {
      */
     @Override
     protected AttackHandler getCorrectHandler(ToHitData toHit,
-            WeaponAttackAction waa, Game game, TWGameManager manager) {
-        return new MPodHandler(toHit, waa, game, manager);
+                                              WeaponAttackAction waa, TWGame twGame, TWGameManager manager) {
+        return new MPodHandler(toHit, waa, twGame, manager);
     }
 
     @Override

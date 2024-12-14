@@ -22,8 +22,7 @@ package megamek.common.weapons;
 import java.io.Serial;
 import java.util.Vector;
 
-import megamek.common.Game;
-import megamek.common.Infantry;
+import megamek.common.TWGame;
 import megamek.common.Report;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
@@ -37,7 +36,7 @@ public class RapidfireACWeaponHandler extends UltraWeaponHandler {
     @Serial
     private static final long serialVersionUID = -1770392652874842106L;
 
-    public RapidfireACWeaponHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public RapidfireACWeaponHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 
@@ -48,7 +47,7 @@ public class RapidfireACWeaponHandler extends UltraWeaponHandler {
         }
 
         int jamLevel = 4;
-        boolean kindRapidFire = game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_KIND_RAPID_AC);
+        boolean kindRapidFire = twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_KIND_RAPID_AC);
         if (kindRapidFire) {
             jamLevel = 2;
         }

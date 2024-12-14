@@ -13,7 +13,7 @@
  */
 package megamek.common.weapons.other;
 
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.SimpleTechLevel;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
@@ -69,8 +69,8 @@ public class ISCenturionWeaponSystem extends EnergyWeapon {
      * megamek.server.Server)
      */
     @Override
-    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, Game game,
+    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, TWGame twGame,
                                               TWGameManager manager) {
-        return new CenturionWeaponSystemHandler(toHit, waa, game, manager);
+        return new CenturionWeaponSystemHandler(toHit, waa, twGame, manager);
     }
 }

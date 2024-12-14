@@ -2,7 +2,7 @@ MEGAMEK VERSION HISTORY:
 ----------------
 0.50.02-SNAPSHOT
 + PR #6183: New GM Commands, princess commands on map menu, graphics for some explosions
-+ PR #6186: Allow pausing a Princess-only game
++ PR #6186: Allow pausing a Princess-only TWGame
 + PR #6190: Allow printing unit list from MM
 + Fix #433: Add an advanced search for boards to the lobby
 + Fix #5086: Updated SRMAXHandler to ignore specialty armors
@@ -14,7 +14,7 @@ MEGAMEK VERSION HISTORY:
 + Fix #6069: Stops bays from loading BA and protomek ammunition
 + PR #6221: Corrects weight and critical slots for BNIU
 + PR #6222: Adds the players team in the BV report
-+ PR #6223: Allows GM to control any bot in the game via Map Menu
++ PR #6223: Allows GM to control any bot in the TWGame via Map Menu
 + Fix #5397: Allow Capital Missiles to switch modes instantly
 + Fix #4315: IR sensors should be able to detect units without heat scale
 + PR #6228: Victory and MM scenarios updates victory handling to recognize victory/draw by scenario events correctly
@@ -98,11 +98,11 @@ MEGAMEK VERSION HISTORY:
 + PR #6150: TRO View problem
 + Fix #6138: The weapon panel ammo selector will actually switch to selected ammo again
 + Fix #6145: Units should no longer crash (as in: hit the ground) in space
-+ PR #6164: The game will now prompt to save remaining units to a MUL file even if the player has no remaining units (or never had any)
++ PR #6164: The TWGame will now prompt to save remaining units to a MUL file even if the player has no remaining units (or never had any)
 + PR #6163: Custom unit definitions can now be stored in and loaded from MUL files (GUI access to this feature coming in future updates)
 + Fix #5985: AMS may no longer target mortar shells
 + Fix #6067: Protomeks can now set the climb mode during movement, enabling them to enter buildings
-+ PR #6167: MM Scenarios: Improve game options parsing
++ PR #6167: MM Scenarios: Improve TWGame options parsing
 + Fix #6086: Manual Shutdown should be a standard rule
 + Fix #6152: Added check for Repeating TSEMP
 + Fix #6169: Seperated physical modifiers from base and show them in toHit tooltip
@@ -229,7 +229,7 @@ MEGAMEK VERSION HISTORY:
 + PR #5959: MM side of fix for MHQ 4755: NPE when opfor has no faction code
 
 0.49.20 (2024-06-28 2100 UTC) (THIS IS THE LAST VERSION TO SUPPORT JAVA 11)
-+ PR #5281, #5327, #5308, #5336, #5318, #5383, #5369, #5384, #5455, #5505, #5541: Code internals: preparatory work for supporting game types such as SBF, code cleanup for string drawing, superclass change for BoardView,
++ PR #5281, #5327, #5308, #5336, #5318, #5383, #5369, #5384, #5455, #5505, #5541: Code internals: preparatory work for supporting TWGame types such as SBF, code cleanup for string drawing, superclass change for BoardView,
      Keydispatcher aka MegaMekController simplification, moving BoardView shadowmap creation to its own class, BoardView subclassing, DialogOptionsListener update
 + PR #5295: MM now supports the light conditions "glare" and "solar flare" (TO:AR)
 + PR #5301, #5441: Aerospace units now show a much improved flight path indicator when planning their movement; use MM's symbol font for indicator symbols, also for Collapse Warnings
@@ -246,7 +246,7 @@ MEGAMEK VERSION HISTORY:
 + PR #5418: More code internals: Princess's Precognition no longer produces unnecessary packet command log messages and processes an additional packet command
 + Fix #5408: Princess has taken part in a week-long battle workshop; she will now be less conservative with ammo (and other tweaks)
 + Fix #5417: Fixes Errors and nonsensical Princess movement
-+ Fix #4034: Prevent an error when trying to save a game with C3 networks present
++ Fix #4034: Prevent an error when trying to save a TWGame with C3 networks present
 + Fix #5419: iATM have received numerous code corrections that should restore their behavior in bays and better Princess calculations for them
 + PR #5433: Fixes ammo handling for one-shot weapons such as RLs
 + PR #5432: BoardView tooltip generation has been made modular. Using this, a specialized tooltip has been added for the Board Editor that displays much more detailed terrain info
@@ -286,9 +286,9 @@ MEGAMEK VERSION HISTORY:
 + Fix #5504: Aeros that do not require fuel should now (finally) be able to move and not show warnings
 + Fix #5523: Fighter Squadrons are able to fire ammo weapons again
 + PR #5553: (Possible) fix to dedicated server loading issues (related to #5539)
-+ Fix #5547: Fixing a bug coming from a duplicate artillery overlay added to the game map
++ Fix #5547: Fixing a bug coming from a duplicate artillery overlay added to the TWGame map
 + Fix #5548: Fixing a bug trying to get line of sight issues for the tooltip
-+ Fix #5542: Fixing the game not progressing to a round that has reinforcements
++ Fix #5542: Fixing the TWGame not progressing to a round that has reinforcements
 + PR #5550, PR #5562: The default state of Edge usage is now "true" (also in MHQ)
 + PR #5549: ModelRecord unit analysis has been upgraded and expanded
 + Fix #5556: Fixing Nameplates
@@ -299,7 +299,7 @@ MEGAMEK VERSION HISTORY:
 + PR #5576: Improvements to TacOps coolant failure systems
 + PR #5586: Updated Game Options and Report Log Default Preferences
 + PR #5599: Fixing Rocket Launchers to no longer allow indirect fire
-+ PR #5601: Add revision to the game log
++ PR #5601: Add revision to the TWGame log
 + PR #5589: Re-submitting role exclusions
 + PR #5600: Numerous typo and spelling fixes
 + Fix #5596: Fixing firing arc updates and projections in space, the effects of special ammo on range can now be considered also for enemy units when selected in the Unit Display
@@ -341,7 +341,7 @@ MEGAMEK VERSION HISTORY:
 + PR #5210: We have added some fonts to the distribution: Exo, Jura, Anta and Bitter. These can be chosen for display and print in various places
 + Fix #5237: Broken Units with recent changes
 + Fix #5243: AMS Ammo Naming issue.
-+ Fix #5214: Exception when loading saved game
++ Fix #5214: Exception when loading saved TWGame
 + Fix #5224: Infantry Firing issue
 + PR #5241: Add test to ensure every unit can load
 + PR #5244: Fixing MML #1452 Allows you to pod mount null signature system.
@@ -422,7 +422,7 @@ MEGAMEK VERSION HISTORY:
 + PR #5059: Unit tooltip pilot updates
 + PR #5057: Lobby force updates
 + PR #5041: Princess Ice & Infantry On Ice Fix
-+ PR #5069: Reset forces when resetting game
++ PR #5069: Reset forces when resetting TWGame
 + Fix #5064, Fix #5065: Aero movement cenvelope and acc/dec next optimizations.
 + PR #5071: MUL parser updates
 + PR #5075: Laser-guided bombs now receive a -2 bonus on tagged units
@@ -433,7 +433,7 @@ MEGAMEK VERSION HISTORY:
 + Fix #5070: CI Anti-Mek Gear - Implements proper Anti-Mek set up for Infantry
 + Fix #5078: BA LB-X should get flak bonus against airborne targets
 + Fix #5088: Inaccurate Movement Envelope for Aerospace Fighters on Ground Maps
-+ PR #5094: add start and connect to game to the file menu
++ PR #5094: add start and connect to TWGame to the file menu
 + PR #5102: Laser insulator and RISC laser pulse module validation
 + PR #5101, #5116, #5119, #5137: Rework of the internal representation of Armor
 + PR #5106, #5107: Separates clan and IS name for Meks with different names such as Mad Cat/Timber Wolf
@@ -466,7 +466,7 @@ MEGAMEK VERSION HISTORY:
 
 0.49.16 (2023-12-30 2200 UTC)
 + Fix #4769: BA Tube Artillery should support smoke rounds
-+ Fix #4854: Fix multiple end-of-game and end-of-phase hangs
++ Fix #4854: Fix multiple end-of-TWGame and end-of-phase hangs
 + Fix #4541: Natural piloting SPA applies to physical attacks
 + PR #4871: Allow HTML tags in the TROView fluff
 + Data: Update Boards and Tagging. Fluff project continues.
@@ -474,7 +474,7 @@ MEGAMEK VERSION HISTORY:
 + Issue #4213: RFE Add CI indirect fire for mortars
 + PR #4877: Add client setting for auto centering
 + PR #4875: Done and skip buttons handle changes in GUI Scale better
-+ Issue #4861: Fix for RAC and UAC ammo bingo state hanging game
++ Issue #4861: Fix for RAC and UAC ammo bingo state hanging TWGame
 + PR #4853: Fixes bugs with loading infantry into transports and JumpShip fuel consumption
 + Data: Correcting various Prototype weapon BVs.
 + Issue #4794: Game hangs on 'firing phase'
@@ -518,13 +518,13 @@ MEGAMEK VERSION HISTORY:
 + PR #4981: Add unit readout button (Warbook) that displays the unit summary, TRO entry, and AS card in Game
 + PR #4961: User file directory
 + PR #4977: Add a split pane lobby between player and unit panels
-+ PR #4980: Allow gm to configure spas in game
++ PR #4980: Allow gm to configure spas in TWGame
 + Issue #2595: Warn before collapsing buildings via movement due to weight
 
 0.49.15 (2023-10-21 1530 UTC)
 + PR #4688: Round reports should no longer take increasingly long to load
 + PR #4686: QuadVee should no longer be able to fall after converting to vehicle mode
-+ PR #4684: Added game option for GM to advance report phases without waiting for other players
++ PR #4684: Added TWGame option for GM to advance report phases without waiting for other players
 + PR #4691: Correct max # of bay doors for space stations and jumpships
 + PR #4661: Add audio tab and master volume setting to client settings
 + PR #4678: Display vehicle crit effects in unit tooltip
@@ -538,7 +538,7 @@ MEGAMEK VERSION HISTORY:
 + PR #4716: Camo rotation and scaling
 + PR #4709: Mixed tech dropships do not save BA Tech type
 + Issue #4704: Follow-the-leader LRM ammo is treated as regular ammo when passing through ECM field.
-+ Issue #4708: Respect variable tech level game option/allowed era settings
++ Issue #4708: Respect variable tech level TWGame option/allowed era settings
 + Issue #4711: Prevent squadron-related NPE in lobby
 + Issue #4692: Landed dropships introduced in megamek scenarios should deploy properly
 + PR #4728: Mute "other players turn" sound properly
@@ -593,7 +593,7 @@ MEGAMEK VERSION HISTORY:
 
 0.49.14 (2023-07-28 2100 UTC)
 + Fix #4452: Fixes a bug with detecting if Infantry dies due to extreme temperatures
-+ Fix #4245: At victory in a double-blind game, a full unfiltered report is now available
++ Fix #4245: At victory in a double-blind TWGame, a full unfiltered report is now available
 + PR #4458: When clicking on report hyperlink, center board on entity if possible
 + Fix #4460: Prevent blank lobby after adding custom units in multi-player games
 + PR #4454: End-round report shows visible active unit data (as displayed in tooltip)
@@ -620,7 +620,7 @@ MEGAMEK VERSION HISTORY:
 + Fix #894: TO fatigue is now calculated from the better of Gunnery/Anti-Mek for Infantry
 + PR #4539: Picked-up pilots are now shown on the unit tooltip in pilot info
 + PR #4532, #4536: BV Calculation updates for MG Arrays and Manei Domini options
-+ Fix #206: The allowed weapons for the Sandblaster and Weapon Specialist SPAs have been corrected; some are available depending on game options; Weapon choices are now shown in the pilot tooltip
++ Fix #206: The allowed weapons for the Sandblaster and Weapon Specialist SPAs have been corrected; some are available depending on TWGame options; Weapon choices are now shown in the pilot tooltip
 + PR #4549, #4551: GUI improvements to the Unit Selector
 + Fix #4305: Environmental Specialist SPA is now properly reducing penalties from high wind
 + PR #4567: The unofficial sensor geek modifier is now applied to sensor ranges displayed on the map
@@ -632,7 +632,7 @@ MEGAMEK VERSION HISTORY:
 + Fix #4598: Load from MUL in lounge now sets unit's deployment round to 0 by default
 + Fix #4574: Mortar turret ammo selection dropdown is empty
 + Fix #4543, 4547: Auto-success/fail message in to-hit display; set scroll to top when selecting new target for reduced annoyance
-+ PR #4609: There is now a client setting to hide the unit tooltips in the game reports
++ PR #4609: There is now a client setting to hide the unit tooltips in the TWGame reports
 + PR #4607, #4654: Alpha Strike Conversion updates
 + PR #4610: Implemented Gas Hog quirk (only relevant for aerospace units at the moment)
 + Issue #4527: Allow indirect LRM launches from nose cones of grounded spheroid dropships
@@ -642,7 +642,7 @@ MEGAMEK VERSION HISTORY:
 + PR #4622: Fluff images for some unit types are now loaded from the right directories
 + Fix #4618: Improved and unified savegame path resolution and error reporting for -dedicated and -host starts; should now find savegames without path
 + Fix #4540: Field of fire and sensors rings now display during indirect attack declaration (-> TAG)
-+ PR #4576: Gamemaster mode can now edit units during a game
++ PR #4576: Gamemaster mode can now edit units during a TWGame
 + Fix #4591: Grounded SmallCraft now receive a -2 attack bonus instead of a +2 malus that only applies to fighters
 + PR #4637: There is now an indicator in the player table showing the GM player
 + Fix #4599: The Alpha Strike stats table that can be accessed from the lobby is now sortable; sorting also applies to printing AS cards
@@ -650,7 +650,7 @@ MEGAMEK VERSION HISTORY:
 + Fix #4439, #4638: Indirect mortar attacks without spotter and indirect semi-guided + tag attacks now ignore all terrain modifiers including those of the target hex
 + PR #4605: The Replace Player Dialog can now edit existing bot configurations
 + Fix #3654: Infantry/BA damage messages no longer accumulate
-+ Fix #4641: In the lobby, setting the game master no longer requires a vote
++ Fix #4641: In the lobby, setting the TWGame master no longer requires a vote
 + Fix #4645: Display the correct conversion mode text for LAMs
 + Fix #4656: Game board key binds (wasd) now also work in the report phases
 + Fix #4653: Moving from prone to hull down now allows a free facing change the same way moving from prone to standing does
@@ -680,7 +680,7 @@ MEGAMEK VERSION HISTORY:
 + Fix #4117: Unit card and minimap can now be focused when clicked
 + Fix #4261: Prevent aerospace units from having an out-of-bounds bomb count
 + Fix #2102, #3896: Weapon-delivered smoke will now not move in the round it is created and not count this round towards dispersion;
-                    it will also disperse regardless of game options
+                    it will also disperse regardless of TWGame options
 + PR #4269: Anti-aliasing has been removed as a gui option; high quality rendering will always be used
 + Fix #2220: Units now dismount to adjacent hexes from SV
 + Fix #4203: QoL updates to the Create Random Army tabs
@@ -711,7 +711,7 @@ MEGAMEK VERSION HISTORY:
 + Issue #4291: Prevent unintended discovery of opponent hidden units if both player and opponent have them
 + PR #4318: Added expandable detailed info to target selection dropdowns
 + PR #4368: The random map generator can now generate Snow features
-+ PR #4360: Low Quality Graphics options to address lag in game
++ PR #4360: Low Quality Graphics options to address lag in TWGame
 + Issue #3813: Implement repeating TSEMPs
 + Issue #4370: Remove unnecessary log bloat for altitude checks in space
 + PR #4405: Prevent error displaying hex tooltip in various situations
@@ -723,13 +723,13 @@ MEGAMEK VERSION HISTORY:
 + PR #4362: The round report now gives detailed unit counts
 + Fix #4386: Indirect-fire ballistic weapons no longer apply modifiers for planetary conditions
 + PR #4379: The overheat from weapon fire shown in the unit display now shows the correct heat capacity values when heat capacity is modified
-+ PR #4288: The in-game Done button has been reworked to prevent accidental no-actions without constantly having to add a click in the nag window
++ PR #4288: The in-TWGame Done button has been reworked to prevent accidental no-actions without constantly having to add a click in the nag window
 + PR #4412: Remove "(Standard)" as model to follow the MUL. The MUL has removed the (Standard) and we will continue our practice of matching the MUL as closely as possible
-+ Fix #4327, #4400: Field of Fire and FOV Darken/Highlight may now be used in more phases of the game
++ Fix #4327, #4400: Field of Fire and FOV Darken/Highlight may now be used in more phases of the TWGame
 + PR #4414: The wreck tooltip now shows crew info if they did not eject
 + Data: iATM ammo should use ATM availability codes for standard (ER,HE,Standard) ammos
 + Fix #4406: Fix an issue with Forces not working correctly when using double blind
-+ PR #4388: Chaff Pods (ECM and smoke) are now functional in the game
++ PR #4388: Chaff Pods (ECM and smoke) are now functional in the TWGame
 + Issue #4416: Entities destroyed by environmental conditions are marked as destroyed
 + Issue #4411: Corrected display of cruise missile damage values
 + Issue #4835: Allow repeating TSEMP on aerospace units
@@ -765,13 +765,13 @@ MEGAMEK VERSION HISTORY:
 + Issue #4088: Improved Autocannon/2 on ASF is listed as doing 20/0/0 damage
 + PR #4096: Fix Unit Display weapon order bugs
 + PR #4078: Various unit tooltip improvements
-+ PR #4030: show game board in all the game phases
-+ PR #4125: Add tooltips showing shortcut keys to the in-game action buttons
++ PR #4030: show TWGame board in all the TWGame phases
++ PR #4125: Add tooltips showing shortcut keys to the in-TWGame action buttons
 + Issue #4090: Fix TO:AR lighting conditions piloting skill and MP penalties
 + Issue #4093: (Errata) Ensure a minimum weight and crit count of 1 for MASC
 + Data: Various Data fixes (RAT name shortening, New Rec Guides)
 + PR #4100: Base Components: Adding JDisableablePanel
-+ PR #4094: Disconnecting Entity from MM's Force to facilitate other game types
++ PR #4094: Disconnecting Entity from MM's Force to facilitate other TWGame types
 + PR #4111: Super Cooled Myomer is now operational in MM games
 + MHQ Issue #3558: Track RATs Using a Final HashMap to Prevent Null Issues
 + Issue #4098: Adding Sprite Camouflage and Damage Export Options
@@ -796,7 +796,7 @@ MEGAMEK VERSION HISTORY:
 + Issue #4129: Unit tool tip fixes #4129
 + Issue #4158: Fixing a bug in using ammo from a trailer
 + Issue #3026: Vehicles with suitable equipment are now able to create Trenches/Fieldworks
-+ Issue #4171: MM-J17: NPE at End of MM game
++ Issue #4171: MM-J17: NPE at End of MM TWGame
 + PR #4131: Substantial additions to the advanced unit search
 + PR #4151: Allow configurable sounds to be played for some turn-related events
 + Issue #4157: The lobby unit configuration dialog will now remember its size and position
@@ -810,8 +810,8 @@ MEGAMEK VERSION HISTORY:
 + Issue #4185: RFE: Visual GUI indicator that unit is using Searchlight.
 + Issue #4173: Heat Buildup colors in weapons fire tab are off by one
 + Issue #4141, #4218: Fixing a bug with ejected pilots at altitude blocking ground unit movement
-+ PR #4209: Strategic BattleForce record sheets can now be printed from the conversion dialog window in MM's game lobby
-+ PR #4211: Alpha Strike cards can now be printed from most card views and, for multiple units, from the conversion dialog in MM's game lobby
++ PR #4209: Strategic BattleForce record sheets can now be printed from the conversion dialog window in MM's TWGame lobby
++ PR #4211: Alpha Strike cards can now be printed from most card views and, for multiple units, from the conversion dialog in MM's TWGame lobby
 + PR #4194: Show movement mode before move indicators
 + PR #4193: Show amount of heat over capacity on the weapon tab
 + Issues #4260, #4353: Fixed some XStream de-serialization issues loading saved games
@@ -846,7 +846,7 @@ MEGAMEK VERSION HISTORY:
 + Issue #3980: Prototype ER Large Laser Wrong Stats for Aerospace Units
 + PR #3989L AS Conversion fixes round 3
 + Issue #3978: Line wrap for long sensor texts in the Unit Display's sensor tab
-+ Issue #3975: Allow the report display dialog to be always active during a game
++ Issue #3975: Allow the report display dialog to be always active during a TWGame
 + PR #3997: Fixing Missing DockingCollar Handling in Unit Load
 + PR #3992: Update Alpha Strike conversion to newest errata
 + Issue #2842: Fix an issue where Thin Snow would increase MP costs for BA
@@ -871,7 +871,7 @@ MEGAMEK VERSION HISTORY:
 + Issue #3811: Fix formatting issue with the Infantry victory report
 + Issue #4021: Preventing Save Game Loading Player Name NPE
 + PR #3969: Add an overlay for Planetary Conditions
-+ Issue #2695: Improve game options tooltips
++ Issue #2695: Improve TWGame options tooltips
 + PR #4049: Player Java 17 Support
 + PR #4055: Expand FOV Highlight Disk Size Option Dimension for Display Scaling
 + PR #4057: Allow Report Display Split Pane to Resize
@@ -925,7 +925,7 @@ MEGAMEK VERSION HISTORY:
 + Issue #3757: Minimum Range for Clan LRM
 + PR #3771: UnitDisplay: Lobby-style Quirk Text
 + Issue #1852: More flexible deployment zones; improvements to deployment zone rendering; defunct 'deep deployment zone' feature as it's now redundant
-+ Issue #3753: Vehicles with Vehicle Grenade Launchers no longer lock up the game during firing phase when VGL firing arc goes off board
++ Issue #3753: Vehicles with Vehicle Grenade Launchers no longer lock up the TWGame during firing phase when VGL firing arc goes off board
 + Issue #470: Display weapon fields of fire during TAG phase
 + Issue #3730: Savegame Planetary settings are not persistent if in Lobby
 + Issue #3744: Mast Mount not in Support Vee equipment for VTOL
@@ -1070,7 +1070,7 @@ MEGAMEK VERSION HISTORY:
 + Updating to Jackson Core 2.13.1 from 2.9.8
 + Issue #3357: Updating to Jakarta.Mail 2.0.1 from Javax.Mail 1.6.2
 + Data: Equipment Name fixes/ standardizations identified with recent changes to MML equipment tab.  Biggest change was removing duplicate C3 Master entries and consolidating them in a C3 weapons folder. Includes fixes to impacted unit files.
-+ Issue #3371: Fixing TurnOrdered NPEs for null Entity game and null Player team
++ Issue #3371: Fixing TurnOrdered NPEs for null Entity TWGame and null Player team
 + Data: Updated EVS Map Pack (I like big maps I cannot lie)
 + Issue: #3384: Swarm LRMs not available, but Swarm-I are
 + Data: Cleaning up some missing equipment flags
@@ -1230,13 +1230,13 @@ MEGAMEK VERSION HISTORY:
 + PR #3009: Fixing Princess Null Entity Packet state update
 + Issue #3002: Disallow torso-twisting and vehicle turret rotation during TAG phase per recent errata
 + PR #3010: StatusBarPhaseDisplay Code cleanup
-+ PR #3011: Fixes for multiple game-freezing issues relating to counter-battery fire against previously destroyed units
++ PR #3011: Fixes for multiple TWGame-freezing issues relating to counter-battery fire against previously destroyed units
 + PR #2968: Prevent TAG from attempting to designate targets for hostile incoming homing ordnance
 + PR #3023: Allow UUID Serialization
 + PR #3022: Preventing three Compute::getTargetTotalNP NPEs
 + PR #3021: Fixing Calculate LOS NPEs
 + Data: New Sprites, Camos
-+ PR #3041: Princess config dialog improvements; much easier bot replacement upon loading a save game.
++ PR #3041: Princess config dialog improvements; much easier bot replacement upon loading a save twGame.
 + Issue #3407: Prevent server lockup when processing swarm attacks that select an infantry unit in a building as a secondary target
 + PR #3051: RAT Generator Editor no longer shuffles model entries around randomly; space stations have been added to RAT Generator
 + Issue #3031: Bot will no longer attempt to cross water in "long range pathfinding mode" when doing so would cause an armor breach
@@ -1286,7 +1286,7 @@ MEGAMEK VERSION HISTORY:
 + Issue #929: Narced status on unit tooltip
 + Issue #2920: Prevent lock-up when resolving homing artillery attacks vs tagged hex
 + PR #2929: Players can now skip deploying minefields
-+ Issue #2543: Board images save at current zoom, game summary at zoom 1
++ Issue #2543: Board images save at current zoom, TWGame summary at zoom 1
 + PR #2910: UnitReadoutDialog Standardization
 + Issue #2917: Fixing Structured_Water directory reference
 + Issue #2003: Fix terrain exit issue in map editor
@@ -1304,7 +1304,7 @@ MEGAMEK VERSION HISTORY:
 + Issue #2819: Fixing Left Click Targetting Issues
 + PR #2831: FovHighlightingAndDarkening Null Handling Improvements
 + PR #2835: ReadMe Java recommendation update and accessibility improvements
-+ Issue #2820: Improved initial sizing of game options popup
++ Issue #2820: Improved initial sizing of TWGame options popup
 + PR #2850: Fixing LobbyMekCellFormatter NPE
 + PR #2849: Fixing Abstract Wreck Sprite NPE
 + Issue #2826 Traitor Context menu correction (no traitoring to teamless)
@@ -1351,7 +1351,7 @@ MEGAMEK VERSION HISTORY:
 + Issue #1219: Adding Defensive Code for RATGenerator Era
 + Issues #1785/#2138: Fixing and Improving Round Report Player Stats
 + Issues #2787: Protomech AC gun and ammo are different tech levels
-+ PR #2786: Units set for a delayed assault drop no longer disappear on the first turn of the game.
++ PR #2786: Units set for a delayed assault drop no longer disappear on the first turn of the twGame.
 + Issue #2438: Adding More Detail to Fire Damage Reporting
 + Data: New Sprites, IrTech addition, numerous other data fixes. Fixes for #2696
 + Issue #2794: Switching back and forth from TestBot in bot config dialog no longer causes an NPE because the TestBot option has been removed.
@@ -1403,8 +1403,8 @@ MEGAMEK VERSION HISTORY:
 + Issue #2585, 2586: When destroying locations, multi-location equipment (e.g. Chameleon, Null-Sig) is now properly destroyed
 + Issue #2580: Fix non-unique IDs for Buildings
 + Issue #2609: Fix for bot deployment hang on maps with phantom buildings
-+ Issue #2613: Graceful failure for DFA attacks against improperly picked targets (no DFA occurs, rather than the game locking up)
-+ Issue #2619: Prevent unwanted turn skip if loading a save game with only one unit left to move
++ Issue #2613: Graceful failure for DFA attacks against improperly picked targets (no DFA occurs, rather than the TWGame locking up)
++ Issue #2619: Prevent unwanted turn skip if loading a save TWGame with only one unit left to move
 + Issue #2598: DropShip can't mount (load units) if on hexes higher than level 2
 + Issue #2620: Homing Arrow IV no longer deals excessive splash damage to battle armor
 + Data: Fixing issues #2623, #2612, #2603, #2602, #2600, #2582, #2566, #2064, #2036
@@ -1437,7 +1437,7 @@ MEGAMEK VERSION HISTORY:
 + Issue #2523: Ammo explosion should apply 1 hit of feedback damage even with auto-eject
 
 0.47.15 (RC1) (2020-12-14 2330 UTC)
-+ Pr #2458: When loading saved games, drop down box allows selecting of player names present in game
++ Pr #2458: When loading saved games, drop down box allows selecting of player names present in TWGame
 + Issue #1449: Zweihander SPA incorrectly applies critical damage
 + PR #2402: Upgrade to XStream 1.4.14 (Removes warning about illegal reflective operation)
 + Issue #2398: Final position of vehicle after skid (and fall) reported in Round Report but not applied to unit
@@ -1454,7 +1454,7 @@ MEGAMEK VERSION HISTORY:
 + Issue #2430: NPE in doEntityDisplacement
 + PR #2444: Improve MtfFile parsing performance
 + PR #2445: Defensive BV for HarJel III should be -1
-+ Issue #2348: Added option to output game summary images during various phases
++ Issue #2348: Added option to output TWGame summary images during various phases
 + Issue #2413: Improve "Darken hexes outside field of view"
 + Issue #2078: Ignore weapon groups when counting equipment
 + Issues #2405 #2399: Fix scroll wheel oddities
@@ -1462,7 +1462,7 @@ MEGAMEK VERSION HISTORY:
 + Issue #2095: Lineholder I/Machine Gun Array Battle Value Issue
 + PR #2464: LAM BV heat efficiency
 + Issue #2465: Ensure immobility takes into account the crew only when applicable
-+ PR #2474: Fix game freeze when removing last unit during deployment phase with lance movement for that unit type turned on
++ PR #2474: Fix TWGame freeze when removing last unit during deployment phase with lance movement for that unit type turned on
 + PR #2469: BV weapon heat
 + PR #2476: Vehicle BV fixes
 + Issue #2473: Only last player to connect can deploy minefields
@@ -1514,12 +1514,12 @@ MEGAMEK VERSION HISTORY:
 + Issue #2246: "Change Tileset Theme" menu entry disabled outside the Board Editor
 + Issues #2349, #2347. #2339 Various Data fixes
 + Data: New Sprites
-+ Issue #2343: Player units can flee during tornado; fix for blank report when loading game with report sprites in client with report sprites disabled
++ Issue #2343: Player units can flee during tornado; fix for blank report when loading TWGame with report sprites in client with report sprites disabled
 + Issue #2367: Bot can no longer use searchlights with hidden units
 + Issue #2369: Heavy Machine Gun 0/0/0 Range
 + Issue #2300: Head loss with torso-mounted cockpit no longer prevents weapons fire unless other sensor damage has occurred
 + Issue #2371: Odd interaction between Modular Armor and Hardened Armor
-+ Issue #2267: Units are no longer able to fire ammo-based weapons that don't actually have any ammo (thus locking up the game)
++ Issue #2267: Units are no longer able to fire ammo-based weapons that don't actually have any ammo (thus locking up the TWGame)
 + Issue #1955: Mechs can deploy hidden in water as long as they are completely submerged
 + Issue #2377: Fuel Air Bombs size wrong
 + PR #2380: Implement "Oversized" quirk
@@ -1548,7 +1548,7 @@ MEGAMEK VERSION HISTORY:
 + PR #2283: Fixing Large Support Tank isCrippled Check
 + PR #2284: Fix soft-lock when selecting infantry units using infantry weapons
 + PR #2285: Fixing isCrippled check for Super Heavy Tanks
-+ PR #2288: Fixing player name display for game connection dialog from MekHQ
++ PR #2288: Fixing player name display for TWGame connection dialog from MekHQ
 + PR #2289: Fixing Unit Selector Name Generation
 + Issue #2240: Unit Tooltip Work
 + Issue #2214: Generic Infantry Types Data
@@ -1572,7 +1572,7 @@ MEGAMEK VERSION HISTORY:
 + Issue #2141, 2142: Attempts to fix multiple threading-related bot freezes (addressable by kicking and replacing)
 + PR #2148: Out-of-control spheroid DropShips in atmosphere no longer pretend to let the player control movement
 + Data: New Sprites
-+ PR #2132: No more sending malformed game data objects over to the server to exploit deserialization vulnerabilities. Sorry.
++ PR #2132: No more sending malformed TWGame data objects over to the server to exploit deserialization vulnerabilities. Sorry.
 + Issue #2150: Fixing Princess Vehicle Abandonment NPE
 + Issue #2089: Generate Names from Specified Historical Ethnicity
 + PR #2158: Press ctrl-k for a handy summary of keyboard shortcuts
@@ -1606,7 +1606,7 @@ MEGAMEK VERSION HISTORY:
 + Issue #2110: When using the LOS tool, if you somehow manage to select an out-of-bounds hex, it will no longer throw an error
 + Issue #2113: Fixing Alternate Pilot Skill BV Mod Tooltip
 + PR #2111: Another attempt to get Princess to stop firing on crippled units when using forced withdrawal rules
-+ Issue #2115: Prevent NPE when rolling individual initiative for non-existing units belonging to phantom player who's not in the game
++ Issue #2115: Prevent NPE when rolling individual initiative for non-existing units belonging to phantom player who's not in the TWGame
 + Issue #2116: Going hull down from the top-level dropdown menu no longer attempts to sweep mines instead
 + Data: Updated Sprites (This includes some temporary removal of existing Royal Sprites but they will return)
 + Issue #2122: Blazer has incorrect short range AV
@@ -1614,8 +1614,8 @@ MEGAMEK VERSION HISTORY:
 
 0.47.8 (2020-08-02 2300 UTC)
 + Data: New Sprites and numerous Mechset naming fixes.
-+ Issue #2024: Fix possible NREs in AccessibilityWindow during various game events
-+ Issue #2023: Destroying artillery which has rounds in-flight no longer stops the game
++ Issue #2024: Fix possible NREs in AccessibilityWindow during various TWGame events
++ Issue #2023: Destroying artillery which has rounds in-flight no longer stops the TWGame
 + Issue #2020: Respect deployment round for offboard entities
 + PR #2040: Grass theme as default (unnamed) theme
 + Issue #2039: Tripod mechs with an active pilot now properly get +1 to physical attack rolls
@@ -1624,7 +1624,7 @@ MEGAMEK VERSION HISTORY:
 + PR #2058: Fixed missing paren for damaged aero heat sinks in aerospace unit "Mech View"
 + PR #2042: Remove incorrect minimum range penalty on direct fire artillery vs aerospace units
         Enable Princess to use artillery in direct-fire mode (vs both ground and air units), including artillery cannons
-+ PR #2060: Fix game freeze for bot-controlled ejected pilots and hot-dropped infantry on ground maps
++ PR #2060: Fix TWGame freeze for bot-controlled ejected pilots and hot-dropped infantry on ground maps
 + PR #2061: Random Callsign Generator
 + PR #2041: Remove weird 'Hardened' on the equipment section of some Combat Vehicles
 + Issue #2066: Changing year or tech level for DropShip sometimes removes anti-missile systems from assigned bays
@@ -1632,7 +1632,7 @@ MEGAMEK VERSION HISTORY:
 + Data: RAT and Force Gen name fixes.
 + Issue #2054: New Ahne Texture pack (Tileset) for the MegaMek client
 + Issue #2037: New additions to TheJungle for Kaji maps (and some other new maps)
-+ Issue #2071: Battle armor taser attacks against battle armor no longer lock the game up when a BA suit in the target unit shuts down
++ Issue #2071: Battle armor taser attacks against battle armor no longer lock the TWGame up when a BA suit in the target unit shuts down
 + Issue #2028: Units now visually indicate damage levels
 + PR #2079: Update dermal armor implant to use IO rules for conventional infantry
 + PR #2082: Wasp and Stinger LAMs are now more rare when using RAT generator; Wasp Mk I LAM now has actual bomb bays instead of cargo bays
@@ -1904,10 +1904,10 @@ v0.46.0-rc.1 (2019-07-23 0300 UTC)
 + Issue #1090: VGL Unable to Fire - Out of Arc
 + Issue #1375: Heat damage not correctly applied to all unit types
 + PR #1385: Lack of deployment zone for entity no longer causes deployment turn to be ignored when loading MUL.
-+ PR #1389: Adding units mid game (via rat/mul) to an observer player is no longer possible as it causes the game to lock up
++ PR #1389: Adding units mid TWGame (via rat/mul) to an observer player is no longer possible as it causes the TWGame to lock up
 + MegaMekLab Issue #314: Fixed availability ratings for inner sphere LMG and ammo
 + Issue #1249: Industrial TSM now applies 2x damage to appropriate melee attacks
-+ Issue #1352: Changing Planetary Conditions prior to starting a new game causes a -40C without input
++ Issue #1352: Changing Planetary Conditions prior to starting a new TWGame causes a -40C without input
 + Issue #1400: Fleeing while carrying a non-existent MekWarrior no longer causes a soft-lock
 + Data: Corsair fighter once again shows proper sprite
 + Issue #1407: Attacks on transported battle armor no longer cause soft lock
@@ -1946,7 +1946,7 @@ v0.45.3 (2019-02-12 0500 UTC)
 + PR #1214: Prevent players from being able to control their out-of-control spacecraft when the default flight path would take the spacecraft off board.
 + Data: New Sprites
 + PR #1212: Adds new Edge options for Aerospace units
-+ Issue #1218: Fixed ProtoMek-related game-stopping server crash
++ Issue #1218: Fixed ProtoMek-related TWGame-stopping server crash
 + Data: Adding the Saxarba HQ Tileset.
 + Issue #1194: C3i function should apply to boosted cyber comm and enhanced multi model sensor (not standard multimodal sensor) implants per IO
 + PR #1227: Enable Princess to unjam weapons, turrets and rapid-fire autocannons (RACs, etc).
@@ -1992,7 +1992,7 @@ v0.45.1 (2018-09-03 2300 UTC)
         on would ignore "forced withdrawal" rules and keep firing with its crippled units.
 + Data: New Sprites and some unit fixes.
 + PR #1118: Expose MULParser.parse(Element) for MekHQ perf improvements.
-+ Issue #612: [Feature] Year setting in various random unit generation mechanisms now gets set to the game year whenever that changes.
++ Issue #612: [Feature] Year setting in various random unit generation mechanisms now gets set to the TWGame year whenever that changes.
 + PR #1068: Advanced Aerospace construction data and unit fixes.
 + PR #1134: pilot portrait option for tooltip
 
@@ -2001,7 +2001,7 @@ v0.45.0 (2018-08-02 0200 UTC)
 + Issue #1008: When adding units through Add A Combat Unit dialog adds two instead of one when using enter key
 + PR #989: Errata - Range Master SPA no longer applicable to LOS range
 + PR #1001: [Feature] Prototype improvements to infantry pathfinding allowing Princess to make significantly better use of infantry than previously.
-+ PR #1013: Defer calculating initial BV when adding multiple entities to game.
++ PR #1013: Defer calculating initial BV when adding multiple entities to twGame.
         Fixes bug that disconnects C3 networks when loading from MUL of any unit loaded before the C3 master.
 + Issue #1027: Off-board Infantry Field Artillery "Target Out of Arc"
 + Issue #1028: Infantry TAG has 0 range
@@ -2269,7 +2269,7 @@ v0.43.4 (2017-10-01 11:00 UTC)
 + Issue #620: Image Atlasing breaks tilesets that flip images
 + TileMapImageLoader now fails if the file it's trying to load doesn't exist
 + Issue #609: Ice not working with unit displacement correctly
-+ Added Random Skills dialog button to Random Army Dialog (helps if using to reinforce mid-game)
++ Added Random Skills dialog button to Random Army Dialog (helps if using to reinforce mid-TWGame)
 + Issue #624: Mechs with destroyed gyros can't eject
 + Issue #579: Reflective armor takes strange damage from physicals
 + Issue #625: Initial BV in Entity tooltip can be wrong
@@ -2411,7 +2411,7 @@ v0.43.0 (2017-02-13 03:30 UTC)
 + Adding some references to missing MD Infantry stuff. Names only not implemented for play.
 
 v0.42.0 (2017-01-01 14:00 UTC)
-+ Issue #441: Fled units not being saved at the end of the game
++ Issue #441: Fled units not being saved at the end of the TWGame
 + Data/Feature: Turret Project Part 3 - Major additions to the number and types of turret. Sprites still in progress.
 + Issue #444: Client dies during the fire phase
 
@@ -2539,7 +2539,7 @@ v0.41.22 (2016-08-26 03:00 UTC)
 + Adjusted starting fires modifiers for buildings to match TO pg44
 + Issue #145: Infantry unimpacted by fire in buildings if above HL1
 + Issue #313: Altitude bombing: Cannot bomb more than one hex
-+ Issue #314: Dive bomb resolution shows blank after first attack during game
++ Issue #314: Dive bomb resolution shows blank after first attack during TWGame
 + Issue #160: Mechs switching hot-loading LRMs on/off during battle
 + Issue #315: Movement processing doesn't initialize current location, which
     could lead to skid checks not being made for turns on starting hex, or could
@@ -2612,7 +2612,7 @@ v0.41.20 (2016-06-27 02:00)
 
 v0.41.19 (2016-06-05 22:40 UTC)
 + Issue #233: NPE Displaying Client Options when no skins present
-+ Issue #21: SPAs and Unit Quirks not displaying after loading saved game
++ Issue #21: SPAs and Unit Quirks not displaying after loading saved TWGame
 + Issue #208: Incorrect color when reversing a mech with lateral shifts
 + Issue #224: Backup MP cost possibly incorrect when mech is prone
 + Issue #217: Zip Line Dialog sometimes displayed when it shouldn't be
@@ -2645,7 +2645,7 @@ v0.41.18 (2016-05-26 19:30 UTC)
 + Issue #158 Missing RATs From FM Warden Clans (Thanks to xStormforgex)
 + Issue #162: "The armor panel is null." warning during deployment phase
 + Issue #165: NPE in Compute.canCompleteNodePath
-+ Issue #157: When /reset used from a saved game, you lose map size options
++ Issue #157: When /reset used from a saved TWGame, you lose map size options
 + Issue #143: Super Heavy Endo Steel Weight Calculating wrong (in MML)
 + Issue #132: Make pilot death more obvious in head destruction.
 + Feature: Added a client settings option to toggle the use of board soft centering
@@ -2745,7 +2745,7 @@ v0.41.15 (2016-02-21 14:15 UTC)
 + Issue #27: Shift-letter keys don't appear to work in ChatterBox2
 + Data: New Sprites and Unit Fixes.
 + Issue #6: Issues with path separators for boards
-+ Bug: CustomUnitDialog was using Entity's TL for verification, not game TL
++ Bug: CustomUnitDialog was using Entity's TL for verification, not TWGame TL
 + Bug: Server appears unresponsive during a client feedback request
 + Issue #31: Ejected Vehicle Crews Should Count as Crippled
 + Bug: Quirks could not be assigned to melee weapons
@@ -2794,7 +2794,7 @@ v0.41.12 (2015-12-23 2:48 UTC)
 + Bug: Icarus II unit icon not showing up
 + Bug [#4648]: "add a combat unit" stops working after you close the window
 + Data: New Sprites, OTP Capellan Crusades, unit fixes.
-+ Bug [#4650]: ASFs not getting free turn between game turns
++ Bug [#4650]: ASFs not getting free turn between TWGame turns
 + DropShip cost summary now properly displayed
 + Bug [#4655]: Vehicles falling into basements cannot move
 + Bug: Basement collapsed i18n entry for tooltip incorrect
@@ -2824,7 +2824,7 @@ v0.41.12 (2015-12-23 2:48 UTC)
 + Bug [#4668]: UnitDisplay/Minimap positions save poorly with multi-monitors
 + Data: New Sprites and unit name fixes. Update to Canon Quirks.
 + Bug [#4670]: Clan units with ammunition won't load
-+ Bug [#4669]: Players connecting mid-game reset initiative
++ Bug [#4669]: Players connecting mid-TWGame reset initiative
 
 v0.41.11 (2015-11-15 16:50 UTC)
 + Data: New Sprites.
@@ -2835,7 +2835,7 @@ v0.41.11 (2015-11-15 16:50 UTC)
 + Added RISC Emergency Coolant System
 + Bug [#4637]: Princess NPE in Precognition
 + Bug [#4636]: Type filter in Unit selection missing 'All', unless 'unofficial'
-    is selected in game options
+    is selected in TWGame options
 + Bug: Accidental fall from above check fails when target is standing in water
 + Bug: AdvancedSearchDialog query doesn't clear when UnitSelectorDialog closed
 + Bug: AdvancedSearchDialog, possible to select weapon & eq table simultaneously
@@ -2844,13 +2844,13 @@ v0.41.11 (2015-11-15 16:50 UTC)
 + Bug: listSaves command was looking for .sav and not updated .sav.gz
 + Added function to possibly ignore key presses, used from MekWars
 + Data: New Sprites.
-+ Bug: /load command requires players to disconnect/reconnect after game loads
++ Bug: /load command requires players to disconnect/reconnect after TWGame loads
 + Bug [#4638]: Advanced Aero Rules Broken in 41.10 (specifically with Evade)
 + Bug: Issues with updating double-blind visuals information
 + Feature: Implemented RISC APDS
 + New Sprites/Couple of unit fixes.
 + Feature [#1407]: Default tripod icon
-+ Default game year set to 3150
++ Default TWGame year set to 3150
 + Errata: BA Tube Artillery should allow up to 8 shots per crit, in 2-shot clips
 + New Sprites
 + Bug [#4644]: Player names not visible if player color is selected as "white"
@@ -2871,7 +2871,7 @@ v0.41.10 (2015-10-12 00:11 UTC)
 + Bug [#4628]: Battle Value of the Void-Signature System
 + Feature [#555]: Double-clicking locations in Armor tab selects that location
     in Systems tab
-+ Bug [#4292]: Double blind, enemy BV never shown (now game option to show bv)
++ Bug [#4292]: Double blind, enemy BV never shown (now TWGame option to show bv)
 + Bug: Movement Envelop and Firing Arcs sometimes remain between phases/turns
 + Bug [#4234]: Added Mine Clearance missile munitions
 + Bug [#4219]: Issues with stacking violations and MovePaths
@@ -2893,7 +2893,7 @@ v0.41.9 (2015-09-14 01:25 UTC)
 + Bug: Wind direction was actually wind strength
 + Data: New Sprites
 + Bug [#4619] Mech Icon not displayed in MM and new sprites
-+ ExternalIds added to all entities and crews in constructor for better end game tracking
++ ExternalIds added to all entities and crews in constructor for better end TWGame tracking
 + Bug: neverDeployed in MULParser defaulting to false when tag is missing
 + Bug: ejected crews are having isEjected set to false on the turn after ejection
 + additional conditions for Entity.canEscape to handle immobilized units and legged/hipped mechs
@@ -2910,7 +2910,7 @@ v0.41.9 (2015-09-14 01:25 UTC)
 v0.41.8 (2015-09-01 12:10 UTC)
 + Bug: EjectedCrew entities not getting pilot processed in by MulParser
 + Bug: Key binds will now function when parsing defaultKeyBinds.xml fails
-+ Mul files created at end of game now include information about salvage, devastated, and ejected entities
++ Mul files created at end of TWGame now include information about salvage, devastated, and ejected entities
 + MULParser can now read EjectedCrew entities
 + removed separate ejection vector from MULParser
 + Added kill records to the MUL file
@@ -3155,7 +3155,7 @@ v0.41.4 (2015-05-31 16:45 UTC)
 + Data: New Sprites,Unit Fixes,and New Map
 + Bug: If pressing a repeating key (like scrolling) when Done is clicked, scroll
     command gets stuck repeating
-+ Bug: Opening board editor before playing a game could break key binds
++ Bug: Opening board editor before playing a TWGame could break key binds
 + Princess now evaluates (and executes) kicks.
 + Bug: HVAC explosions do no actual damage.
 + Patch [#481]: Show deployment zones when designating arty autohit
@@ -3564,7 +3564,7 @@ v0.39.4 / v0.40.0RC2 (2014-12-14 19:00 UTC)
 + Bug [#4355]: ASFs are unable to strafe hexes with friendly ASFs
 + Bots will now issue /allowTeamChange in response to /joinTeam requests
 + Updated Server messages for /allowTeamChange to make it clear who voted
-+ Bug: Extreme range rule check box was disabled in game options dialog
++ Bug: Extreme range rule check box was disabled in TWGame options dialog
 + Bug [#4361]: Out of control ASFs do not have access to the ASF movement option
 + Bug: Unexpected connection closing can cause client to enter an infinite loop
 + Bug: Added showScrollBar to SkinSpec specifications, added plainSkinScrollBars
@@ -3807,7 +3807,7 @@ v0.39.1 (2014-08-26 14:56 UTC)
     element falls back to the paintComponent method of its parent, which enables
     a plain skin to be specified by leaving out all icons.
 + Feature: Added ability to select a skin specification file in  the client
-    settings dialog.  Note: this only takes effect before a game is started
+    settings dialog.  Note: this only takes effect before a TWGame is started
 + Feature: SkinSpecification/MegamekBorder now supports a no border mode
 + Feature: SkinSpec/MegamekButton now supports scaled background images in
     addition to tiled ones
@@ -3854,7 +3854,7 @@ v0.39.1 (2014-08-26 14:56 UTC)
     Fluff Filename: Grasshopper GHR-7K Gravedigger.gif
 + Data: New Images and some unit fixes. Includes additional wreck images.
 + Data: New Images and fix for bug [#4209]
-+ Bug: Added a new game event: GameVictoryEvent, which has a corresonding
++ Bug: Added a new TWGame event: GameVictoryEvent, which has a corresonding
     GameListener.gameVictory method.  This event is called when the
     PHASE_VICTORY is ending, but before Game.reset is called.  This fixes a bug
     with MekHQ (and likely MekWars as well)
@@ -3863,7 +3863,7 @@ v0.39.1 (2014-08-26 14:56 UTC)
 + PlayerSettingsDialog now displays the name of the player being configured
 + Server sends a chat to all players when a player changes their player-wide
     initiative bonus
-+ PlayerSettingsDialog can now be accessed mid-game so that players can adjust
++ PlayerSettingsDialog can now be accessed mid-TWGame so that players can adjust
     their settings, like player-wide initiative bonus.  This is to help support
     conditional initiative bonuses, like in Total Chaos
 + Feature [#1264]: Display proper probabilities with Natural Aptitude: Gunnery
@@ -3917,7 +3917,7 @@ v0.39.1 (2014-08-26 14:56 UTC)
 + Bug [#4224]: Client still thinks an Entity is in the dest hex during movement
     phase
 + Feature: Natural Aptitude Piloting
-+ Feature [#1237]: Save/Load game settings in Megamek
++ Feature [#1237]: Save/Load TWGame settings in Megamek
 + Added consideration for Natural Aptitude Piloting & Gunnery to Princess (I
     think I got it all)
 + Data: New Images, Osteon Fix, Wreck Set Fix and RAT fixes
@@ -4025,7 +4025,7 @@ v0.39.0 (2014-07-02 21:14 UTC)
 + Bug: Inf and Protos move multi option could cause extra turns to be added
 + Bug [#4178]: Must click in the wrong place to use the Unit Overview on maps
     that are thinner than the MegaMek window
-+ Feature: Load command now aware of saved game file extensions, like LocalLoad
++ Feature: Load command now aware of saved TWGame file extensions, like LocalLoad
 + Bug [#4220]: Made Game's gameListeners state variable transient
 
 v0.38.0-dev (2014-07-02 20:27 UTC)
@@ -4150,13 +4150,13 @@ v0.37.11-exp (2014-05-05 15:47 UTC)
     handling
 + Feature [#1243]: Client Feedback Request
 + Bug [#41]: steping out of a domino effect not possible
-+ Bug: Bot receiving CFR would hang game: both bots not reply with "no action"
++ Bug: Bot receiving CFR would hang TWGame: both bots not reply with "no action"
     when asked if they want to step out of a domino effect.
 + Bug [#4104]: [experimental] Context menus are out of alignment
 + Bug [#4105]: Make a clear distinction between players present in the lounge
     and those joined aftwards
 + Feature: Added the ability for players to join a team via the /joinTeam
-    command, this also allows players who join in the middle of a game to join
+    command, this also allows players who join in the middle of a TWGame to join
     a team and reinforce units (or have units given to them via /traitor)
 + Bug: RandomUnitGenerator was horribly memory inefficient
 + Removed code to dispose of RandomUnitGenerator, since it no longer takes up
@@ -4184,7 +4184,7 @@ v0.37.11 (2014-05-05 15:47 UTC)
 + Bug: Nail/Rivet Gun always out of range.
 + Bug: Aimed shots at immobile targets possible with iNarc/iATM.
 + Bug [#3998]: Ammo & Equipment Limits: Ammo tech level is now determined by the
-    game year instead of the unit's creation year
+    TWGame year instead of the unit's creation year
 + Bug [#3301]: Allow Advanced Ammunition - there are now two options: one allows
     just advanced ammo, while the second option enables advanced, experimental,
     and unofficial ammo
@@ -4264,7 +4264,7 @@ v0.37.10 0.38.0 Release Candidate 2 (2014-04-08 02:26)
 + Bug: Saving board image with FoV tool on would cause a hex to be highlighted
 + Saving a board image needlessly uses a 3rd party PNG encoder, changed code to
     use javax.imageio.ImageIO
-+ Bug [#4026]: Intermittent Vehicle Attack Issue with tacops vehicle crews game
++ Bug [#4026]: Intermittent Vehicle Attack Issue with tacops vehicle crews TWGame
     option
 + Data: Updated Camo Images.
 + Data: New Images.
@@ -4412,7 +4412,7 @@ v0.37.9, 0.38.0 Release Candidate 1 (2014-03-29 14:25 UTC)
     for escort and headhunting type missions.
 + Bug [#4072]: Entity sprites "blinking" out of drawing since revisions after
     r10659.
-+ Bug: Changing the AP weapon mounted would cause a crash when starting the game
++ Bug: Changing the AP weapon mounted would cause a crash when starting the TWGame
     (I had to change Entity.getTotalWeaponList to return the actual list and
     not a copy, which appeared to not be necessary)
 + Bug: Changing ammo type on BA would change the number of shots selected
@@ -4421,7 +4421,7 @@ v0.37.9, 0.38.0 Release Candidate 1 (2014-03-29 14:25 UTC)
 + Bug [#3999]: Renamed all .BLK to .blk
 + Data: New Images and Units.  Fixes to RATs.
 + Bug: Tanks with stunned crews could spot for indirect fire
-+ Bug [#3672]: Starting a scenario resets all game options to default
++ Bug [#3672]: Starting a scenario resets all TWGame options to default
 + Fixed an issue with Princess attempting impossible physical attacks.
 + Bug [#3669]: Random Names bad encoding (major refactorization of MUL parsing)
 + Bug: Reading in bomb choices from a MUL file threw an
@@ -4492,7 +4492,7 @@ v0.37.8 (2014-02-22 22:57 UTC)
 + Tweaked Herd Mentality values again as Princess still shows a tendency to
     spread out too much when running a mix of fast and slow units.
 + Bug [#4006]: Facing after fall while moving was wrong
-+ show damage level should be a client setting, not a game option
++ show damage level should be a client setting, not a TWGame option
 + Bug [#4040]: Unable to match AP weapon mount for BA 0.37.8-dev
 + Bug [#4041]: DWP drop declaration repeated every end phase 0.37.8-dev
 + Started refactoring the FireControl class for readability and testability.
@@ -4552,7 +4552,7 @@ v0.37.8 (2014-02-22 22:57 UTC)
 + Bug: Server.crashVTOLorWiGE(7) had an off-by-one error for the facing table
 + Bug [#4006]: hit table when crashing during skid
 + Bug [#4049]: No unit to move error with Meks move as a lance
-+ Bug [#4048]: Ejected units have no cause of destruction at end of game report
++ Bug [#4048]: Ejected units have no cause of destruction at end of TWGame report
 + Added Clan PPC Capacitor
 + Adjusted default player colors: yellow and white are now at the end, as they
     aren't very readable
@@ -4657,7 +4657,7 @@ v0.37.7 (2014-02-11 02:57 UTC)
     needs to have an :AWP tag added to it.  Added a new state to Mounted,
     isAWPMounted along with a getter and setter.  MechFileParser.postLoadInit
     was updated to link AP Mounts with APM Mounted equipment in the same loc.
-+ Bug [#4026]: Intermittent Vehicle Attack Issue with tacops vehicle crews game
++ Bug [#4026]: Intermittent Vehicle Attack Issue with tacops vehicle crews TWGame
     option
 + Data: More BA Unit Fixes
 + Bug [#4038]: Magscan option missing popup description 0.37.7-dev
@@ -4943,7 +4943,7 @@ v0.37.2-exp (2014-01-01 17:50 UTC)
 + Added key binds for previous target/next target (Shift-Q/Shift-E)
 + Added key binds for previous unit/next unit (Z/C)
 + Added 'Key Binds' panel to Client Settings dialog.  Keybinds can now be
-    edited in game and will be saved to an xml file
+    edited in TWGame and will be saved to an xml file
 
 v0.37.2 (2014-01-01 17:32 UTC)
 + Bug [#3957]: New (Unofficial) Case Rule Duplicated
@@ -5228,7 +5228,7 @@ v0.37.0 (2013-12-21, 13:13 UTC1+)
 + Bug: [#3956] Bot hangs on Divide By Zero error 0.37-dev
 
 v0.36.0 (2013-10-25, 00:26 UTC+2)
-+ Bug [#3892]: Ejected MekWarrior Takes Sprite of a 'mech from previous game
++ Bug [#3892]: Ejected MekWarrior Takes Sprite of a 'mech from previous TWGame
 + Bug: Adjusted Server.saveGame so that the whole XML isn't stored in memory
     and is instead streamed to a file.
 + Change default max heap size to 1024m
@@ -5310,7 +5310,7 @@ v0.35.43 (0.36.0 Release Candidate 3)
 + Bug [#3867]: Potential infinite loop in Princess.calculateMoveTurn
 + Bug: Fixed a potential NPE in FiringDisplay
 + Changed the minimum size of the MechSelectorDialog to 640x480 (from 800x600)
-+ Added a label in the ChatLounge that displays the current game year
++ Added a label in the ChatLounge that displays the current TWGame year
 + Added a tooltip to the map summary that lists the currently selected maps
 + Bug: Manually shut down units skipped as "ineligible"
 + Data: Unit and a couple of image fixes
@@ -5351,7 +5351,7 @@ v0.35.42 (0.36.0 Release Candidate 2) (2013-20-09, 21:50 UTC-5)
     and so bugged MechView
 + Bug: Fixed an ArrayIndexOutOfBounds exception when the Load button is pressed
     when no valid units can be loaded
-+ Bug [#3854]: Units without bays cannot load units during the game
++ Bug [#3854]: Units without bays cannot load units during the TWGame
 + Adding tech level changes for FM3145/TRO3145 Print.
 + Bug: Fixes to Weapon/Misc Equipment and Ammo Dates.
 + Data:Unit fixes and duplicate removal
@@ -5435,7 +5435,7 @@ v0.35.41 (0.36.0 Release Candidate 1) (2013-04-09, 00:16 UTC+2)
 + Bug: verifier does not check for ECM for stealth armor/void sig armor
 + Bug: [3812]: Active Probe Incorrect Intro Date
 + Bug: Clear and Load Unit List menu items non-functional in lounge
-+ RFE: Reinforcements menu option to load reinforcements mid-game
++ RFE: Reinforcements menu option to load reinforcements mid-TWGame
 + Bug: Next button doesn't always cycle correctly
 + Bug: Capacities aren't checked when loading multiple units in the ChatLounge.
     This can lead to exceptions in Server.
@@ -5468,7 +5468,7 @@ v0.35.41 (0.36.0 Release Candidate 1) (2013-04-09, 00:16 UTC+2)
 + Bug [#3816]: Bombs cannot be used with fighter squadrons
 + Bug: Timestamp comparision backwards
 + Bug: Server.sendLoadGame() modification for XML saves only incorrect
-+ Bug: transports added to an Entity don't have their game state variable set,
++ Bug: transports added to an Entity don't have their TWGame state variable set,
     which can lead to NPEs
 + Bug: Jumping backwards across elevation changes with mechanical jump boosters
     could cause PSR nags, although no PSRs would be rolled
@@ -5495,7 +5495,7 @@ v0.35.41 (0.36.0 Release Candidate 1) (2013-04-09, 00:16 UTC+2)
     entity Ids instead of Entity references.  Many of the unload methods were
     trying to remove an Entity object from a Vector<Integer> which caused
     problems
-+ Bug: Improper clearing of minefields on game reset could lead to NPEs in
++ Bug: Improper clearing of minefields on TWGame reset could lead to NPEs in
     subsequent games.
 + Bug [#3824]: Clicking on a hex won't path to that hex in certain circumstances
 + Bug [#3381]: Compute.inVisualRange and inSensorRange don't consider altitude
@@ -5621,7 +5621,7 @@ v0.35.39 (2013-06-18, 23:00 UTC+2)
 + Bug: ArrayIndexOutOfBoundsException when loading large support vees
 + Bug 3727: Large vehicle location/name mismatch
 + Bug: BA BV wrong for units with DWP
-+ Bug: The server wasn't being killed when a game fails to load, leaving the socket in use
++ Bug: The server wasn't being killed when a TWGame fails to load, leaving the socket in use
 + Data: More Unit fixes, Reorganized Vehicles Folder and new image.
 + Partial fix for Bug 3731: Hex class inefficiently stores terrain information
 + Data: Fixes to Narc-/Artemis-equipped units lacking compatible missile ammo
@@ -5631,7 +5631,7 @@ v0.35.39 (2013-06-18, 23:00 UTC+2)
 + Bug 3731: Hex class inefficiently stores terrain information (Note: this breaks save compatibility)
 + Bug: no collapse check when moving in building
 + Bug 3723: defaultQuirks.xml missing STK-4P and STK-6M Stalker models
-+ Bug 3730: Potential Race condition in RandomNameGenerator when loading a saved game before units are done loading
++ Bug 3730: Potential Race condition in RandomNameGenerator when loading a saved TWGame before units are done loading
 + Patch : I changed how the MechSummaryCache is written.  It's now a binary file instead of a text file.  This is part of the code in Patch #450
 + Bug 3037: "Done" button failes to work after reset
 + Bug 3738: Startup button disabled for shutdown dropships
@@ -5666,7 +5666,7 @@ v0.35.39 (2013-06-18, 23:00 UTC+2)
 + Data: Beginning of Date corrections for all units.
 + Bug 3614: (Aero) Side-Slip Rules Incorrect on Ground Maps
 + Bug 3625: "no units to move" after assault drop; dropped unit frozen at altitude after skip
-+ Bug: If a game is loaded that is beyond the deployment phase, the RNG, RUG and MechSummaryCache do not get wiped out.
++ Bug: If a TWGame is loaded that is beyond the deployment phase, the RNG, RUG and MechSummaryCache do not get wiped out.
   This leads to a lot of extra memory being used.  These are normally wiped out in Client, when the phase changes to deployment.
 + Data: More Mech Date fixes.  Removal of a few duplicate units and adding a couple of missed Omni Variants
 + Cleaned up a bunch of unclosed handlers creating memory leaks. Added some warning suppression to a few unused things.
@@ -5758,7 +5758,7 @@ v0.35.38 (2013-05-07, 01:44 UTC+2)
 + Bug: extended LRM 20 should have heat 12
 + Bug: clan artillery ammo BV wrong
 + Bug: CASE II in torso should prevent explosive BV reduction in adjacent leg
-+ Bug 3702: changing game settings resets camo selection dialog
++ Bug 3702: changing TWGame settings resets camo selection dialog
 + Start to allow multiple techlevels per equipment, based on year, for TRO:Prototypes tech progression
 
 v0.35.37 (2013-04-27, 00:35 UTC+2)
@@ -5840,7 +5840,7 @@ v0.35.36 (2013-04-13, 23:23 UTC+2)
 + Bug 3581: BV calculation for vehicles with dead crew
 + Bug 3656: Hardened armor does not provide the -2 bonus for all penetrating
     critical hits
-+ Bug 3592: Defeated player stuck as observer in lobby after game ends
++ Bug 3592: Defeated player stuck as observer in lobby after TWGame ends
 + Bug 3690: The LOS tool doesn't appear to consider wooded hexes when determing
     whether LOS is blocked or not
 + Bug 3496: Hotkeys failing to work
@@ -5958,7 +5958,7 @@ v0.35.35 (2013-03-14, 22:49 UTC+1)
 + Bug: Enemy units ignored elevation when picking up MekWarriors.
 + Bug 3575: Mud Takes Priority in Minimap
 + Bug: Next Unit button skipping units
-+ Bug 3674: Null armor panel on loading save game
++ Bug 3674: Null armor panel on loading save TWGame
 + Bug 2509: units should remember last turn movement (pavement for skid)
 + Bug: fail infantry assault drop as per paratroopers (needs work)
 
@@ -6028,8 +6028,8 @@ v0.35.33 (2012-11-26, 22:19 UTC+1)
     MHQ
 + check for null mounted on BipedMech#hasVibroBladeInLocation (still don't know
     why a null mounted was there though)
-+ Bug: RAT files not reloading when the game is reset
-+ Bug: random name generator losing preferences when game reset
++ Bug: RAT files not reloading when the TWGame is reset
++ Bug: random name generator losing preferences when TWGame reset
 + added tech rating, availability codes, and dates to extended equipment
     database
 + base getNCrew and getNPassenger methods in Aero
@@ -6194,7 +6194,7 @@ v0.35.32 (2012-09-30, 22:09 UTC+2)
     levels to be reported after a fall.
 + Bug 2881155, Patch 3557211: artillery pre-targeted hex display
 + Patch 3568183: Ignore physical damage in path selection for Clan units when
-    using no clan physical attacks game option
+    using no clan physical attacks TWGame option
 + Patch 3569325: updated basement patch
 + Patch 3570935: Princess: Consider MASC failure in evaluating Paths
 + better C3 network reporting in chat lounge
@@ -6242,7 +6242,7 @@ v0.35.31 (2012-07-11, 19:54 UTC+2)
 + Added skipping of array linked MGs to getFirstWeapon()
 + Bug 3536174: Artillery Units can only fire "one" artillery...
 + Bug: Dropships do no damage
-+ Bug 3536170: Beginning the game shutdown with tanks they auto-start...
++ Bug 3536170: Beginning the TWGame shutdown with tanks they auto-start...
 + Bug: Missed png for the directory filter fix
 + Bug 3536356: Princess jump movement undervalued due to mixing for- and
     backward movement (which normal players can't even do).
@@ -6467,7 +6467,7 @@ v0.35.29 (2012-04-02)
 + Bug 3472686: Saving unit list including retreated units saves from all
 + Bug 3284019: Chippewa W7T missing SRM ammo
 + Bots now save their Ending Forces MUL file automatically into the logs folder
-    at the end the game just prior to disconnecting themselves.
+    at the end the TWGame just prior to disconnecting themselves.
 + clan CASE/CASE II in arms rules clarification (rear armor of adjacent torso
     should get blown)
 + Bug 3510281: CASE & CASE II incorrectly implemented
@@ -6555,12 +6555,12 @@ v0.35.27 (2012-01-10, 20:41 UTC+1)
 + Use Marauder 9M image for Marauder 9M2
 + Bug 3446718: Rounding errors in crew quarters calculations
 + Bug 3441029: displaced VTOL falling
-+ MagLev engine and Rail movement modes for construction purposes, no game rules
++ MagLev engine and Rail movement modes for construction purposes, no TWGame rules
     yet
 + Bug: units switching from JJ to IJJ always report as invalid in TestMech
 + Fixed possible NPE in Princess's BotGeometry.CoordFacingCombo.equals()
 + Bug: Calling KickAttackAction.getDamageFor() for infantry could lock up the
-    game during the physical attack phase
+    TWGame during the physical attack phase
 + Bug: WiGE BV error
 + Bug: Princess shouldn't consider offboard or undeployed units in
     Precognition.java
@@ -6581,9 +6581,9 @@ v0.35.27 (2012-01-10, 20:41 UTC+1)
     imagers
 + Bug: evading should mean the unit is running, even when using less than
     run MP
-+ Bug: ammo dump not before round X game option was not working in swing UI
++ Bug: ammo dump not before round X TWGame option was not working in swing UI
 + Bug: possible to dump ammo when carrying BA on back in swing UI
-+ Bug 3463526: bot prevents new game starting
++ Bug 3463526: bot prevents new TWGame starting
 + removed generics for java 6 compatability (at least until OSX releases java 7)
 + Coolant ammo for fluid guns and vehicle flamers
 + Errata: industrial mechs without advanced firing control now get a 0.9 mod on
@@ -6652,7 +6652,7 @@ v0.35.25 (2011-10-09, 15:00 UTC+2)
 + unofficial option to reduce the velocity mod for StratOps Advanced
     Anti-Aircraft fire
 + Bug 3279878: Grounded dropships and double-blind
-+ Bug 3358252: Rollever text is for incorrect game option
++ Bug 3358252: Rollever text is for incorrect TWGame option
 + Bug 3358460: Dropship destroyed by fire
 + re-organized RAT folder structure  (Source > Faction > Type > Weight Class)
 + improvements to RandomArmyDialog gui
@@ -6962,7 +6962,7 @@ v0.35.21 (2011-01-06, 21:45 UTC+1)
 + Manei Domini TSM Implant
 + Bug 3104045: Piranha Missile
 + Bug 3080525: Infantry Sneak
-+ Separate TacOps Sensor game option, so players can use double-blind by LoS
++ Separate TacOps Sensor TWGame option, so players can use double-blind by LoS
     only
 + Bug: TSM run MP not correct
 + Bug: Only autofire searchlight when unit has a searchlight
@@ -6990,10 +6990,10 @@ v0.35.21 (2011-01-06, 21:45 UTC+1)
 + proximity damage in rear arc of aerodyne dropships taking off
 + Bug: grounded aerospace units flank MP not halved
 + Bug: Dropships getting 0-range ECM in atmosphere
-+ unofficial game option to allow smoke drift even with no wind (call it a
++ unofficial TWGame option to allow smoke drift even with no wind (call it a
     'breeze')
 + adjustments to landing/takeoff lengths for STOL-equipped aircraft
-+ added a check for secondary positions to game#getEntities(Coords c)
++ added a check for secondary positions to TWGame#getEntities(Coords c)
 + stacking limits for Large Support Vees
 + grounded dropships act like Large Support Vees for stacking purposes
 + grounded dropships block LoS
@@ -7319,7 +7319,7 @@ v0.35.16 (2010-06-19. 16:28 UTC+2)
 + Updated TestMech to check for new illegal equipment combos.
 + Bug: XXL Engine weight sometimes wrong
 + Bug: Mace has wrong weight in verifier
-+ Added full-head ejection system (no game rules yet)
++ Added full-head ejection system (no TWGame rules yet)
 + Added laser insulators
 + Bug: armor weight sometimes not correct, stupid floating point inaccuracy
 
@@ -7341,7 +7341,7 @@ v0.35.14 (2010-04-31, 21:20 UTC+2)
     tile images.
 + Atmospheric drops
 + Bug: airborne aeros getting hit by crashing units
-+ Bug: dropping units on atmospheric map should exit the game when they land
++ Bug: dropping units on atmospheric map should exit the TWGame when they land
 + falling damage for infantry and BattleArmor
 + check building collapse on assault drop
 + Bug: bay doors reseting to 1 after first drop
@@ -7369,7 +7369,7 @@ v0.35.14 (2010-04-31, 21:20 UTC+2)
 + Improved button layout for deployment and movement (rest coming soon)
 + Updated VSP and MagShot External Names
 + Bug 2980974: weapons report truncated
-+ unofficial game option to modify maximum to-hit penalty for Ghost Targets
++ unofficial TWGame option to modify maximum to-hit penalty for Ghost Targets
 + added support vehicle targeting systems
 + Ghost Targets +4 maximum is for PSR modifier not to-hit modifier
 + Bug: VTOLs assault-dropping on deployment
@@ -7618,7 +7618,7 @@ v0.35.9 (2009-11-09, 19:32 UTC+1)
 + weapons and ammo in HTML tables in MechView
 + Bug: duplicate entity counter not updating properly
 + removed test portraits
-+ re-added game options button
++ re-added TWGame options button
 + Bug: HMV loader not setting internal structure type correctly
 + MechView improvements (font, ammo table, equipment table)
 + separate MechView.java for AWT (plain text) and swing (HTML)
@@ -7760,7 +7760,7 @@ v0.35.6 (2009-08-17, 15:23 UTC+2)
 + fluff fields for Equipment (tech rating, availability, and introduction/
     extinction dates)
 + tech ratings for all autocannons
-+ salvage.mul printed to log directory at game end
++ salvage.mul printed to log directory at TWGame end
 + Bug 2836883: To-hit modifier for units on top of the same multi-hex building
 + Bug 2835900: BA w/ Magnetic Clamps should default to mount inside on a Vehicle
     w/ transporter
@@ -7923,7 +7923,7 @@ v0.35.3 (2009-06-27, 20:37 UTC+2)
 + Space suits, DEST and Sneak suits (infantry armor)
 + localized infantry armor labels
 + infantry BV adjusted for infantry armor
-+ added quirks with no game effects for completeness
++ added quirks with no TWGame effects for completeness
 + Weapon Quirks
 + Accurate Weapon Quirk
 + Inaccurate Weapon Quirk
@@ -7993,7 +7993,7 @@ v0.35.2 (2009-06-18, 16:00 UTC+2)
 + Reinforced Legs Quirk
 + Weak Legs Quirk
 + removed level 3 (MaxTech) targeting systems
-+ clear quirks when Quirk game option changed
++ clear quirks when Quirk TWGame option changed
 + Cowl Quirk
 + quirks save to and load from MULs
 + Fix Aero BV bug
@@ -8056,7 +8056,7 @@ v0.35.1 (209-06-03, 15:48 UTC+2)
 + changed reporting of dead zones
 + Bug: Chameleon Light Polarization Shield not working
 + TacOps Sprinting Movement Mode
-+ Added game option to log d6s
++ Added TWGame option to log d6s
 + TacOps Leaping
 + Hangar and Fortress building classes
 + TacOps building armor
@@ -8274,7 +8274,7 @@ v0.33.41 (2009-02-25, UTC+1)
 + Read all engine codes correctly from BLK files
 
 v0.33.40 (2009-02-08, 2:27 UTC+1)
-+ Reorganized game options so that unofficial options are integrated into the
++ Reorganized TWGame options so that unofficial options are integrated into the
     appropriate tabs
 + revert Bug 2538487: Firing with a prone quad, was not actually a bug
 + RFE: Added new internal names for Improved Heavy Medium and Improved Heavy
@@ -8334,7 +8334,7 @@ v0.33.39 (2009-01-28, UTC+1)
 + industrial mech cockpit equipment restrictions should also apply to primitive
     industrial cockpits
 + Fix a few 3075 mechfiles
-+ Rename "allow level 3 ammunition" game option to "allow advanced ammunition"
++ Rename "allow level 3 ammunition" TWGame option to "allow advanced ammunition"
 + Bug 2517886: TacOps PSR weightclass mod not stacking correctly
 + Default players to a team, instead of "No Team"
 + Laser AMS should have BV of 45, not 105
@@ -8384,7 +8384,7 @@ v0.33.38 (2009-01-15, 19:51 UTC+1)
 + Added Industrial Mech Cockpit (that has no advanced firing control)
 + BV errata on TSM and MASC speed factors
 + Bug: Speed Factor rounding too soon when calculating BV
-+ RFE: GameListeners are no longer saved to the save game files
++ RFE: GameListeners are no longer saved to the save TWGame files
 + Bug: Apollo has not loading LRM 15 ammo
 + Bug: sorting of weapons wrong in BV calculation when BV difference is < 1
 + Bug: BAR armor not working quite right
@@ -8453,11 +8453,11 @@ v0.33.36 (2008-12-10, 19:00 UTC)
 + Bug in Mech BV calculation fixed
 + Bug: Infantry flamers cause too much heat
 + include equipment.txt in release built via ant
-+ added /load command to load a game from the savegames directory
++ added /load command to load a TWGame from the savegames directory
 + added safety check for filename in load command
-+ added a /localload command to load a game from the client's savegames
++ added a /localload command to load a TWGame from the client's savegames
     directory
-+ game option to disable local saves when double blind is in use
++ TWGame option to disable local saves when double blind is in use
 + added /listSave command to list all *.sav files in the savegames directory
 + updated command line help
 + added serialization to Aero sub-classes
@@ -8487,7 +8487,7 @@ v0.33.36 (2008-12-10, 19:00 UTC)
 + Bug: target movement mod of 1 for jumping 0 hexes in BV calculations
 + isMilitary method
 + Bug 2206429: (AERO) Fighters can do maneuvers in space
-+ Bug 2385422: (AERO) Small Craft freeze game
++ Bug 2385422: (AERO) Small Craft freeze TWGame
 + Small Aerospace Cockpits
 + Bug 2205615: (AERO) Heat by bay losing attacks
 + Bug 2205567: (AERO) loaded fighters survive carrier destruction
@@ -8549,7 +8549,7 @@ v0.33.35 (2008-11-16)
 + RFE: Still show player DB messages for their unit after the pilot lost LOS of
     the attacker.
 + Added extra building roof images
-+ Bug: LACs having Rapid fire mode when game option is not set
++ Bug: LACs having Rapid fire mode when TWGame option is not set
 + Bug: BA have higher run MP than they should
 + Bug: 3D boardview not working
 + Assign more memory to javac when building MM via ant, to prevent OutOfMemory
@@ -8605,20 +8605,20 @@ v0.33.34 (2008-10-28, 02:30 UTC)
 + Bug: non-mech units falling when in collapsing building
 + Commander Initiative
 + IR scanners only detect units with heat on their heat track
-+ Bug: game-option dependent modes not appearing on units after loading a
++ Bug: TWGame-option dependent modes not appearing on units after loading a
     savegame
 + old code for BAP detection within a certain range deleted
 + Bug: BAP not detecting through buildings
 + Bug: overheating adjustments to night modifiers
 + Bug: VTOL units have seismic sensors
 + Sensors only detect a single range bracket
-+ Added game option to make sensor ranges inclusive (i.e. medium range includes
++ Added TWGame option to make sensor ranges inclusive (i.e. medium range includes
     medium and short)
 + Bug: MRM 20 OS showing rack size 40
 + Void-Signature System (including sensor modifiers)
 + Bug: initiative bonuses not clearing in InitiativeRoll
 + RFE: Do not update Planetary Conditions/Game Options/Map settings after the
-    game has started
+    TWGame has started
 + Bug: Null-Sig/Void-Sig fixes
 + Bug: only link stealth/Null-sig to ECM on Meks
 + Bug 2176127: Swarm missiles being weird.
@@ -8687,7 +8687,7 @@ http://www.classicbattletech.com/forums/index.php?action=dlattach;topic=38208.0;
     bonus functions
 + Bug: Fixed physical weapon attacks to hit mods
 + Bug: getting up from hull down not working correctly
-+ Bug: experimental/unofficial ammo not being allowed when appropriate game
++ Bug: experimental/unofficial ammo not being allowed when appropriate TWGame
     option is set
 + Bug: go prone and go hulldown and climb mode movement sprites not displayed
     immediately
@@ -8829,7 +8829,7 @@ v0.33.31 (2009-09-14, 19:30 GMT+1)
 + Bug: Modes not loading correctly for MekWars
 + Bug 2051697: "permanent" hull down
 + Bug: Dial down Heat/Damage now display correctly on MekDisplay
-+ Changed to how game options are loaded in Entity.
++ Changed to how TWGame options are loaded in Entity.
 + Bug: Tool tips not centering on Mouse Point
 + Bug: Ammo explosion rule causing NPE
 + Bug: Visual Range not calculated correctly in Planetary Conditions.
@@ -8845,7 +8845,7 @@ v0.33.31 (2009-09-14, 19:30 GMT+1)
 + Added BPod Code.
 + Bug: AP ammo and TC Ammo not doing full damage to Hardened Armor
 + Bug: LK Munition and HE Munition using the same flag
-+ Bug: Update entities for changed game options
++ Bug: Update entities for changed TWGame options
 + curMode() now returns EquipmentMode.getMode("None") instead of NULL
 + Bug: PPC Caps all have same external name screwing up MekWars.
 + Bug 2069823: ATM Ammo Issues
@@ -9093,7 +9093,7 @@ v0.33.26 (2008-05-28, 23:23 GMT+2)
 + RFE 1941889: (i)Narc hit locations
 + Correct missile ammo for artemis 3058U tanks
 + Bug: BV calculation on heat efficient mechs did not factor in Artemis IV
-+ Bug 1966507: Support vehicle BAR not used in game
++ Bug 1966507: Support vehicle BAR not used in TWGame
 + Synchronized Swing and AWT as of 5/21/2008 (water/ice landing in bridge
     hexes and large support vehicles)
 + Patch 1967302: Lower Atmosphere, Space Maps (MA integration)
@@ -9201,7 +9201,7 @@ v0.33.23 (2008-04-30, 17:30 GMT+2)
     of ammo in a ton.
 + Bug: Fix double blind report error
 + Bug: Fix report error when targeting a building with infernos
-+ Bug: correctly report remaining ammo in end-of-game unit status report
++ Bug: correctly report remaining ammo in end-of-TWGame unit status report
 + Bug: Rapidfire AC doesn't generate heat
 
 v0.33.22 (2008-04-19, 23:30 GMT+2)
@@ -9267,7 +9267,7 @@ v0.33.21 (2008-04-01, 00:47 GMT+2)
 v0.33.20 (2008-03-04, 12:32 GMT+1)
 + Bug: Victory NPE in Scenario games
 + Bug: transported entities don't unload correctly when transporter dies
-+ Don't calculate ECCM stuff when game option is not set
++ Don't calculate ECCM stuff when TWGame option is not set
 + Bug 1902346: Clan LRM 16 has same internal name as Clan LRM 15
 + Bug: glancing blows often not reducing damage by half
 + Bug: torpedoes not loading correctly from HMP/HMV
@@ -9278,7 +9278,7 @@ v0.33.20 (2008-03-04, 12:32 GMT+1)
 + Bug: Torpedoes not working
 + Bug: Enemy commander destroyed now actually means all enemy commanders
     destroyed, instead of "last commander standing"
-+ Bug: victory triggering in single-player game even when check for victory game
++ Bug: victory triggering in single-player TWGame even when check for victory TWGame
     option is disabled
 + Bug 1880496: NARC-asissted indirect fire taking spotter firing penalty
 + Bug: Narc/INarc Pods not removed on location destruction
@@ -9322,7 +9322,7 @@ v0.33.19 (2008-02-26, 2:13 GMT+1)
 
 v0.33.18 (2008-02-14, 23:31 GMT+1)
 + Bug: Flechette and Frag ammo not doing full damage to Infantry
-+ RFE: Force Victory skips all units in every phase to end game.
++ RFE: Force Victory skips all units in every phase to end twGame.
 + Bug: BattleArmor being effected like Infantry against Frag and Flechette
 + RFE: Moved Force Victory option to top of the victory group
 + Plasma Rifle and Plasma Cannon also deal half damage to pain shunt infantry
@@ -9425,7 +9425,7 @@ v0.33.16 (2008-01-19, 18:45 GMT+1)
 + Bug 1870305: Guided Arrow IV not working.
 + Bug: Report error with artillery when attacking unit dead or fled when arty
     lands
-+ Bug: Taggers not allowed to shoot when no arty units left in game, but an
++ Bug: Taggers not allowed to shoot when no arty units left in TWGame, but an
     homing arty attack in the air
 
 v0.33.15 (2008-01-11, 20:35 GMT+1)
@@ -9585,7 +9585,7 @@ v0.33.10 (2007-10-28, 16:13 GMT+1)
 + Bug 1806055: C3 Master and Advanced Search
 + Bug: After reset, starting position got set to any, but UI still showed old
     starting position
-+ Bug: when changing a game option that possibly changed BV (like force-size
++ Bug: when changing a TWGame option that possibly changed BV (like force-size
    mod), BV displayed in the chatlounge didn't change
 + Skidding Bug: Hex just entered counted for distance.
 + Bug 1751666: Made the option apply only to 'Meks as per suggestion of
@@ -9661,7 +9661,7 @@ v0.33.8 (2007-07-16, 21:00 GMT +2)
 + Cleaned up batchall.de.zip: removed no longer needed units
 + MG arrays now work, LCT-5T mechfile updated
 + Added TeamCommand allowing players on the same team to speak to each other in
-    game
+    TWGame
 + Bug: Visibility limiting BAP range.
 + changed TeamCommand command from /team to /t make it easier to type.
 + Made Server.sendChat method public so TeamCommand could access it.
@@ -9706,7 +9706,7 @@ v0.33.6 (2007-05-26, 20:00 GMT +2)
 + Bug 1706265 fixed
 + Added House rule MW pilots cannot spot.
 + RFE 1701138: Spotting and firing
-+ Bug: NPE in multi player game where a player ejects and disconnects.
++ Bug: NPE in multi player TWGame where a player ejects and disconnects.
 + Found the Real cause of above bug. Caused when adding new Removal Cause.
 + Fixed it this time for sure!
 + Bug: Meks could skid into wall hexes.
@@ -9906,7 +9906,7 @@ v0.33.2 (2006-11-12 21:32 GMT+9)
 v0.33.1 (2006-10-31 22:40 GMT+9)
 + Fix filename case for IS Omni images, so they show up on filename case-
  sensitive OS.
-+ Bug 1577506: BA SRM2 launchers don't show any ammo in game
++ Bug 1577506: BA SRM2 launchers don't show any ammo in TWGame
 + Bug: multiple copies of same ammo in the customise dialog
 + Bug: .BLK format omni vehicles weren't omni. (now include <omni></omni>)
 + Default images for mechanized platoons - thanks to Carpe Mortis
@@ -9935,7 +9935,7 @@ v0.33.1 (2006-10-31 22:40 GMT+9)
 + Light AC changed from level 3 to level 2
 + Bug: swarming mek could hit itself by "getting in the way" of damage
 + Bug: ammo explosion from heat could select an empty bin
-+ Bug 1584814: check game option for fire is enabled before creating fires.
++ Bug 1584814: check TWGame option for fire is enabled before creating fires.
 + AP gauss
 + Changed new PPCs from level 3 to level 2
 + Fix break in fire processor
@@ -10127,7 +10127,7 @@ v0.31.13 (2006-09-04, 22:08 GMT+2)
   on bot strategy is disabled by default, it can be enabled by adding
   "Debug=true" line to mmconf/bot.properties.  This substantially reduces the
   size of MoveOption so the bot memory leak is manageable. (379 rounds for bot
-  vs bot lance size game)
+  vs bot lance size TWGame)
 + Bug 1550129: can now charge unit standing on bridge again
 + Bug 1550208: mad dog B has wrong ammo
 + Bug: Clan half-ton MG ammo had BV 1 instead of 0.5.
@@ -10181,7 +10181,7 @@ v0.31.12 (2006-09-31, 21:04 GMT+2)
 + Cleanup of warnings in gui
 + Bug 1528962: large memory leak when changing zoom levels
 + Bug 1526913: ECM bubble redraw issue
-+ Discard unit cache and canon units list when game is started, to free memory
++ Discard unit cache and canon units list when TWGame is started, to free memory
 + Explosions now correctly damage buildings.
 + In double blind, observers can now see units that are
   visible to at least one enemy, without doing /seeall
@@ -10201,8 +10201,8 @@ v0.31.12 (2006-09-31, 21:04 GMT+2)
 + Bug 1464952/1298206: purifier's mimetic armour now cancels +1 for jump
   Note this is changed in TW so mimetic doesn't cancel anything so I've
   documented that and added a FIXME for when we change ruleset
-+ Changed "host game" startup so that game options are loaded by the Server
-  instead of the MegamekGUI, to address a rare lockup caused by game options
++ Changed "host TWGame" startup so that TWGame options are loaded by the Server
+  instead of the MegamekGUI, to address a rare lockup caused by TWGame options
   being sent before the player name.  (unfortunately unlikely to be the same
   as 1546375, although the symptom was the same the log is different).
 + errors setting up games are now alerted to the user (or logged for
@@ -10300,9 +10300,9 @@ v0.31.9 (2006-07-15, 17:15 GMT+2)
 + Taught the bot how to play under individual initiative
 + MechDisplayEvent.getWeaponId() returned entityId
 + Show execution of charge/dfa on unit tooltip
-+ Victory condition game options (% enemy BV destroyed and BV ratio)
++ Victory condition TWGame options (% enemy BV destroyed and BV ratio)
 + RFE: maxtech infantry damage
-+ Bug 1515671: /victory and /defeat does not end game
++ Bug 1515671: /victory and /defeat does not end TWGame
 + Show Charges and DFAs in the firing phase.
 + Bug 1517652: don't NPE with delayed deployment.
 + Warhawk C corrected (removed lower arm actuator)
@@ -10465,7 +10465,7 @@ v0.31.5 (2006-02-14, 14:19 GMT)
 + Patch 1376607: Full Double Blind Message Filtering
     Note: use Server#addReport() to add Reports instead of
     vPhaseReport.addElement() from now on.
-+ Bug 1417988: full double blind causes NPE starting game
++ Bug 1417988: full double blind causes NPE starting TWGame
 + Bug 1410795: Unit on top of a building receive protection
 + Bug 1413027: PSR should not be required for turning in a building hex
 + Bug: VTOL undamaged by sideslip into building
@@ -10497,7 +10497,7 @@ v0.31.5 (2006-02-14, 14:19 GMT)
 + Bug 1424570: Light AC's need special munitions
 + Bug 1413335: physical attack vs building
 + Bug 1414795: remove underweight duplicate of Mantis VTOL
-+ Protect MaxTech BAP rules by game option.
++ Protect MaxTech BAP rules by TWGame option.
 + Bug 1415157: doubleblind not working correctly on disconnect
 + Bug 1297704: LOS tool not working correctly
 + Bug: HMP Mechs with split weapons did not load correctly.
@@ -10505,7 +10505,7 @@ v0.31.5 (2006-02-14, 14:19 GMT)
 + Bug 1427812: Thundergod mislabeled as Cerberus
 + Bug 1427926: Stealth BA can be secondary targets.
 + Bug 1428707: turn lost when loading infantry with inf_move_multi
-+ Individual initiative game option *not compatible with other
++ Individual initiative TWGame option *not compatible with other
      initiative options*
 + Patch 1428586: GetAllEntites function in Game for MekWars cooperation.
 + Bug: Splitable weapons that are not split loaded multiple times in MTF files

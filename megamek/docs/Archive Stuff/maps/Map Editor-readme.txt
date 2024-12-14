@@ -58,9 +58,9 @@ information on the board file format, and the tileset file format.
     individual type of terrain may only appear once in a hex.
 
     See the list below for details on the types of terrain and the levels that
-    the game expects them at.
+    the TWGame expects them at.
 
-    The exits parameter is internally set by the game.  It is a 6-bit integer,
+    The exits parameter is internally set by the twGame.  It is a 6-bit integer,
     with each bit representing a side of the hex, starting at the top and
     proceeding clockwise around the edges.  A bit is set if the hex in that
     direction has the same type of terrain present.  There is usually no reason
@@ -79,15 +79,15 @@ information on the board file format, and the tileset file format.
     check the "Exit Roads to Pavement" checkbox, the map refreshes itself to
     show you the results.  The if this checkbox is not checked when you save
     the board, the "exit_roads_to_pavement" option described below will be set
-    to "false".  Please note that, when multiple boards are used in a game, if
+    to "false".  Please note that, when multiple boards are used in a TWGame, if
     one board has the "exit_roads_to_pavement" option set to "false", *NO*
     roads will automatically exit onto a pavement hex, so use this option
     sparingly.
 
   Types Of Terrain Features
-    The game expects the level for each type of terrain feature within a certain
+    The TWGame expects the level for each type of terrain feature within a certain
     range.  Values not in this range may cause the terrain to appear on the map,
-    but there will usually be no game effect, or, worse, undesirable effects.
+    but there will usually be no TWGame effect, or, worse, undesirable effects.
     A lot of terrain is activated with a value of "1".
 
     Some types of terrain should only appear in combination with other types.
@@ -118,7 +118,7 @@ information on the board file format, and the tileset file format.
         bldg_cf: 0-150; defaults to 15, 40, 90, or 120 if not specified
         bldg_elev: 1+; you must supply a number if a building is supplied.
         bldg_basement_type: 0-7, indicates type of basement and type of fall
-            0: unknown basement, game will roll the type of basement when entering first
+            0: unknown basement, TWGame will roll the type of basement when entering first
             1: no basement
             2: double basement, feet first fall
             3: single basement, feet first fall
@@ -174,7 +174,7 @@ board files by hand.  This reference is just for creating a different editor.
     The option keyword is followed by the name of the option and the option's
     value for the board.  In v0.29, the only option recognized by MegaMek is
     exit_roads_to_pavement.  If this option is set to false, road hexes will
-    not automatically exit into pavement hexes.  If a game's playing area uses
+    not automatically exit into pavement hexes.  If a TWGame's playing area uses
     more than one board, if any board sets this option to false, no road hexes
     on *any* board will automatically exit into pavement hexes.
 
@@ -233,8 +233,8 @@ board files by hand.  This reference is just for creating a different editor.
 The graphics for maps are stored in tileset files.  These are located in the
 data/images/hexes directory.  The default tileset is called "atmospheric.tileset".
 Image files should be located in a subdirectory off of the data/images/hexes directory.
-The tileset used by the game can be changed in the MegaMek.cfg file, in the
-game base directory.
+The tileset used by the TWGame can be changed in the MegaMek.cfg file, in the
+TWGame base directory.
 
   Tileset File Format
     The tileset file format is similar to the board file format.  The two
@@ -305,7 +305,7 @@ game base directory.
     After this removal, the woods terrain is a perfect match.  All the relevant
     terrain, the elevation and the theme are matches.  The program will display
     the light_forest_2.gif, with the road09.gif superimposed on top of it, as
-    the image for this hex in the game.
+    the image for this hex in the twGame.
 
 
 Author: Ben Mazur

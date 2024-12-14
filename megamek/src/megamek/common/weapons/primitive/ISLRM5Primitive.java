@@ -15,7 +15,7 @@
 package megamek.common.weapons.primitive;
 
 import megamek.common.AmmoType;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.SimpleTechLevel;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
@@ -69,8 +69,8 @@ public class ISLRM5Primitive extends LRMWeapon {
     }
 
     @Override
-    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, Game game,
+    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, TWGame twGame,
                                               TWGameManager manager) {
-        return new LRMHandler(toHit, waa, game, manager, -2);
+        return new LRMHandler(toHit, waa, twGame, manager, -2);
     }
 }

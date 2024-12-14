@@ -31,7 +31,7 @@ public class VehicleFlamerCoolHandler extends AmmoWeaponHandler {
      * @param waa
      * @param g
      */
-    public VehicleFlamerCoolHandler(ToHitData toHit, WeaponAttackAction waa, Game g, TWGameManager m) {
+    public VehicleFlamerCoolHandler(ToHitData toHit, WeaponAttackAction waa, TWGame g, TWGameManager m) {
         super(toHit, waa, g, m);
     }
 

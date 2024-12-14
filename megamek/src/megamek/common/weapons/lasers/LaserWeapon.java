@@ -14,7 +14,7 @@
 package megamek.common.weapons.lasers;
 
 import megamek.common.AmmoType;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.MiscType;
 import megamek.common.Mounted;
 import megamek.common.ToHitData;
@@ -22,7 +22,6 @@ import megamek.common.actions.WeaponAttackAction;
 import megamek.common.annotations.Nullable;
 import megamek.common.equipment.MiscMounted;
 import megamek.common.options.GameOptions;
-import megamek.common.options.OptionsConstants;
 import megamek.common.weapons.AttackHandler;
 import megamek.common.weapons.EnergyWeaponHandler;
 import megamek.common.weapons.InsulatedLaserWeaponHandler;
@@ -75,16 +74,16 @@ public abstract class LaserWeapon extends EnergyWeapon {
     }
 
     @Override
-    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, Game game,
+    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, TWGame twGame,
             TWGameManager manager) {
-        Mounted<?> linkedBy = waa.getEntity(game).getEquipment(waa.getWeaponId()).getLinkedBy();
+        Mounted<?> linkedBy = waa.getEntity(twGame).getEquipment(waa.getWeaponId()).getLinkedBy();
         if ((linkedBy != null) && !linkedBy.isInoperable()) {
             if (linkedBy.getType().hasFlag(MiscType.F_LASER_INSULATOR)) {
-                return new InsulatedLaserWeaponHandler(toHit, waa, game, manager);
+                return new InsulatedLaserWeaponHandler(toHit, waa, twGame, manager);
             } else if (linkedBy.getType().hasFlag(MiscType.F_RISC_LASER_PULSE_MODULE)) {
-                return new PulseLaserWeaponHandler(toHit, waa, game, manager);
+                return new PulseLaserWeaponHandler(toHit, waa, twGame, manager);
             }
         }
-        return new EnergyWeaponHandler(toHit, waa, game, manager);
+        return new EnergyWeaponHandler(toHit, waa, twGame, manager);
     }
 }

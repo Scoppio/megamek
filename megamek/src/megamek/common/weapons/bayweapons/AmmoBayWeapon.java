@@ -35,15 +35,15 @@ public abstract class AmmoBayWeapon extends BayWeapon {
     }
 
     @Override
-    public AttackHandler fire(WeaponAttackAction waa, Game game, TWGameManager manager) {
+    public AttackHandler fire(WeaponAttackAction waa, TWGame twGame, TWGameManager manager) {
         // Just in case. Often necessary when/if multiple ammo weapons are
         // fired; if this line not present
         // then when one ammo slots run dry the rest silently don't fire.
-        checkAmmo(waa, game);
-        return super.fire(waa, game, manager);
+        checkAmmo(waa, twGame);
+        return super.fire(waa, twGame, manager);
     }
 
-    protected void checkAmmo(WeaponAttackAction waa, Game g) {
+    protected void checkAmmo(WeaponAttackAction waa, TWGame g) {
         Entity ae = waa.getEntity(g);
         WeaponMounted bay = ae.getWeapon(waa.getWeaponId());
         for (WeaponMounted weapon : bay.getBayWeapons()) {
@@ -56,14 +56,14 @@ public abstract class AmmoBayWeapon extends BayWeapon {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * megamek.common.weapons.Weapon#getCorrectHandler(megamek.common.ToHitData,
      * megamek.common.actions.WeaponAttackAction, megamek.common.Game)
      */
     @Override
-    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, Game game,
+    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, TWGame twGame,
                                               TWGameManager manager) {
-        return new AmmoBayWeaponHandler(toHit, waa, game, manager);
+        return new AmmoBayWeaponHandler(toHit, waa, twGame, manager);
     }
 }

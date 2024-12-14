@@ -171,21 +171,21 @@ public class InfantryFireControl extends FireControl {
      * @param maxHeat
      *                     How much heat we're willing to tolerate. Ignored, since
      *                     infantry doesn't track heat.
-     * @param game         The current {@link Game}
+     * @param twGame         The current {@link TWGame}
      * @return the 'best' firing plan under a certain heat.
      */
     @Override
     protected FiringPlan guessBestFiringPlanUnderHeat(final Entity shooter, @Nullable EntityState shooterState,
-            final Targetable target, @Nullable EntityState targetState, int maxHeat, final Game game) {
+            final Targetable target, @Nullable EntityState targetState, int maxHeat, final TWGame twGame) {
         FiringPlan bestPlan = new FiringPlan(target);
 
         // Shooting isn't possible if one of us isn't on the board.
         if ((null == shooter.getPosition()) || shooter.isOffBoard()
-                || !game.getBoard().contains(shooter.getPosition())) {
+                || !twGame.getBoard().contains(shooter.getPosition())) {
             logger.error("Shooter's position is NULL/Off Board!");
             return bestPlan;
         }
-        if ((null == target.getPosition()) || target.isOffBoard() || !game.getBoard().contains(target.getPosition())) {
+        if ((null == target.getPosition()) || target.isOffBoard() || !twGame.getBoard().contains(target.getPosition())) {
             logger.error("Target's position is NULL/Off Board!");
             return bestPlan;
         }
@@ -193,7 +193,7 @@ public class InfantryFireControl extends FireControl {
         // if it's not infantry, then we shouldn't be here, let's redirect to the base
         // method.
         if (!(shooter instanceof Infantry)) {
-            return super.guessBestFiringPlanUnderHeat(shooter, shooterState, target, targetState, maxHeat, game);
+            return super.guessBestFiringPlanUnderHeat(shooter, shooterState, target, targetState, maxHeat, twGame);
         }
 
         if (null == shooterState) {
@@ -213,24 +213,24 @@ public class InfantryFireControl extends FireControl {
         List<FiringPlan> firingPlans = new ArrayList<>();
 
         // case 1: infantry weapons
-        FiringPlan standardPlan = guessFiringPlan(shooter, shooterState, target, targetState, game,
+        FiringPlan standardPlan = guessFiringPlan(shooter, shooterState, target, targetState, twGame,
                 InfantryFiringPlanType.Standard);
         firingPlans.add(standardPlan);
 
         // case 2: field guns if we didn't move
         if (shooterState.getHexesMoved() == 0) {
-            FiringPlan fieldGunPlan = guessFiringPlan(shooter, shooterState, target, targetState, game,
+            FiringPlan fieldGunPlan = guessFiringPlan(shooter, shooterState, target, targetState, twGame,
                     InfantryFiringPlanType.FieldGuns);
             firingPlans.add(fieldGunPlan);
         }
 
         // case 3: leg attack
-        FiringPlan legPlan = guessFiringPlan(shooter, shooterState, target, targetState, game,
+        FiringPlan legPlan = guessFiringPlan(shooter, shooterState, target, targetState, twGame,
                 InfantryFiringPlanType.Leg);
         firingPlans.add(legPlan);
 
         // case 4: swarm attack
-        FiringPlan swarmPlan = guessFiringPlan(shooter, shooterState, target, targetState, game,
+        FiringPlan swarmPlan = guessFiringPlan(shooter, shooterState, target, targetState, twGame,
                 InfantryFiringPlanType.Swarm);
         firingPlans.add(swarmPlan);
 
@@ -256,11 +256,11 @@ public class InfantryFireControl extends FireControl {
      *                     The unit being fired on.
      * @param targetState
      *                     The current state of the target.
-     * @param game         The current {@link Game}
+     * @param twGame         The current {@link TWGame}
      * @return The {@link FiringPlan} containing all weapons to be fired.
      */
     private FiringPlan guessFiringPlan(final Entity shooter, @Nullable EntityState shooterState,
-            final Targetable target, @Nullable EntityState targetState, final Game game,
+            final Targetable target, @Nullable EntityState targetState, final TWGame twGame,
             InfantryFiringPlanType firingPlanType) {
 
         final FiringPlan myPlan = new FiringPlan(target);
@@ -271,7 +271,7 @@ public class InfantryFireControl extends FireControl {
                 WeaponFireInfo bestShoot = null;
 
                 final WeaponFireInfo shoot = buildWeaponFireInfo(shooter, shooterState, target, targetState, weapon,
-                        null, game, true);
+                        null, twGame, true);
                 // Choose best expected damage shot, not best to-hit
                 if (null == bestShoot ||
                         (shoot.getExpectedDamage() > bestShoot.getExpectedDamage())) {

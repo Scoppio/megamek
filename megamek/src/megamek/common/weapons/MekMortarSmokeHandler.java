@@ -15,14 +15,8 @@ package megamek.common.weapons;
 
 import java.util.Vector;
 
-import megamek.common.AmmoType;
-import megamek.common.Compute;
-import megamek.common.Coords;
-import megamek.common.Game;
-import megamek.common.Mounted;
-import megamek.common.Report;
-import megamek.common.TargetRoll;
-import megamek.common.ToHitData;
+import megamek.common.*;
+import megamek.common.TWGame;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.enums.GamePhase;
 import megamek.logging.MMLogger;
@@ -36,7 +30,7 @@ public class MekMortarSmokeHandler extends AmmoWeaponHandler {
 
     private static final long serialVersionUID = -2073773899108954657L;
 
-    public MekMortarSmokeHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public MekMortarSmokeHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 
@@ -122,7 +116,7 @@ public class MekMortarSmokeHandler extends AmmoWeaponHandler {
         } else {
             // only scatters by one d6
             targetPos = Compute.scatter(targetPos, 1);
-            if (game.getBoard().contains(targetPos)) {
+            if (twGame.getBoard().contains(targetPos)) {
                 // misses and scatters to another hex
                 r = new Report(3195);
                 r.subject = subjectId;

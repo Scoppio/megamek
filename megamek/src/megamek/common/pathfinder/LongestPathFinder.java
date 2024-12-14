@@ -23,13 +23,8 @@ import java.util.List;
 import java.util.Objects;
 
 import megamek.client.bot.princess.MinefieldUtil;
-import megamek.common.Coords;
-import megamek.common.Game;
-import megamek.common.Infantry;
-import megamek.common.MovePath;
+import megamek.common.*;
 import megamek.common.MovePath.MoveStepType;
-import megamek.common.MoveStep;
-import megamek.common.Tank;
 import megamek.common.annotations.Nullable;
 import megamek.logging.MMLogger;
 
@@ -46,8 +41,8 @@ public class LongestPathFinder extends MovePathFinder<Deque<MovePath>> {
 
     protected LongestPathFinder(EdgeRelaxer<Deque<MovePath>, MovePath> edgeRelaxer,
             AdjacencyMap<MovePath> edgeAdjacencyMap, Comparator<MovePath> comparator,
-            Game game) {
-        super(edgeRelaxer, edgeAdjacencyMap, comparator, game);
+            IGame IGame) {
+        super(edgeRelaxer, edgeAdjacencyMap, comparator, IGame);
     }
 
     /**
@@ -59,16 +54,16 @@ public class LongestPathFinder extends MovePathFinder<Deque<MovePath>> {
      * @param stepType - if equal to MoveStepType.BACKWARDS, then searcher also
      *                 includes backward steps. Otherwise only forward movement is
      *                 allowed
-     * @param game     The current {@link Game}
+     * @param twGame     The current {@link TWGame}
      * @return a longest path finder
      */
-    public static LongestPathFinder newInstanceOfLongestPath(int maxMP, MoveStepType stepType, Game game) {
+    public static LongestPathFinder newInstanceOfLongestPath(int maxMP, MoveStepType stepType, TWGame twGame) {
         LongestPathFinder lpf = new LongestPathFinder(new LongestPathRelaxer(),
                 new NextStepsAdjacencyMap(stepType),
                 new MovePathMinMPMaxDistanceComparator(),
-                game);
+            twGame);
         lpf.addFilter(new MovePathLengthFilter(maxMP));
-        lpf.addFilter(new MovePathLegalityFilter(game));
+        lpf.addFilter(new MovePathLegalityFilter(twGame));
         return lpf;
     }
 
@@ -78,17 +73,17 @@ public class LongestPathFinder extends MovePathFinder<Deque<MovePath>> {
      * heavy.
      *
      * @param maxMP - the maximal thrust points available for an aero
-     * @param game  The current {@link Game}
+     * @param twGame  The current {@link TWGame}
      * @return a longest path finder for aeros
      */
-    public static LongestPathFinder newInstanceOfAeroPath(int maxMP, Game game) {
-        LongestPathFinder lpf = new LongestPathFinder(new AeroMultiPathRelaxer(!game.getBoard().inSpace()),
+    public static LongestPathFinder newInstanceOfAeroPath(int maxMP, TWGame twGame) {
+        LongestPathFinder lpf = new LongestPathFinder(new AeroMultiPathRelaxer(!twGame.getBoard().inSpace()),
                 new NextStepsAdjacencyMap(MoveStepType.FORWARDS),
                 new AeroMultiPathComparator(),
-                game);
+            twGame);
         lpf.aero = true;
         lpf.addFilter(new MovePathLengthFilter(maxMP));
-        lpf.addFilter(new MovePathLegalityFilter(game));
+        lpf.addFilter(new MovePathLegalityFilter(twGame));
         return lpf;
     }
 

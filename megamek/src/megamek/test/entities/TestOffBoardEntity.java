@@ -13,22 +13,18 @@
  */
 package megamek.test.entities;
 
-import megamek.common.BipedMek;
-import megamek.common.Board;
-import megamek.common.Coords;
-import megamek.common.Entity;
-import megamek.common.Game;
-import megamek.common.OffBoardDirection;
+import megamek.common.*;
+import megamek.common.TWGame;
 
 public class TestOffBoardEntity {
     public static void main(String... args) {
         // Give the game a blank map.
-        Game game = new Game();
-        game.setBoardDirect(new Board(16, 17));
+        TWGame twGame = new TWGame();
+        twGame.setBoardDirect(new Board(16, 17));
 
         // Now create an entity in the game.
         Entity entity = new BipedMek();
-        entity.setGame(game);
+        entity.setGame(twGame);
         entity.setDeployRound(1);
 
         // Deploy the entity 30 hexes north of

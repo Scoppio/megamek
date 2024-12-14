@@ -13,15 +13,8 @@
  */
 package megamek.common.actions;
 
-import megamek.common.Entity;
-import megamek.common.EquipmentType;
-import megamek.common.Game;
-import megamek.common.Infantry;
-import megamek.common.MiscType;
-import megamek.common.Mounted;
-import megamek.common.TargetRoll;
-import megamek.common.Targetable;
-import megamek.common.ToHitData;
+import megamek.common.*;
+import megamek.common.TWGame;
 import megamek.common.weapons.infantry.InfantryWeapon;
 
 public class LayExplosivesAttackAction extends AbstractAttackAction {
@@ -51,15 +44,15 @@ public class LayExplosivesAttackAction extends AbstractAttackAction {
         return dmg * numTurns;
     }
 
-    public ToHitData toHit(Game game) {
-        return toHit(game, getEntityId(), game.getTarget(getTargetType(), getTargetId()));
+    public ToHitData toHit(TWGame twGame) {
+        return toHit(twGame, getEntityId(), twGame.getTarget(getTargetType(), getTargetId()));
     }
 
     /**
      * To-hit number, i.e. is the action possible
      */
-    public static ToHitData toHit(Game game, int attackerId, Targetable target) {
-        final Entity ae = game.getEntity(attackerId);
+    public static ToHitData toHit(TWGame twGame, int attackerId, Targetable target) {
+        final Entity ae = twGame.getEntity(attackerId);
         if ((target.getTargetType() != Targetable.TYPE_BUILDING)
                 && (target.getTargetType() != Targetable.TYPE_FUEL_TANK)) {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "You can only target buildings");

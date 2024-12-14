@@ -65,12 +65,12 @@ public class DfaAttackAction extends DisplacementAttackAction {
 
     /**
      * Checks if a death from above attack can hit the target, including movement
-     * 
-     * @param game The current {@link Game}
+     *
+     * @param twGame The current {@link TWGame}
      */
-    public static ToHitData toHit(Game game, int attackerId,
-            Targetable target, MovePath md) {
-        final Entity ae = game.getEntity(attackerId);
+    public static ToHitData toHit(TWGame twGame, int attackerId,
+                                  Targetable target, MovePath md) {
+        final Entity ae = twGame.getEntity(attackerId);
 
         // Do to pretreatment of physical attacks, the target may be null.
         if (target == null) {
@@ -137,7 +137,7 @@ public class DfaAttackAction extends DisplacementAttackAction {
         }
 
         // determine last valid step
-        md.compile(game, ae);
+        md.compile(twGame, ae);
         for (final Enumeration<MoveStep> i = md.getSteps(); i.hasMoreElements();) {
             final MoveStep step = i.nextElement();
             if (!step.isLegal(md)) {
@@ -163,25 +163,25 @@ public class DfaAttackAction extends DisplacementAttackAction {
                     "Target must be done with movement");
         }
 
-        return DfaAttackAction.toHit(game, attackerId, target, chargeSrc);
+        return DfaAttackAction.toHit(twGame, attackerId, target, chargeSrc);
     }
 
-    public ToHitData toHit(Game game) {
-        final Entity entity = game.getEntity(getEntityId());
-        return DfaAttackAction.toHit(game, getEntityId(),
-                game.getTarget(getTargetType(), getTargetId()),
+    public ToHitData toHit(TWGame twGame) {
+        final Entity entity = twGame.getEntity(getEntityId());
+        return DfaAttackAction.toHit(twGame, getEntityId(),
+                twGame.getTarget(getTargetType(), getTargetId()),
                 entity.getPosition());
     }
 
     /**
      * To-hit number for a death from above attack, assuming that movement has been
      * handled
-     * 
-     * @param game The current {@link Game}
+     *
+     * @param twGame The current {@link TWGame}
      */
-    public static ToHitData toHit(Game game, int attackerId,
-            Targetable target, Coords src) {
-        final Entity ae = game.getEntity(attackerId);
+    public static ToHitData toHit(TWGame twGame, int attackerId,
+                                  Targetable target, Coords src) {
+        final Entity ae = twGame.getEntity(attackerId);
 
         // arguments legal?
         if (ae == null) {
@@ -202,7 +202,7 @@ public class DfaAttackAction extends DisplacementAttackAction {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "Invalid Target");
         }
 
-        if (!game.getOptions().booleanOption(OptionsConstants.BASE_FRIENDLY_FIRE)) {
+        if (!twGame.getOptions().booleanOption(OptionsConstants.BASE_FRIENDLY_FIRE)) {
             // a friendly unit can never be the target of a direct attack.
             if ((target.getTargetType() == Targetable.TYPE_ENTITY)
                     && ((((Entity) target).getOwnerId() == ae.getOwnerId())
@@ -214,13 +214,13 @@ public class DfaAttackAction extends DisplacementAttackAction {
             }
         }
 
-        final boolean targetInBuilding = Compute.isInBuilding(game, te);
+        final boolean targetInBuilding = Compute.isInBuilding(twGame, te);
         ToHitData toHit = null;
 
         final int attackerElevation = ae.getElevation()
-                + game.getBoard().getHex(ae.getPosition()).getLevel();
+                + twGame.getBoard().getHex(ae.getPosition()).getLevel();
         final int targetElevation = target.getElevation()
-                + game.getBoard().getHex(target.getPosition()).getLevel();
+                + twGame.getBoard().getHex(target.getPosition()).getLevel();
         final int attackerHeight = attackerElevation + ae.getHeight();
 
         // check elevation of target flying VTOL
@@ -319,11 +319,11 @@ public class DfaAttackAction extends DisplacementAttackAction {
         }
 
         // attacker movement
-        toHit.append(Compute.getAttackerMovementModifier(game, attackerId,
+        toHit.append(Compute.getAttackerMovementModifier(twGame, attackerId,
                 EntityMovementType.MOVE_JUMP));
 
         // target movement
-        toHit.append(Compute.getTargetMovementModifier(game, targetId));
+        toHit.append(Compute.getTargetMovementModifier(twGame, targetId));
 
         // piloting skill differential
         if ((ae.getCrew().getPiloting() != te.getCrew().getPiloting())) {
@@ -362,9 +362,9 @@ public class DfaAttackAction extends DisplacementAttackAction {
         // target immobile
         toHit.append(Compute.getImmobileMod(te));
 
-        toHit.append(AbstractAttackAction.nightModifiers(game, target, null, ae, false));
+        toHit.append(AbstractAttackAction.nightModifiers(twGame, target, null, ae, false));
 
-        Compute.modifyPhysicalBTHForAdvantages(ae, te, toHit, game);
+        Compute.modifyPhysicalBTHForAdvantages(ae, te, toHit, twGame);
 
         // evading bonuses (
         if (te.isEvading()) {
@@ -382,7 +382,7 @@ public class DfaAttackAction extends DisplacementAttackAction {
             toHit.setHitTable(ToHitData.HIT_PUNCH);
         }
         // Attacking Weight Class Modifier.
-        if (game.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_PHYSICAL_ATTACK_PSR)) {
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_PHYSICAL_ATTACK_PSR)) {
             if (ae.getWeightClass() == EntityWeightClass.WEIGHT_LIGHT) {
                 toHit.addModifier(-2, "Weight Class Attack Modifier");
             } else if (ae.getWeightClass() == EntityWeightClass.WEIGHT_MEDIUM) {
@@ -433,8 +433,8 @@ public class DfaAttackAction extends DisplacementAttackAction {
     }
 
     @Override
-    public String toSummaryString(final Game game) {
-        final String roll = this.toHit(game).getValueAsString();
+    public String toSummaryString(final TWGame twGame) {
+        final String roll = this.toHit(twGame).getValueAsString();
         return Messages.getString("BoardView1.DfaAttackAction", roll);
     }
 }

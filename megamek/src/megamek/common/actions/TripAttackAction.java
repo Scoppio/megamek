@@ -30,24 +30,24 @@ public class TripAttackAction extends PhysicalAttackAction {
         super(entityId, targetType, targetId);
     }
 
-    public ToHitData toHit(Game game) {
-        return TripAttackAction.toHit(game, getEntityId(), game.getTarget(getTargetType(), getTargetId()));
+    public ToHitData toHit(TWGame twGame) {
+        return TripAttackAction.toHit(twGame, getEntityId(), twGame.getTarget(getTargetType(), getTargetId()));
     }
 
     /**
      * To-hit number for the specified leg to kick
      */
-    public static ToHitData toHit(Game game, int attackerId, Targetable target) {
-        final Entity ae = game.getEntity(attackerId);
+    public static ToHitData toHit(TWGame twGame, int attackerId, Targetable target) {
+        final Entity ae = twGame.getEntity(attackerId);
         if (ae == null) {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "You can't attack from a null entity!");
         }
 
-        if (!game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_TRIP_ATTACK)) {
+        if (!twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_TRIP_ATTACK)) {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "no Trip attack");
         }
 
-        String impossible = PhysicalAttackAction.toHitIsImpossible(game, ae, target);
+        String impossible = PhysicalAttackAction.toHitIsImpossible(twGame, ae, target);
         if (impossible != null) {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "impossible");
         }
@@ -56,7 +56,7 @@ public class TripAttackAction extends PhysicalAttackAction {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "impossible");
         }
 
-        if (!game.getOptions().booleanOption(OptionsConstants.BASE_FRIENDLY_FIRE)) {
+        if (!twGame.getOptions().booleanOption(OptionsConstants.BASE_FRIENDLY_FIRE)) {
             // a friendly unit can never be the target of a direct attack.
             if ((target.getTargetType() == Targetable.TYPE_ENTITY)
                     && ((((Entity) target).getOwnerId() == ae.getOwnerId())
@@ -107,8 +107,8 @@ public class TripAttackAction extends PhysicalAttackAction {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "Target is prone");
         }
 
-        Hex attHex = game.getBoard().getHex(ae.getPosition());
-        Hex targHex = game.getBoard().getHex(target.getPosition());
+        Hex attHex = twGame.getBoard().getHex(ae.getPosition());
+        Hex targHex = twGame.getBoard().getHex(target.getPosition());
         final int attackerElevation = ae.getElevation() + attHex.getLevel();
         final int targetElevation = target.getElevation() + targHex.getLevel();
 
@@ -166,7 +166,7 @@ public class TripAttackAction extends PhysicalAttackAction {
         toHit = new ToHitData(base, "base");
         toHit.addModifier(-1, "Trip");
 
-        PhysicalAttackAction.setCommonModifiers(toHit, game, ae, target);
+        PhysicalAttackAction.setCommonModifiers(toHit, twGame, ae, target);
 
         // Get best leg
         if (ae instanceof QuadMek) {

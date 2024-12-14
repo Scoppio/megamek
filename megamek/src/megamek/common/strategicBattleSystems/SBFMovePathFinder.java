@@ -68,7 +68,7 @@ public class SBFMovePathFinder extends AbstractPathFinder<BoardLocation, SBFMove
      * Current implementation uses AStar algorithm.
      *
      * @param destination
-     * @param game The current {@link Game}
+     * @param game The current {@link TWGame}
      */
     public static SBFMovePathFinder aStarFinder(BoardLocation destination, SBFGame game) {
         SBFMovePathFinder spf = new SBFMovePathFinder(game, SBFMovePath::getLastPosition, new MovePathRelaxer(),

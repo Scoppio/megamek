@@ -14,7 +14,7 @@
 package megamek.common.weapons.bayweapons;
 
 import megamek.common.EquipmentTypeLookup;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.weapons.AttackHandler;
@@ -50,17 +50,17 @@ public class SubCapitalMissileBayWeapon extends AmmoBayWeapon {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * megamek.common.weapons.Weapon#getCorrectHandler(megamek.common.ToHitData,
      * megamek.common.actions.WeaponAttackAction, megamek.common.Game)
      */
     @Override
-    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, Game game,
+    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, TWGame twGame,
                                               TWGameManager manager) {
-        return new CapitalMissileBayHandler(toHit, waa, game, manager);
+        return new CapitalMissileBayHandler(toHit, waa, twGame, manager);
     }
-    
+
     @Override
     public int getBattleForceClass() {
         return BFCLASS_CAPITAL_MISSILE;

@@ -3,7 +3,7 @@ Introducing Princess, the crown jewel of MegaMek's AI warriors, notorious for he
 
 Within the digital confines of MegaMek, Princess reigns supreme in her own chaotic domain, executing each turn with a precision that’s dazzlingly effective yet bewilderingly short-sighted. She's a master of the immediate, squeezing every ounce of potential from the present turn with a tactical acumen that leaves her human adversaries in awe. Yet, don't ask her about the 'next move' in the grand scheme—our beloved Princess has a knack for living (and battling) in the moment, often forgetting her grand strategy as soon as the next round begins.
 
-So here's the inside scoop, dear players: While Princess might outmaneuver you in the short run, her inability to think turn over turn is her Achilles' heel. But underestimate her at your own peril; her next move is as much a surprise to her as it is to you, making every game an adventurous foray into the unpredictable mind of MegaMek's most enigmatic AI.
+So here's the inside scoop, dear players: While Princess might outmaneuver you in the short run, her inability to think turn over turn is her Achilles' heel. But underestimate her at your own peril; her next move is as much a surprise to her as it is to you, making every TWGame an adventurous foray into the unpredictable mind of MegaMek's most enigmatic AI.
 
 In a wink to you, the savvy gamer, remember this: Princess is more than code and strategy; she's a narrative woven into the very fabric of the MegaMek universe, challenging you to adapt, anticipate, and enjoy the tumultuous ride. Prepare to engage with an opponent who is part tactical genius, part whimsical sovereign, and entirely in a league of her own.
 
@@ -23,7 +23,7 @@ Verbosity - Used to set the level of logging Princess will use. DEBUG mode is ve
 
 Forced Withdrawal - Used to make the Princess follow the Forced Withdrawal rules outlined in Total Warfare.
 
-Immediate Withdrawal - Used to make Princess send her units to her home edge from the start of the game, regardless of damage level. This can be handy for Chase and Breakthrough scenarios.
+Immediate Withdrawal - Used to make Princess send her units to her home edge from the start of the TWGame, regardless of damage level. This can be handy for Chase and Breakthrough scenarios.
 
 Auto Flee Board - (Only available when Immediate Withdrawal is in effect.) If this is checked, Princess will issue the Flee command as soon as her units reach her home edge, regardless of damage level.
 
@@ -52,7 +52,7 @@ The key to setting Princess up is using the above settings together and realizin
 2)
 Chat Commands
 
-Chat commands can only be given to an allied Princess player (on the same team). If you are playing solo and will want to change settings on the fly you can open a separate instance of MM and join the game (making sure to set the team to the bot's side). With this you can issue Behavior changing commands to the bot.
+Chat commands can only be given to an allied Princess player (on the same team). If you are playing solo and will want to change settings on the fly you can open a separate instance of MM and join the TWGame (making sure to set the team to the bot's side). With this you can issue Behavior changing commands to the bot.
 
 Flee
 princessName: flee : 0-4 [0=north, 1=south, 2=west, 3=east, 4=nearest edge]
@@ -119,9 +119,9 @@ Princess will replace the named player.
 
 3)
 Running Separate Instances of MegaMek
-Once you have your basic game set up, start a second game (called an instance to reduce confusion) of MegaMek. 'Connect as a Computer Player', then set up the Behaviors as you want. If the units the bot is supposed to use are already in the first instance, you can go back to that and click on each mek (or shift-click for multiple ones) and change teams as you wish.
+Once you have your basic TWGame set up, start a second TWGame (called an instance to reduce confusion) of MegaMek. 'Connect as a Computer Player', then set up the Behaviors as you want. If the units the bot is supposed to use are already in the first instance, you can go back to that and click on each mek (or shift-click for multiple ones) and change teams as you wish.
 
-Note1: You don't have to operate in this fashion, you can have one game run all the bot clients you wish. The only time you HAVE to run a separate instance is when you will want to change Behaviors for the bot client(s). I prefer to use this fashion for larger or longer games as it allows you to have separate logs and save games. I believe it does speed up Princess' decision making to have separate instances open.
+Note1: You don't have to operate in this fashion, you can have one TWGame run all the bot clients you wish. The only time you HAVE to run a separate instance is when you will want to change Behaviors for the bot client(s). I prefer to use this fashion for larger or longer games as it allows you to have separate logs and save games. I believe it does speed up Princess' decision making to have separate instances open.
 Note2: The more bots you have running and the more units each one controls, the more memory MM will use. Running separate instances will compound this memory issue. This doesn't really seem to be a problem with modern machines.
 Note3: Multiple Princess bots within one instance of MM can be on the same C3 or C3i network.
 

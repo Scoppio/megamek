@@ -30,7 +30,7 @@ import megamek.common.Compute;
 import megamek.common.ComputeECM;
 import megamek.common.Coords;
 import megamek.common.Entity;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Mek;
 import megamek.common.Minefield;
 import megamek.common.MiscType;
@@ -51,11 +51,11 @@ public class LRMHandler extends MissileWeaponHandler {
     @Serial
     private static final long serialVersionUID = -9160255801810263821L;
 
-    public LRMHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public LRMHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         this(t, w, g, m, 0);
     }
 
-    public LRMHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m, int salvoMod) {
+    public LRMHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m, int salvoMod) {
         super(t, w, g, m);
         nSalvoBonus = salvoMod;
     }
@@ -72,7 +72,7 @@ public class LRMHandler extends MissileWeaponHandler {
             vPhaseReport.addElement(r);
             Coords coords = target.getPosition();
 
-            Enumeration<Minefield> minefields = game.getMinefields(coords)
+            Enumeration<Minefield> minefields = twGame.getMinefields(coords)
                     .elements();
             ArrayList<Minefield> mfRemoved = new ArrayList<>();
             while (minefields.hasMoreElements()) {
@@ -249,7 +249,7 @@ public class LRMHandler extends MissileWeaponHandler {
         // add AMS mods
         nMissilesModifier += getAMSHitsMod(vPhaseReport);
 
-        if (game.getOptions().booleanOption(OptionsConstants.ADVAERORULES_AERO_SANITY)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVAERORULES_AERO_SANITY)
                 && entityTarget != null && entityTarget.isLargeCraft()) {
             nMissilesModifier -= getAeroSanityAMSHitsMod();
         }
@@ -260,7 +260,7 @@ public class LRMHandler extends MissileWeaponHandler {
         // ELRMs only hit with half their rack size rounded up at minimum range.
         // Ignore this for space combat. 1 hex is 18km across.
         if (wtype instanceof ExtendedLRMWeapon
-                && !game.getBoard().inSpace()
+                && !twGame.getBoard().inSpace()
                 && (nRange <= wtype.getMinimumRange())) {
             rackSize = rackSize / 2 + rackSize % 2;
             minRangeELRMAttack = true;

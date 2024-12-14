@@ -22,16 +22,8 @@ package megamek.common.weapons;
 import java.io.Serial;
 import java.util.Vector;
 
-import megamek.common.BattleArmor;
-import megamek.common.Building;
-import megamek.common.Compute;
-import megamek.common.Entity;
-import megamek.common.Game;
-import megamek.common.Infantry;
-import megamek.common.Report;
-import megamek.common.TargetRoll;
-import megamek.common.Targetable;
-import megamek.common.ToHitData;
+import megamek.common.*;
+import megamek.common.TWGame;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.enums.GamePhase;
 import megamek.common.options.OptionsConstants;
@@ -44,7 +36,7 @@ public class SRMInfernoHandler extends SRMHandler {
     @Serial
     private static final long serialVersionUID = 826674238068613732L;
 
-    public SRMInfernoHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public SRMInfernoHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
         damageType = DamageType.INFERNO;
         sSalvoType = " inferno missile(s) ";
@@ -63,14 +55,14 @@ public class SRMInfernoHandler extends SRMHandler {
         }
         Entity entityTarget = (target.getTargetType() == Targetable.TYPE_ENTITY) ? (Entity) target
                 : null;
-        final boolean targetInBuilding = Compute.isInBuilding(game,
+        final boolean targetInBuilding = Compute.isInBuilding(twGame,
                 entityTarget);
         final boolean bldgDamagedOnMiss = targetInBuilding
                 && !(target instanceof Infantry)
                 && ae.getPosition().distance(target.getPosition()) <= 1;
 
         // Which building takes the damage?
-        Building bldg = game.getBoard().getBuildingAt(target.getPosition());
+        Building bldg = twGame.getBoard().getBuildingAt(target.getPosition());
 
         // Report weapon attack and its to-hit value.
         Report r = new Report(3115);
@@ -128,7 +120,7 @@ public class SRMInfernoHandler extends SRMHandler {
 
         // Set Margin of Success/Failure.
         toHit.setMoS(roll.getIntValue() - Math.max(2, toHit.getValue()));
-        bDirect = game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_DIRECT_BLOW)
+        bDirect = twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_DIRECT_BLOW)
                 && ((toHit.getMoS() / 3) >= 1) && (entityTarget != null);
         if (bDirect) {
             r = new Report(3189);
@@ -200,7 +192,7 @@ public class SRMInfernoHandler extends SRMHandler {
         // add AMS mods
         nMissilesModifier += getAMSHitsMod(vPhaseReport);
 
-        if (game.getOptions().booleanOption(OptionsConstants.ADVAERORULES_AERO_SANITY)) {
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVAERORULES_AERO_SANITY)) {
             Entity entityTarget = (target.getTargetType() == Targetable.TYPE_ENTITY) ? (Entity) target
                     : null;
             if (entityTarget != null && entityTarget.isLargeCraft()) {

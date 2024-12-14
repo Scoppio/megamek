@@ -37,7 +37,7 @@ public class TSEMPHandler extends EnergyWeaponHandler {
      * @param g
      * @param m
      */
-    public TSEMPHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public TSEMPHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 

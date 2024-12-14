@@ -106,7 +106,7 @@ class TerrainShadowHelper {
             return null;
         }
 
-        Board board = boardView.game.getBoard();
+        Board board = boardView.twGame.getBoard();
         if ((board == null) || board.inSpace()) {
             return null;
         }
@@ -120,11 +120,11 @@ class TerrainShadowHelper {
         }
 
         // Map editor? No shadows
-        if (boardView.game.getPhase().isUnknown()) {
+        if (boardView.twGame.getPhase().isUnknown()) {
             return null;
         }
 
-        PlanetaryConditions conditions = boardView.game.getPlanetaryConditions();
+        PlanetaryConditions conditions = boardView.twGame.getPlanetaryConditions();
         long stT = System.nanoTime();
 
         // 1) create or get the hex shadow
@@ -414,7 +414,7 @@ class TerrainShadowHelper {
             g.dispose();
             mask = boardView.createShadowMask(mask);
             mask = BLUR_OP.filter(mask, null);
-            PlanetaryConditions conditions = boardView.game.getPlanetaryConditions();
+            PlanetaryConditions conditions = boardView.twGame.getPlanetaryConditions();
             if (!conditions.getLight().isDay()) {
                 mask = BLUR_OP.filter(mask, null);
             }

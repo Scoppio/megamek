@@ -51,7 +51,7 @@ public class SBFClientGUIGameListener extends GameListenerAdapter {
 
     @Override
     public void gameBoardNew(GameBoardNewEvent e) {
-        clientGUI.bvGame.setBoard(e.getNewBoard());
+        clientGUI.bvtwGame.setBoard(e.getNewBoard());
     }
 
     @Override

@@ -39,7 +39,7 @@ public class ADAMissileWeaponHandler extends MissileWeaponHandler {
     @Serial
     private static final long serialVersionUID = 6329291710822071023L;
 
-    public ADAMissileWeaponHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public ADAMissileWeaponHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 

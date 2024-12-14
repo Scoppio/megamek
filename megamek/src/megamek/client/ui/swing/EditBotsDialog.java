@@ -48,8 +48,7 @@ import megamek.client.ui.Messages;
 import megamek.client.ui.baseComponents.AbstractButtonDialog;
 import megamek.client.ui.dialogs.BotConfigDialog;
 import megamek.client.ui.enums.DialogResult;
-import megamek.client.ui.swing.util.UIUtil;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Player;
 import megamek.logging.MMLogger;
 
@@ -67,7 +66,7 @@ public class EditBotsDialog extends AbstractButtonDialog {
     private final ClientGUI clientGui;
 
     /** Convenience field for clientGui.getClient().getGame(). */
-    private final Game game;
+    private final TWGame twGame;
 
     /** The id ordered list of displayed ghosts and bots players */
     private List<Player> ghostAndBotPlayers;
@@ -91,7 +90,7 @@ public class EditBotsDialog extends AbstractButtonDialog {
     protected EditBotsDialog(JFrame frame, ClientGUI clientGUI) {
         super(frame, "EditBotsDialog", "EditBotsDialog.title");
         this.clientGui = clientGUI;
-        game = clientGui.getClient().getGame();
+        TWGame = clientGui.getClient().getGame();
         refreshPlayers();
         initialize();
     }
@@ -108,7 +107,7 @@ public class EditBotsDialog extends AbstractButtonDialog {
     }
 
     protected void refreshPlayers() {
-        ghostAndBotPlayers = game.getPlayersList().stream()
+        ghostAndBotPlayers = twGame.getPlayersList().stream()
                 .filter(client -> client.isGhost() || client.isBot())
                 .sorted(Comparator.comparingInt(Player::getId)).collect(Collectors.toList());
         ghostAndBotPlayers.forEach(player -> botConfigs.put(player, new BehaviorSettings()));
@@ -145,7 +144,7 @@ public class EditBotsDialog extends AbstractButtonDialog {
         gridPanel.add(new JSeparator());
 
         // The rows for the ghost players
-        Map<String, BehaviorSettings> savedSettings = game.getBotSettings();
+        Map<String, BehaviorSettings> savedSettings = twGame.getBotSettings();
         for (Player player : ghostAndBotPlayers) {
             // Name
             gridPanel.add(new JLabel(player.toString()));
@@ -280,7 +279,7 @@ public class EditBotsDialog extends AbstractButtonDialog {
     }
 
     private void callRestoreConfig(Player botOrGhost) {
-        Map<String, BehaviorSettings> savedSettings = game.getBotSettings();
+        Map<String, BehaviorSettings> savedSettings = twGame.getBotSettings();
         if ((savedSettings != null) && savedSettings.containsKey(botOrGhost.getName())) {
             try {
                 // Don't change the existing saved settings

@@ -17,7 +17,7 @@ import java.util.Vector;
 
 import megamek.common.Compute;
 import megamek.common.HitData;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Infantry;
 import megamek.common.Report;
 import megamek.common.Targetable;
@@ -38,14 +38,14 @@ public class MekMortarHandler extends AmmoWeaponHandler {
      * @param g
      * @param m
      */
-    public MekMortarHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public MekMortarHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
         generalDamageType = HitData.DAMAGE_MISSILE;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#calcHits(java.util.Vector)
      */
     @Override
@@ -97,7 +97,7 @@ public class MekMortarHandler extends AmmoWeaponHandler {
 
     /**
      * Calculate the clustering of the hits
-     * 
+     *
      * @return a <code>int</code> value saying how much hits are in each cluster
      *         of damage.
      */
@@ -108,7 +108,7 @@ public class MekMortarHandler extends AmmoWeaponHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#calcDamagePerHit()
      */
     @Override
@@ -119,7 +119,7 @@ public class MekMortarHandler extends AmmoWeaponHandler {
                     wtype.getInfantryDamageClass(),
                     ((Infantry) target).isMechanized(),
                     toHit.getThruBldg() != null, ae.getId(), calcDmgPerHitReport);
-            
+
             toReturn = applyGlancingBlowModifier(toReturn, true);
             return (int) toReturn;
         }

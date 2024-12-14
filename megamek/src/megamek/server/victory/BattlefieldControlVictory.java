@@ -22,7 +22,7 @@ package megamek.server.victory;
 import java.io.Serializable;
 import java.util.Map;
 
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Player;
 
 /**
@@ -33,16 +33,16 @@ import megamek.common.Player;
 public class BattlefieldControlVictory implements VictoryCondition, Serializable {
 
     @Override
-    public VictoryResult checkVictory(Game game, Map<String, Object> ctx) {
+    public VictoryResult checkVictory(TWGame twGame, Map<String, Object> ctx) {
         // check all players/teams for aliveness
         int playersAlive = 0;
         Player lastPlayer = null;
         boolean oneTeamAlive = false;
         int lastTeam = Player.TEAM_NONE;
         boolean unteamedAlive = false;
-        for (Player player : game.getPlayersList()) {
+        for (Player player : twGame.getPlayersList()) {
             int team = player.getTeam();
-            if (game.getLiveDeployedEntitiesOwnedBy(player) <= 0) {
+            if (twGame.getLiveDeployedEntitiesOwnedBy(player) <= 0) {
                 continue;
             }
             // we found a live one!

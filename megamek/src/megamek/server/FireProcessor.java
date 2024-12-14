@@ -36,7 +36,7 @@ import megamek.server.totalwarfare.TWGameManager;
 public class FireProcessor extends DynamicTerrainProcessor {
     private static final MMLogger logger = MMLogger.create(FireProcessor.class);
 
-    private Game game;
+    private TWGame twGame;
     Vector<Report> vPhaseReport;
 
     public FireProcessor(TWGameManager gameManager) {
@@ -45,7 +45,7 @@ public class FireProcessor extends DynamicTerrainProcessor {
 
     @Override
     public void doEndPhaseChanges(Vector<Report> vPhaseReport) {
-        game = gameManager.getGame();
+        TWGame = gameManager.getGame();
         this.vPhaseReport = vPhaseReport;
         removeSmokeTerrainFromHexes();
         resolveFire();
@@ -61,14 +61,14 @@ public class FireProcessor extends DynamicTerrainProcessor {
      * Level now denotes standard and inferno fires.
      */
     private void resolveFire() {
-        Board board = game.getBoard();
+        Board board = twGame.getBoard();
         int width = board.getWidth();
         int height = board.getHeight();
-        WindDirection windDirection = game.getPlanetaryConditions().getWindDirection();
-        Wind windStrength = game.getPlanetaryConditions().getWind();
+        WindDirection windDirection = twGame.getPlanetaryConditions().getWindDirection();
+        Wind windStrength = twGame.getPlanetaryConditions().getWind();
 
         // Get the position map of all entities in the game.
-        Hashtable<Coords, Vector<Entity>> positionMap = game.getPositionMap();
+        Hashtable<Coords, Vector<Entity>> positionMap = twGame.getPositionMap();
 
         // process smoke FIRST, before any fires spread or
         // smoke is produced.
@@ -77,7 +77,7 @@ public class FireProcessor extends DynamicTerrainProcessor {
         // Cycle through all buildings, checking for fire.
         // ASSUMPTION: buildings don't lose 2 CF on the turn a fire starts.
         // ASSUMPTION: multi-hex buildings lose 2 CF in each burning hex
-        Enumeration<Building> buildings = game.getBoard().getBuildings();
+        Enumeration<Building> buildings = twGame.getBoard().getBuildings();
         while (buildings.hasMoreElements()) {
             Building bldg = buildings.nextElement();
             Enumeration<Coords> bldgCoords = bldg.getCoords();
@@ -119,7 +119,7 @@ public class FireProcessor extends DynamicTerrainProcessor {
                         Vector<Report> burnReports = null;
                         if ((currentHex.containsTerrain(Terrains.WOODS)
                                 || currentHex.containsTerrain(Terrains.JUNGLE))
-                                && game.getOptions().booleanOption(OptionsConstants.ADVANCED_WOODS_BURN_DOWN)) {
+                                && twGame.getOptions().booleanOption(OptionsConstants.ADVANCED_WOODS_BURN_DOWN)) {
                             burnReports = burnDownWoods(currentCoords);
                         }
                         // report and check for fire spread
@@ -146,7 +146,7 @@ public class FireProcessor extends DynamicTerrainProcessor {
                 Hex currentHex = board.getHex(currentXCoord, currentYCoord);
 
                 if (currentHex.containsTerrain(Terrains.FIRE)) {
-                    Building bldg = game.getBoard().getBuildingAt(currentCoords);
+                    Building bldg = twGame.getBoard().getBuildingAt(currentCoords);
                     // Was the fire started this turn?
                     if (currentHex.getFireTurn() == 0) {
                         // Report fire started this round
@@ -165,9 +165,9 @@ public class FireProcessor extends DynamicTerrainProcessor {
                     boolean containsForest = (currentHex.containsTerrain(Terrains.WOODS)
                             || currentHex.containsTerrain(Terrains.JUNGLE));
                     boolean bInferno = currentHex.terrainLevel(Terrains.FIRE) == 2;
-                    PlanetaryConditions conditions = game.getPlanetaryConditions();
+                    PlanetaryConditions conditions = twGame.getPlanetaryConditions();
                     if (conditions.getWind().isWeakerThan(Wind.TORNADO_F1_TO_F3)
-                            && !(game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_FOREST_FIRES_NO_SMOKE)
+                            && !(twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_FOREST_FIRES_NO_SMOKE)
                                     && containsForest
                                     && (bldg == null))) {
                         ArrayList<Coords> smokeList = new ArrayList<>();
@@ -192,7 +192,7 @@ public class FireProcessor extends DynamicTerrainProcessor {
         Vector<Report> burnReports = new Vector<>();
         int burnDamage = 5;
         try {
-            burnDamage = game.getOptions().intOption(OptionsConstants.ADVANCED_WOODS_BURN_DOWN_AMOUNT);
+            burnDamage = twGame.getOptions().intOption(OptionsConstants.ADVANCED_WOODS_BURN_DOWN_AMOUNT);
         } catch (Exception ex) {
             logger.error("", ex);
         }
@@ -222,7 +222,7 @@ public class FireProcessor extends DynamicTerrainProcessor {
         // to
         // a level 1 building at base level 0, for example.
 
-        final int curHeight = game.getBoard().getHex(src).ceiling();
+        final int curHeight = twGame.getBoard().getHex(src).ceiling();
 
         TargetRoll directroll = new TargetRoll(9, "spread downwind");
         TargetRoll obliqueroll = new TargetRoll(11, "spread 60 degrees to downwind");
@@ -241,8 +241,8 @@ public class FireProcessor extends DynamicTerrainProcessor {
         // Spread to the next hex downwind on a 12 if the first hex wasn't
         // burning...
         // unless a higher hex intervenes
-        Hex nextHex = game.getBoard().getHex(nextCoords);
-        Hex jumpHex = game.getBoard().getHex(nextCoords.translated(windDir.ordinal()));
+        Hex nextHex = twGame.getBoard().getHex(nextCoords);
+        Hex jumpHex = twGame.getBoard().getHex(nextCoords.translated(windDir.ordinal()));
         if ((nextHex != null) && (jumpHex != null) && !(nextHex.containsTerrain(Terrains.FIRE))
                 && ((curHeight >= nextHex.ceiling()) || (jumpHex.ceiling() >= nextHex.ceiling()))) {
             // we've already gone one step in the wind direction, now go another
@@ -268,7 +268,7 @@ public class FireProcessor extends DynamicTerrainProcessor {
      */
     public void spreadFire(final Coords origin, final Coords coords, final TargetRoll roll,
             final int height) {
-        Hex hex = game.getBoard().getHex(coords);
+        Hex hex = twGame.getBoard().getHex(coords);
         if ((hex == null) || (Math.abs(hex.ceiling() - height) > 4)) {
             // Don't attempt to spread fire off the board or for large differences in height
             return;
@@ -281,14 +281,14 @@ public class FireProcessor extends DynamicTerrainProcessor {
 
     /** Processes smoke drift and dissipation. */
     private void resolveSmoke() {
-        final Board board = game.getBoard();
-        final WindDirection windDir = game.getPlanetaryConditions().getWindDirection();
-        PlanetaryConditions conditions = game.getPlanetaryConditions();
-        Wind windStr = game.getPlanetaryConditions().getWind();
+        final Board board = twGame.getBoard();
+        final WindDirection windDir = twGame.getPlanetaryConditions().getWindDirection();
+        PlanetaryConditions conditions = twGame.getPlanetaryConditions();
+        Wind windStr = twGame.getPlanetaryConditions().getWind();
 
         // If the Smoke Drift option is turned on, treat wind strength as light gale if
         // there is none
-        if (game.getOptions().booleanOption(OptionsConstants.BASE_BREEZE)
+        if (twGame.getOptions().booleanOption(OptionsConstants.BASE_BREEZE)
                 && conditions.getWind().isCalm()) {
             windStr = Wind.LIGHT_GALE;
         }
@@ -323,7 +323,7 @@ public class FireProcessor extends DynamicTerrainProcessor {
         }
         allReplacementHexes.keySet().forEach(cloud -> cloud.replaceCoords(allReplacementHexes.get(cloud)));
 
-        game.removeEmptySmokeClouds();
+        twGame.removeEmptySmokeClouds();
 
         // Process smoke dissipation
         for (SmokeCloud cloud : preExistingSmokeClouds()) {
@@ -337,7 +337,7 @@ public class FireProcessor extends DynamicTerrainProcessor {
             cloud.setDrift(false);
         }
 
-        game.removeCompletelyDissipatedSmokeClouds();
+        twGame.removeCompletelyDissipatedSmokeClouds();
     }
 
     /**
@@ -345,7 +345,7 @@ public class FireProcessor extends DynamicTerrainProcessor {
      * marks the hexes for client update.
      */
     private void reapplySmokeTerrain() {
-        for (SmokeCloud cloud : game.getSmokeCloudList()) {
+        for (SmokeCloud cloud : twGame.getSmokeCloudList()) {
             for (Coords coords : cloud.getCoordsList()) {
                 Hex smokeHex = gameManager.getGame().getBoard().getHex(coords);
                 if (smokeHex != null) {
@@ -375,8 +375,8 @@ public class FireProcessor extends DynamicTerrainProcessor {
 
     /** Removes smoke (Terrains.SMOKE) from all hexes of all smoke clouds. */
     private void removeSmokeTerrainFromHexes() {
-        for (SmokeCloud cloud : game.getSmokeCloudList()) {
-            game.getBoard().getHexes(cloud.getCoordsList()).forEach(h -> h.removeTerrain(Terrains.SMOKE));
+        for (SmokeCloud cloud : twGame.getSmokeCloudList()) {
+            twGame.getBoard().getHexes(cloud.getCoordsList()).forEach(h -> h.removeTerrain(Terrains.SMOKE));
         }
     }
 
@@ -414,7 +414,7 @@ public class FireProcessor extends DynamicTerrainProcessor {
     public @Nullable Coords driftAddSmoke(final Coords src, final WindDirection windDir, final Wind windStr,
             final int directionChanges) {
         Coords nextCoords = src.translated(windDir.ordinal());
-        Board board = game.getBoard();
+        Board board = twGame.getBoard();
 
         // if the wind conditions are calm, then don't drift it
         if (windStr.isCalm()) {

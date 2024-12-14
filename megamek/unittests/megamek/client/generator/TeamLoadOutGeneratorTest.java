@@ -52,7 +52,7 @@ class TeamLoadOutGeneratorTest {
     static GameOptions mockGameOptions = mock(GameOptions.class);
     static ClientGUI cg = mock(ClientGUI.class);
     static Client client = mock(Client.class);
-    static Game game = new Game();
+    static TWGame twGame = new TWGame();
 
     static Team team = new Team(0);
     static Player player = new Player(0, "Test");
@@ -72,8 +72,8 @@ class TeamLoadOutGeneratorTest {
     @BeforeEach
     void setUp() {
         when(cg.getClient()).thenReturn(client);
-        when(cg.getClient().getGame()).thenReturn(game);
-        game.setOptions(mockGameOptions);
+        when(cg.getClient().getGame()).thenReturn(twGame);
+        twGame.setOptions(mockGameOptions);
 
         when(mockGameOptions.booleanOption(eq(OptionsConstants.ALLOWED_NO_CLAN_PHYSICAL))).thenReturn(false);
         when(mockGameOptions.stringOption(OptionsConstants.ALLOWED_TECHLEVEL)).thenReturn("Experimental");
@@ -87,7 +87,7 @@ class TeamLoadOutGeneratorTest {
         when(mockGameOptions.intOption(OptionsConstants.ALLOWED_YEAR)).thenReturn(3151);
 
         team.addPlayer(player);
-        game.addPlayer(0, player);
+        twGame.addPlayer(0, player);
     }
 
     @AfterEach
@@ -123,7 +123,7 @@ class TeamLoadOutGeneratorTest {
 
     @Test
     void testReconfigureEntityFallbackAmmoType() throws LocationFullException {
-        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(game);
+        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(twGame);
         Mek mockMek = createMek("Mauler", "MAL-1K", "Tyson");
         Mounted<?> bin1 = mockMek.addEquipment(mockAC5AmmoType, Mek.LOC_LT);
         Mounted<?> bin2 = mockMek.addEquipment(mockAC5AmmoType, Mek.LOC_LT);
@@ -148,7 +148,7 @@ class TeamLoadOutGeneratorTest {
 
     @Test
     void testReconfigureEntityMekNoAmmoTypesRequested() throws LocationFullException {
-        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(game);
+        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(twGame);
 
         Mek mockMek = createMek("Catapult", "CPLT-C1", "J. Robert Hoppenheimer");
         Mounted<?> bin1 = mockMek.addEquipment(mockLRM15AmmoType, Mek.LOC_LT);
@@ -163,7 +163,7 @@ class TeamLoadOutGeneratorTest {
 
     @Test
     void testReconfigureEntityMekOneAmmoType() throws LocationFullException {
-        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(game);
+        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(twGame);
 
         Mek mockMek = createMek("Catapult", "CPLT-C1", "J. Robert Hoppenheimer");
         Mounted<?> bin1 = mockMek.addEquipment(mockLRM15AmmoType, Mek.LOC_LT);
@@ -191,7 +191,7 @@ class TeamLoadOutGeneratorTest {
 
     @Test
     void testReconfigureEntityMekThreeAmmoTypesFourBins() throws LocationFullException {
-        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(game);
+        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(twGame);
 
         Mek mockMek = createMek("Catapult", "CPLT-C1", "J. Robert Hoppenheimer");
         Mounted<?> bin1 = mockMek.addEquipment(mockLRM15AmmoType, Mek.LOC_LT);
@@ -222,7 +222,7 @@ class TeamLoadOutGeneratorTest {
 
     @Test
     void testReconfigureTwoEntityMeksGenericAndNamed() throws LocationFullException {
-        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(game);
+        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(twGame);
 
         Mek mockMek = createMek("Catapult", "CPLT-C1", "J. Robert Hoppenheimer");
         Mek mockMek2 = createMek("Catapult", "CPLT-C1", "John Q. Public");
@@ -260,7 +260,7 @@ class TeamLoadOutGeneratorTest {
 
     @Test
     void testReconfigureTeamOfMeks() throws LocationFullException {
-        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(game);
+        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(twGame);
         ReconfigurationParameters rp = new ReconfigurationParameters();
         Mek mockMek = createMek("Hunchback", "HBK-4G", "Boomstick");
         Mek mockMek2 = createMek("Hunchback", "HBK-4J", "The Shade");
@@ -268,9 +268,9 @@ class TeamLoadOutGeneratorTest {
         mockMek.setOwner(player);
         mockMek2.setOwner(player);
         mockMek3.setOwner(player);
-        game.setEntity(0, mockMek);
-        game.setEntity(1, mockMek2);
-        game.setEntity(2, mockMek3);
+        twGame.setEntity(0, mockMek);
+        twGame.setEntity(1, mockMek2);
+        twGame.setEntity(2, mockMek3);
 
         // Load ammo in 'meks; locations are for fun
         Mounted<?> bin1 = mockMek.addEquipment(mockAC20AmmoType, Mek.LOC_CT);
@@ -292,7 +292,7 @@ class TeamLoadOutGeneratorTest {
         // Kintaro's go under different keys
         mt.insertImperative("Kintaro", "KTO-18", "any", "SRM", "Inferno:Standard");
 
-        tlg.reconfigureEntities(game.getPlayerEntities(player, false), "FS", mt, rp);
+        tlg.reconfigureEntities(twGame.getPlayerEntities(player, false), "FS", mt, rp);
 
         // Check loadouts
         // 1. AC20 HBK should have two tons of Caseless
@@ -311,16 +311,16 @@ class TeamLoadOutGeneratorTest {
 
     @Test
     void testRandomReconfigureBotTeam() throws LocationFullException {
-        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(game);
+        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(twGame);
         Mek mockMek = createMek("Hunchback", "HBK-4G", "Boomstick");
         Mek mockMek2 = createMek("Hunchback", "HBK-4J", "The Shade");
         Mek mockMek3 = createMek("Kintaro", "KTO-18", "Dragonpunch");
         mockMek.setOwner(player);
         mockMek2.setOwner(player);
         mockMek3.setOwner(player);
-        game.setEntity(0, mockMek);
-        game.setEntity(1, mockMek2);
-        game.setEntity(2, mockMek3);
+        twGame.setEntity(0, mockMek);
+        twGame.setEntity(1, mockMek2);
+        twGame.setEntity(2, mockMek3);
 
         // Load ammo in 'meks; locations are for fun
         Mounted<?> bin1 = mockMek.addEquipment(mockAC20AmmoType, Mek.LOC_CT);
@@ -341,34 +341,34 @@ class TeamLoadOutGeneratorTest {
 
     @Test
     void testLoadEntityListTwoEntities() throws LocationFullException {
-        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(game);
+        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(twGame);
         Mek mockMek = createMek("Hunchback", "HBK-4G", "Boomstick");
         Mek mockMek2 = createMek("Hunchback", "HBK-4J", "The Shade");
         Mek mockMek3 = createMek("Kintaro", "KTO-18", "Dragonpunch");
         mockMek.setOwner(player);
         mockMek2.setOwner(player);
         mockMek3.setOwner(player);
-        game.setEntity(0, mockMek);
-        game.setEntity(1, mockMek2);
-        game.setEntity(2, mockMek3);
+        twGame.setEntity(0, mockMek);
+        twGame.setEntity(1, mockMek2);
+        twGame.setEntity(2, mockMek3);
 
         MunitionTree original = new MunitionTree();
-        original.loadEntityList(game.getPlayerEntities(player, false));
+        original.loadEntityList(twGame.getPlayerEntities(player, false));
         tlg.randomizeBotTeamConfiguration(team, "CCY");
     }
 
     @Test
     void testReconfigureBotTeamNoEnemyInfo() throws LocationFullException {
-        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(game);
+        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(twGame);
         Mek mockMek = createMek("Hunchback", "HBK-4G", "Boomstick");
         Mek mockMek2 = createMek("Hunchback", "HBK-4J", "The Shade");
         Mek mockMek3 = createMek("Kintaro", "KTO-18", "Dragonpunch");
         mockMek.setOwner(player);
         mockMek2.setOwner(player);
         mockMek3.setOwner(player);
-        game.setEntity(0, mockMek);
-        game.setEntity(1, mockMek2);
-        game.setEntity(2, mockMek3);
+        twGame.setEntity(0, mockMek);
+        twGame.setEntity(1, mockMek2);
+        twGame.setEntity(2, mockMek3);
 
         // Load ammo in 'meks; locations are for fun
         Mounted<?> bin1 = mockMek.addEquipment(mockAC20AmmoType, Mek.LOC_CT);
@@ -389,7 +389,7 @@ class TeamLoadOutGeneratorTest {
 
     @Test
     void testReconfigureBotTeamAllArtemis() throws LocationFullException {
-        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(game);
+        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(twGame);
         Mek mockMek = createMek("Warhammer", "WHM-6Rb", "Asgard");
         mockMek.addEquipment(EquipmentType.get("IS Artemis IV FCS"), Mek.LOC_RT);
         Mek mockMek2 = createMek("Valkyrie", "VLK-QW5", "Wobbles");
@@ -399,9 +399,9 @@ class TeamLoadOutGeneratorTest {
         mockMek.setOwner(player);
         mockMek2.setOwner(player);
         mockMek3.setOwner(player);
-        game.setEntity(0, mockMek);
-        game.setEntity(1, mockMek2);
-        game.setEntity(2, mockMek3);
+        twGame.setEntity(0, mockMek);
+        twGame.setEntity(1, mockMek2);
+        twGame.setEntity(2, mockMek3);
 
         // Load ammo in 'meks; locations are for fun
         Mounted<?> bin1 = mockMek.addEquipment(mockSRM6AmmoType, Mek.LOC_CT);
@@ -422,7 +422,7 @@ class TeamLoadOutGeneratorTest {
     // Section: legalityCheck tests
     @Test
     void testAmmoTypeIllegalByTechLevel() {
-        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(game);
+        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(twGame);
         AmmoType aType = (AmmoType) EquipmentType.get("IS Arrow IV Ammo");
         AmmoType mType = AmmoType.getMunitionsFor(aType.getAmmoType()).stream()
                 .filter(m -> m.getSubMunitionName().contains("ADA")).findFirst().orElse(null);
@@ -449,7 +449,7 @@ class TeamLoadOutGeneratorTest {
 
     @Test
     void testAmmoTypeIllegalBeforeCreation() {
-        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(game);
+        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(twGame);
         AmmoType aType = (AmmoType) EquipmentType.get("IS Arrow IV Ammo");
         AmmoType mType = AmmoType.getMunitionsFor(aType.getAmmoType()).stream()
                 .filter(m -> m.getSubMunitionName().contains("ADA")).findFirst().orElse(null);
@@ -534,7 +534,7 @@ class TeamLoadOutGeneratorTest {
         // Have the Munition Tree generator use our pre-made mwc so we can see its
         // changes
 
-        ArrayList<Entity> ownTeamEntities = (ArrayList<Entity>) IteratorUtils.toList(game.getTeamEntities(team));
+        ArrayList<Entity> ownTeamEntities = (ArrayList<Entity>) IteratorUtils.toList(twGame.getTeamEntities(team));
         TeamLoadOutGenerator.generateMunitionTree(rp, ownTeamEntities, "", mwc);
 
         assertEquals(0.0, mwc.getArtyWeights().get("Davy Crockett-M"));
@@ -543,7 +543,7 @@ class TeamLoadOutGeneratorTest {
 
     @Test
     void testClampAmmoShotsReduceAmmoBinsToZero() throws LocationFullException {
-        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(game);
+        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(twGame);
 
         Mek mockMek = createMek("Catapult", "CPLT-C1", "J. Robert Hoppenheimer");
         Mounted<?> bin1 = mockMek.addEquipment(mockLRM15AmmoType, Mek.LOC_LT);
@@ -558,7 +558,7 @@ class TeamLoadOutGeneratorTest {
     void testClampAmmoShotsPositiveSmallFloatGivesOneShot() throws LocationFullException {
         // LRM15s carry 8 shots, the clamp function should give 1 shot at 10% / 0.1f
         // ratio
-        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(game);
+        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(twGame);
 
         Mek mockMek = createMek("Catapult", "CPLT-C1", "J. Robert Hoppenheimer");
         Mounted<?> bin1 = mockMek.addEquipment(mockLRM15AmmoType, Mek.LOC_LT);
@@ -573,7 +573,7 @@ class TeamLoadOutGeneratorTest {
     void testClampAmmoShotsSetToHalf() throws LocationFullException {
         // LRM15s carry 8 shots, the clamp function should give 4 shot at 40% / 0.5f
         // ratio
-        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(game);
+        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(twGame);
 
         Mek mockMek = createMek("Catapult", "CPLT-C1", "J. Robert Hoppenheimer");
         Mounted<?> bin1 = mockMek.addEquipment(mockLRM15AmmoType, Mek.LOC_LT);
@@ -587,7 +587,7 @@ class TeamLoadOutGeneratorTest {
     @Test
     void testClampAmmoShotsCannotExceedFull() throws LocationFullException {
         // LRM15s carry 8 shots, the clamp function should give 8 shot at 100% or over
-        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(game);
+        TeamLoadOutGenerator tlg = new TeamLoadOutGenerator(twGame);
 
         Mek mockMek = createMek("Catapult", "CPLT-C1", "J. Robert Hoppenheimer");
         Mounted<?> bin1 = mockMek.addEquipment(mockLRM15AmmoType, Mek.LOC_LT);

@@ -19,14 +19,8 @@
  */
 package megamek.common.weapons;
 
-import megamek.common.AmmoType;
-import megamek.common.BattleArmor;
-import megamek.common.Compute;
-import megamek.common.HitData;
-import megamek.common.Game;
-import megamek.common.Infantry;
-import megamek.common.RangeType;
-import megamek.common.ToHitData;
+import megamek.common.*;
+import megamek.common.TWGame;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.options.OptionsConstants;
 import megamek.server.totalwarfare.TWGameManager;
@@ -39,14 +33,14 @@ public class ChemicalLaserHandler extends AmmoWeaponHandler {
      * @param waa
      * @param g
      */
-    public ChemicalLaserHandler(ToHitData toHit, WeaponAttackAction waa, Game g, TWGameManager m) {
+    public ChemicalLaserHandler(ToHitData toHit, WeaponAttackAction waa, TWGame g, TWGameManager m) {
         super(toHit, waa, g, m);
         generalDamageType = HitData.DAMAGE_ENERGY;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#calcDamagePerHit()
      */
     @Override
@@ -62,7 +56,7 @@ public class ChemicalLaserHandler extends AmmoWeaponHandler {
             toReturn *= ((BattleArmor) ae).getShootingStrength();
         }
         // Check for Altered Damage from Energy Weapons (TacOp, pg.83)
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_ALTDMG)) {
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_ALTDMG)) {
             if (nRange <= 1) {
                 toReturn++;
             } else if (nRange <= wtype.getMediumRange()) {
@@ -72,14 +66,14 @@ public class ChemicalLaserHandler extends AmmoWeaponHandler {
             }
         }
 
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE)
             && (nRange > wtype.getRanges(weapon)[RangeType.RANGE_LONG])) {
             toReturn -= 1;
         }
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS_RANGE)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS_RANGE)
                 && (nRange > wtype.getRanges(weapon)[RangeType.RANGE_EXTREME])) {
             toReturn = (int) Math.floor(toReturn * .75);
-        }        
+        }
 
         if (target.isConventionalInfantry()) {
             toReturn = Compute.directBlowInfantryDamage(

@@ -109,7 +109,7 @@ class PrincessTest {
         when(mockPrincess.isFallingBack(any(Entity.class))).thenReturn(false);
 
         when(mockPathRanker.distanceToClosestEnemy(any(Entity.class), nullable(Coords.class),
-                nullable(Game.class))).thenReturn(10.0);
+                nullable(twGame.class))).thenReturn(10.0);
 
         // Test a 6/9/6 regular mek.
         Entity mockMek = mock(BipedMek.class);
@@ -258,19 +258,19 @@ class PrincessTest {
         when(mockPrincess.calculateMoveIndex(eq(mockOffBoardArty), any(StringBuilder.class))).thenReturn(10.0);
 
         // Test a list of normal units.
-        Game mockGame = mock(Game.class);
+        TWGame mockTWGame = mock(twGame.class);
         GameOptions mockOptions = mock(GameOptions.class);
-        when(mockGame.getOptions()).thenReturn(mockOptions);
+        when(mocktwGame.getOptions()).thenReturn(mockOptions);
         when(mockOptions.booleanOption(OptionsConstants.INIT_SIMULTANEOUS_MOVEMENT)).thenReturn(false);
-        when(mockGame.getPhase()).thenReturn(GamePhase.MOVEMENT);
+        when(mocktwGame.getPhase()).thenReturn(GamePhase.MOVEMENT);
         GameTurn mockTurn = mock(GameTurn.class);
-        when(mockGame.getTurn()).thenReturn(mockTurn);
-        when(mockTurn.isValidEntity(any(Entity.class), any(Game.class))).thenCallRealMethod();
-        when(mockTurn.isValidEntity(any(Entity.class), any(Game.class), anyBoolean())).thenCallRealMethod();
+        when(mocktwGame.getTurn()).thenReturn(mockTurn);
+        when(mockTurn.isValidEntity(any(Entity.class), any(twGame.class))).thenCallRealMethod();
+        when(mockTurn.isValidEntity(any(Entity.class), any(twGame.class), anyBoolean())).thenCallRealMethod();
         PlanetaryConditions mockPC = new PlanetaryConditions();
         mockPC.setGravity(1.0f);
-        when(mockGame.getPlanetaryConditions()).thenReturn(mockPC);
-        when(mockPrincess.getGame()).thenReturn(mockGame);
+        when(mocktwGame.getPlanetaryConditions()).thenReturn(mockPC);
+        when(mockPrincess.getGame()).thenReturn(mockTWGame);
 
         List<Entity> testEntityList = new ArrayList<>();
         testEntityList.add(mockMek);
@@ -410,14 +410,14 @@ class PrincessTest {
         // Unit is on home edge.
         BasicPathRanker mockRanker = mock(BasicPathRanker.class);
         when(mockRanker.distanceToHomeEdge(any(Coords.class), any(CardinalEdge.class),
-                any(Game.class))).thenReturn(0);
+                any(twGame.class))).thenReturn(0);
         when(mockPrincess.getPathRanker(any(Entity.class))).thenReturn(mockRanker);
 
         // Mock objects so we don't have nulls.
         Coords mockCoords = mock(Coords.class);
         when(mockMek.getPosition()).thenReturn(mockCoords);
         when(mockPrincess.getHomeEdge(any(Entity.class))).thenReturn(CardinalEdge.NORTH);
-        Game mockGame = mock(Game.class);
+        IGame mockGame = mock(twGame.class);
         when(mockPrincess.getGame()).thenReturn(mockGame);
         when(mockMek.canFlee(mockMek.getPosition())).thenReturn(true);
 
@@ -454,7 +454,7 @@ class PrincessTest {
         // The unit can flee, but is no longer on the board edge.
         when(mockMek.canFlee(mockMek.getPosition())).thenReturn(true);
         when(mockRanker.distanceToHomeEdge(any(Coords.class), any(CardinalEdge.class),
-                any(Game.class))).thenReturn(1);
+                any(twGame.class))).thenReturn(1);
         assertFalse(mockPrincess.mustFleeBoard(mockMek));
     }
 
@@ -467,11 +467,11 @@ class PrincessTest {
         when(mockHex.getLevel()).thenReturn(0);
         when(mockPrincess.getHex(any(Coords.class))).thenReturn(mockHex);
 
-        Game mockGame = mock(Game.class);
+        TWGame mockTWGame = mock(twGame.class);
         PlanetaryConditions mockPC = new PlanetaryConditions();
         mockPC.setGravity(1.0f);
-        when(mockGame.getPlanetaryConditions()).thenReturn(mockPC);
-        doReturn(mockGame).when(mockPrincess).getGame();
+        when(mocktwGame.getPlanetaryConditions()).thenReturn(mockPC);
+        doReturn(mockTWGame).when(mockPrincess).getGame();
 
         BehaviorSettings mockBehavior = mock(BehaviorSettings.class);
         when(mockBehavior.getFallShameIndex()).thenReturn(5);

@@ -29,7 +29,7 @@ import megamek.client.bot.princess.BehaviorSettingsFactory;
 import megamek.client.bot.princess.Princess;
 import megamek.client.bot.ui.swing.BotGUI;
 import megamek.codeUtilities.StringUtility;
-import megamek.common.Game;
+import megamek.common.IGame;
 import megamek.common.Player;
 import megamek.common.annotations.Nullable;
 
@@ -61,7 +61,7 @@ public class AddBotUtil {
     }
 
     public String addBot(final String[] args,
-            final Game game,
+            final IGame IGame,
             final String host,
             final int port) {
         if (2 > args.length) {
@@ -119,7 +119,7 @@ public class AddBotUtil {
         }
 
         Player target = null;
-        for (Player player : game.getPlayersList()) {
+        for (Player player : IGame.getPlayersList()) {
             if (player.getName().equals(playerName.toString())) {
                 target = player;
             }
@@ -187,13 +187,13 @@ public class AddBotUtil {
         Objects.requireNonNull(client);
         Objects.requireNonNull(behavior);
 
-        final Game game = client.getGame();
+        final IGame IGame = client.getGame();
         final String host = client.getHost();
         final int port = client.getPort();
 
-        Objects.requireNonNull(game);
+        Objects.requireNonNull(IGame);
 
-        Optional<Player> possible = game.getPlayersList().stream()
+        Optional<Player> possible = IGame.getPlayersList().stream()
                 .filter(p -> p.getName().equals(playerName)).findFirst();
         if (possible.isEmpty()) {
             message.append("No player with the name '" + playerName + "'.");
@@ -228,13 +228,13 @@ public class AddBotUtil {
         Objects.requireNonNull(client);
         Objects.requireNonNull(behavior);
 
-        final Game game = client.getGame();
+        final IGame IGame = client.getGame();
         final String host = client.getHost();
         final int port = client.getPort();
 
-        Objects.requireNonNull(game);
+        Objects.requireNonNull(IGame);
 
-        Optional<Player> possible = game.getPlayersList().stream()
+        Optional<Player> possible = IGame.getPlayersList().stream()
                 .filter(p -> p.getName().equals(playerName)).findFirst();
         if (possible.isEmpty()) {
             message.append("No player with the name '" + playerName + "'.");
@@ -276,10 +276,10 @@ public class AddBotUtil {
             StringBuilder message) {
 
         Objects.requireNonNull(client);
-        final Game game = client.getGame();
-        Objects.requireNonNull(game);
+        final IGame IGame = client.getGame();
+        Objects.requireNonNull(IGame);
 
-        Optional<Player> possible = game.getPlayersList().stream()
+        Optional<Player> possible = IGame.getPlayersList().stream()
                 .filter(p -> p.getName().equals(playerName)).findFirst();
 
         if (possible.isEmpty()) {

@@ -33,7 +33,7 @@ public class LRMFragHandler extends LRMHandler {
     @Serial
     private static final long serialVersionUID = 2308151080895016663L;
 
-    public LRMFragHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public LRMFragHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
         sSalvoType = " fragmentation missile(s) ";
         damageType = DamageType.FRAGMENTATION;

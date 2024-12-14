@@ -32,7 +32,7 @@ public class BattlefieldControlTrigger implements Trigger {
 
     @Override
     public boolean isTriggered(IGame game, TriggerSituation event) {
-        if (game instanceof Game twGame) {
+        if (game instanceof TWGame twGame) {
             return twGame.getEntitiesVector().stream()
                     .filter(e -> !e.isOffBoard())
                     .filter(e -> e.getPosition() != null)

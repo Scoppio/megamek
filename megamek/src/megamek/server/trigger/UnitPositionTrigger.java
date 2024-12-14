@@ -88,7 +88,7 @@ public class UnitPositionTrigger implements Trigger {
 
     @Override
     public boolean isTriggered(IGame game, TriggerSituation event) {
-        if (game instanceof Game) {
+        if (game instanceof TWGame) {
             List<InGameObject> allUnits = game.getInGameObjects();
             allUnits.addAll(game.getGraveyard());
             long matchingUnitCount = allUnits.stream()

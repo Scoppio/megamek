@@ -217,9 +217,9 @@ public class TeamOverviewPanel extends JPanel {
         }
 
         /** Updates the stored data from the provided game. */
-        public void updateTable(Game game) {
+        public void updateTable(TWGame twGame) {
             clearData();
-            for (Team team : game.getTeams()) {
+            for (Team team : twGame.getTeams()) {
                 teams.add(team);
                 teamID.add(team.getId());
                 teamNames.add(team.toString());
@@ -233,9 +233,9 @@ public class TeamOverviewPanel extends JPanel {
                 boolean[] unitWarnings = { false, false, false, false, false };
                 for (Player teamMember : team.players()) {
                     // Get the "real" player object, as the team's may be wrong
-                    Player player = game.getPlayer(teamMember.getId());
+                    Player player = twGame.getPlayer(teamMember.getId());
                     bv += player.getBV();
-                    for (Entity entity : game.getPlayerEntities(player, false)) {
+                    for (Entity entity : twGame.getPlayerEntities(player, false)) {
                         // Avoid counting fighters in squadrons twice
                         if (entity instanceof FighterSquadron) {
                             continue;
@@ -393,9 +393,9 @@ public class TeamOverviewPanel extends JPanel {
         }
 
         private boolean seeTeam(int row) {
-            Game game = clientGui.getClient().getGame();
-            return !game.getOptions().booleanOption(OptionsConstants.BASE_REAL_BLIND_DROP)
-                    || game.getTeamForPlayer(clientGui.getClient().getLocalPlayer()).getId() == teamID.get(row);
+            IGame IGame = clientGui.getClient().getGame();
+            return !IGame.getOptions().booleanOption(OptionsConstants.BASE_REAL_BLIND_DROP)
+                    || IGame.getTeamForPlayer(clientGui.getClient().getLocalPlayer()).getId() == teamID.get(row);
         }
 
         /**

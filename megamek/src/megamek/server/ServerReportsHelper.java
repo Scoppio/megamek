@@ -18,70 +18,67 @@
  */
 package megamek.server;
 
-import megamek.common.EjectedCrew;
-import megamek.common.Entity;
-import megamek.common.Game;
-import megamek.common.MekWarrior;
-import megamek.common.Player;
+import megamek.common.*;
+import megamek.common.TWGame;
 
 public class ServerReportsHelper {
 
-    public static int getUnitCount(Player player, Game game) {
-        return Math.toIntExact(game.getPlayerEntities(player, false).stream()
+    public static int getUnitCount(Player player, TWGame twGame) {
+        return Math.toIntExact(twGame.getPlayerEntities(player, false).stream()
                 .filter(entity -> !entity.isDestroyed() && !entity.isTrapped() && !(entity instanceof EjectedCrew)).count());
     }
 
-    public static int getUnitDamageCount(Player player, int damageLevel, Game game) {
-        return Math.toIntExact(game.getPlayerEntities(player, false).stream()
+    public static int getUnitDamageCount(Player player, int damageLevel, TWGame twGame) {
+        return Math.toIntExact(twGame.getPlayerEntities(player, false).stream()
                 .filter(entity -> !entity.isDestroyed() && !entity.isTrapped() && (entity.getDamageLevel() == damageLevel)
                         && !(entity instanceof EjectedCrew)).count());
     }
 
-    public static int getUnitDestroyedCount(Player player, Game game) {
-        return Math.toIntExact(game.getOutOfGameEntitiesVector().stream()
+    public static int getUnitDestroyedCount(Player player, TWGame twGame) {
+        return Math.toIntExact(twGame.getOutOfGameEntitiesVector().stream()
                 .filter(entity -> player.equals(entity.getOwner()) && entity.isDestroyed() && !(entity instanceof EjectedCrew)).count());
     }
 
-    public static int getUnitCrewEjectedCount(Player player, Game game) {
-        return Math.toIntExact(game.getOutOfGameEntitiesVector().stream()
+    public static int getUnitCrewEjectedCount(Player player, TWGame twGame) {
+        return Math.toIntExact(twGame.getOutOfGameEntitiesVector().stream()
                 .filter(entity -> player.equals(entity.getOwner()) && entity.getCrew().isEjected() && !(entity instanceof EjectedCrew)).count());
     }
 
-    public static int getUnitCrewTrappedCount(Player player, Game game) {
-        return Math.toIntExact(game.getOutOfGameEntitiesVector().stream()
+    public static int getUnitCrewTrappedCount(Player player, TWGame twGame) {
+        return Math.toIntExact(twGame.getOutOfGameEntitiesVector().stream()
                 .filter(entity -> player.equals(entity.getOwner()) && entity.isDestroyed() && !entity.getCrew().isDead()
                         && !entity.getCrew().isEjected() && !(entity instanceof EjectedCrew)).count());
     }
 
-    public static int getUnitCrewKilledCount(Player player, Game game) {
-        return Math.toIntExact(game.getOutOfGameEntitiesVector().stream()
+    public static int getUnitCrewKilledCount(Player player, TWGame twGame) {
+        return Math.toIntExact(twGame.getOutOfGameEntitiesVector().stream()
                 .filter(entity -> player.equals(entity.getOwner()) && entity.getCrew().isDead()
                         && !entity.getCrew().isEjected() && !(entity instanceof EjectedCrew)).count());
     }
 
-    public static int getEjectedCrewCount(Player player, Game game) {
-        return Math.toIntExact(game.getPlayerEntities(player, false).stream()
+    public static int getEjectedCrewCount(Player player, TWGame twGame) {
+        return Math.toIntExact(twGame.getPlayerEntities(player, false).stream()
                 .filter(entity -> !entity.isDestroyed() && !entity.isTrapped() &&
                         (((entity instanceof MekWarrior) && ((MekWarrior) entity).getPickedUpById() == Entity.NONE) ||
                                 ((entity instanceof EjectedCrew) && !(entity instanceof MekWarrior)))).count());
     }
 
-    public static int getEjectedCrewPickedUpByTeamCount(Player player, Game game) {
-        return Math.toIntExact(game.getPlayerEntities(player, false).stream()
+    public static int getEjectedCrewPickedUpByTeamCount(Player player, TWGame twGame) {
+        return Math.toIntExact(twGame.getPlayerEntities(player, false).stream()
                 .filter(entity -> !entity.isDestroyed() && !entity.isTrapped() &&
                         ((entity instanceof MekWarrior) && ((MekWarrior) entity).getPickedUpById() != Entity.NONE
-                                && game.getEntity(((MekWarrior) entity).getPickedUpById()).getOwner().getTeam() == player.getTeam())).count());
+                                && twGame.getEntity(((MekWarrior) entity).getPickedUpById()).getOwner().getTeam() == player.getTeam())).count());
     }
 
-    public static int getEjectedCrewPickedUpByEnemyTeamCount(Player player, Game game) {
-        return Math.toIntExact(game.getPlayerEntities(player, false).stream()
+    public static int getEjectedCrewPickedUpByEnemyTeamCount(Player player, TWGame twGame) {
+        return Math.toIntExact(twGame.getPlayerEntities(player, false).stream()
                 .filter(entity -> !entity.isDestroyed() && !entity.isTrapped() &&
                         ((entity instanceof MekWarrior) && ((MekWarrior) entity).getPickedUpById() != Entity.NONE
-                                && game.getEntity(((MekWarrior) entity).getPickedUpById()).getOwner().getTeam() != player.getTeam())).count());
+                                && twGame.getEntity(((MekWarrior) entity).getPickedUpById()).getOwner().getTeam() != player.getTeam())).count());
     }
 
-    public static int getEjectedCrewKilledCount(Player player, Game game) {
-        return Math.toIntExact(game.getOutOfGameEntitiesVector().stream()
+    public static int getEjectedCrewKilledCount(Player player, TWGame twGame) {
+        return Math.toIntExact(twGame.getOutOfGameEntitiesVector().stream()
                 .filter(entity -> entity.getOwner().equals(player) && entity.isDestroyed() && (entity instanceof EjectedCrew)).count());
     }
 
@@ -92,23 +89,23 @@ public class ServerReportsHelper {
      * @return the BV
      * @param player
      */
-    public static int getFledBV(Player player, Game game) {
+    public static int getFledBV(Player player, TWGame twGame) {
         //TODO: I'm not sure how squadrons are treated here - see getBV()
-        return game.getPlayerRetreatedEntities(player).stream()
+        return twGame.getPlayerRetreatedEntities(player).stream()
                 .filter(entity -> !entity.isDestroyed())
                 .mapToInt(Entity::calculateBattleValue).sum();
     }
 
-    public static int getFledUnitsCount(Player player, Game game) {
+    public static int getFledUnitsCount(Player player, TWGame twGame) {
         //TODO: I'm not sure how squadrons are treated here - see getBV()
-        return Math.toIntExact(game.getPlayerRetreatedEntities(player).stream()
+        return Math.toIntExact(twGame.getPlayerRetreatedEntities(player).stream()
                 .filter(entity -> !entity.isDestroyed() && !(entity instanceof EjectedCrew))
                 .mapToInt(Entity::calculateBattleValue).count());
     }
 
-    public static int getFledEjectedCrew(Player player, Game game) {
+    public static int getFledEjectedCrew(Player player, TWGame twGame) {
         //TODO: I'm not sure how squadrons are treated here - see getBV()
-        return Math.toIntExact(game.getPlayerRetreatedEntities(player).stream()
+        return Math.toIntExact(twGame.getPlayerRetreatedEntities(player).stream()
                 .filter(entity -> !entity.isDestroyed() && (entity instanceof EjectedCrew))
                 .mapToInt(Entity::calculateBattleValue).count());
     }

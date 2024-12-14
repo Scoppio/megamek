@@ -30,7 +30,7 @@ public class PrephaseTurn extends GameTurn {
     }
 
     @Override
-    public boolean isValidEntity(@Nullable Entity entity, Game game, boolean useValidNonInfantryCheck) {
-        return super.isValidEntity(entity, game, useValidNonInfantryCheck) && entity.isHidden();
+    public boolean isValidEntity(@Nullable Entity entity, TWGame twGame, boolean useValidNonInfantryCheck) {
+        return super.isValidEntity(entity, twGame, useValidNonInfantryCheck) && entity.isHidden();
     }
 }

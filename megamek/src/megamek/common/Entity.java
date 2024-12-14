@@ -167,7 +167,8 @@ public abstract class Entity extends TurnOrdered implements Transporter, Targeta
 
     public static final int USE_STRUCTURAL_RATING = -1;
 
-    protected transient Game game;
+    protected transient TWGame game;
+    protected transient IGame iGame;
 
     protected int id = Entity.NONE;
 
@@ -1063,7 +1064,17 @@ public abstract class Entity extends TurnOrdered implements Transporter, Targeta
      * @return the game.
      */
     @Nullable
-    public Game getGame() {
+    public TWGame getGame() {
+        return game;
+    }
+
+    /**
+     * This returns the game this Entity belongs to.
+     *
+     * @return the game.
+     */
+    @Nullable
+    public IGame getIGame() {
         return game;
     }
 
@@ -1072,11 +1083,11 @@ public abstract class Entity extends TurnOrdered implements Transporter, Targeta
      * checks that the game is in a consistent state. This function takes care
      * of the units transported by this entity.
      *
-     * @param game The current {@link Game}
+     * @param game The current {@link TWGame}
      */
-    @Override
-    public void setGame(Game game) {
+    public void setGame(TWGame game) {
         this.game = game;
+        this.iGame = game;
         restore();
         // Make sure the owner is set.
         if (null == owner) {

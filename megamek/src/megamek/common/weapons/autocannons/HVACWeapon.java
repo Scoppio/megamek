@@ -20,7 +20,7 @@
 package megamek.common.weapons.autocannons;
 
 import megamek.common.AmmoType;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Mounted;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
@@ -44,12 +44,12 @@ public abstract class HVACWeapon extends ACWeapon {
     }
 
     @Override
-    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, Game game, TWGameManager manager) {
-        Mounted<?> weapon = game.getEntity(waa.getEntityId()).getEquipment(waa.getWeaponId());
+    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, TWGame twGame, TWGameManager manager) {
+        Mounted<?> weapon = twGame.getEntity(waa.getEntityId()).getEquipment(waa.getWeaponId());
         if (weapon.curMode().equals("Rapid")) {
-            return new RapidfireHVACWeaponHandler(toHit, waa, game, manager);
+            return new RapidfireHVACWeaponHandler(toHit, waa, twGame, manager);
         } else {
-            return new HVACWeaponHandler(toHit, waa, game, manager);
+            return new HVACWeaponHandler(toHit, waa, twGame, manager);
         }
     }
 

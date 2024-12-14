@@ -29,7 +29,7 @@ import megamek.server.totalwarfare.TWGameManager;
 public class TAGHandler extends WeaponHandler {
     private static final long serialVersionUID = -967656770476044773L;
 
-    public TAGHandler(ToHitData toHit, WeaponAttackAction waa, Game g, TWGameManager m) {
+    public TAGHandler(ToHitData toHit, WeaponAttackAction waa, TWGame g, TWGameManager m) {
         super(toHit, waa, g, m);
     }
 
@@ -49,7 +49,7 @@ public class TAGHandler extends WeaponHandler {
 
             TagInfo info = new TagInfo(ae.getId(), Targetable.TYPE_ENTITY,
                     entityTarget, false);
-            game.addTagInfo(info);
+            twGame.addTagInfo(info);
             entityTarget.setTaggedBy(ae.getId());
 
             if (weapon.isInternalBomb()) {
@@ -72,7 +72,7 @@ public class TAGHandler extends WeaponHandler {
                                         Building bldg, Vector<Report> vPhaseReport) {
         // add even misses, as they waste homing missiles.
         TagInfo info = new TagInfo(ae.getId(), target.getTargetType(), target, true);
-        game.addTagInfo(info);
+        twGame.addTagInfo(info);
         return false;
     }
 

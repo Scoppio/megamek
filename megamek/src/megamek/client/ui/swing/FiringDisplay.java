@@ -529,9 +529,9 @@ public class FiringDisplay extends AttackPhaseDisplay implements ItemListener, L
         stopTimer();
 
         // end my turn, then.
-        Game game = clientgui.getClient().getGame();
-        Entity next = game.getNextEntity(game.getTurnIndex());
-        if (game.getPhase().isFiring() && (next != null) && (ce() != null)
+        TWGame twGame = clientgui.getClient().getGame();
+        Entity next = twGame.getNextEntity(twGame.getTurnIndex());
+        if (twGame.getPhase().isFiring() && (next != null) && (ce() != null)
                 && (next.getOwnerId() != ce().getOwnerId())) {
             clientgui.maybeShowUnitDisplay();
 
@@ -1040,25 +1040,25 @@ public class FiringDisplay extends AttackPhaseDisplay implements ItemListener, L
     }
 
     private void updateStrafingTargets() {
-        final Game game = clientgui.getClient().getGame();
+        final TWGame twGame = clientgui.getClient().getGame();
         final int weaponId = clientgui.getUnitDisplay().wPan.getSelectedWeaponNum();
         final Mounted<?> m = ce().getEquipment(weaponId);
         ToHitData toHit;
         StringBuffer toHitBuff = new StringBuffer();
         setFireEnabled(true);
         for (Coords c : strafingCoords) {
-            for (Entity t : game.getEntitiesVector(c)) {
+            for (Entity t : twGame.getEntitiesVector(c)) {
                 // Airborne units cannot be strafed
                 if (t.isAirborne()) {
                     continue;
                 }
                 // Can't shoot at infantry in the building
                 // Instead, strafe will hit the building, which could damage Inf
-                if (Compute.isInBuilding(game, t) && (t instanceof Infantry)) {
+                if (Compute.isInBuilding(twGame, t) && (t instanceof Infantry)) {
                     continue;
                 }
 
-                toHit = WeaponAttackAction.toHit(game, currentEntity, t, weaponId,
+                toHit = WeaponAttackAction.toHit(twGame, currentEntity, t, weaponId,
                         Entity.LOC_NONE, AimingMode.NONE, true);
                 toHitBuff.append(t.getShortName() + ": ");
                 toHitBuff.append(toHit.getDesc());
@@ -1068,17 +1068,17 @@ public class FiringDisplay extends AttackPhaseDisplay implements ItemListener, L
                     setFireEnabled(false);
                 }
             }
-            Building bldg = game.getBoard().getBuildingAt(c);
+            Building bldg = twGame.getBoard().getBuildingAt(c);
             if (bldg != null) {
-                Targetable t = new BuildingTarget(c, game.getBoard(), false);
-                toHit = WeaponAttackAction.toHit(game, currentEntity, t, weaponId,
+                Targetable t = new BuildingTarget(c, twGame.getBoard(), false);
+                toHit = WeaponAttackAction.toHit(twGame, currentEntity, t, weaponId,
                         Entity.LOC_NONE, AimingMode.NONE, true);
                 toHitBuff.append(t.getDisplayName() + ": ");
                 toHitBuff.append(toHit.getDesc());
                 toHitBuff.append("\n");
             }
             Targetable hexTarget = new HexTarget(c, HexTarget.TYPE_HEX_CLEAR);
-            toHit = WeaponAttackAction.toHit(game, currentEntity, hexTarget, weaponId,
+            toHit = WeaponAttackAction.toHit(twGame, currentEntity, hexTarget, weaponId,
                     Entity.LOC_NONE, AimingMode.NONE, true);
             if (m.getType().hasFlag(WeaponType.F_AUTO_TARGET)
                     || (toHit.getValue() == TargetRoll.IMPOSSIBLE)) {
@@ -1160,7 +1160,7 @@ public class FiringDisplay extends AttackPhaseDisplay implements ItemListener, L
      * queue.
      */
     void fire() {
-        final Game game = clientgui.getClient().getGame();
+        final TWGame twGame = clientgui.getClient().getGame();
         // get the selected weaponnum
         final int weaponNum = clientgui.getUnitDisplay().wPan.getSelectedWeaponNum();
         WeaponMounted mounted = (WeaponMounted) ce().getEquipment(weaponNum);
@@ -1174,7 +1174,7 @@ public class FiringDisplay extends AttackPhaseDisplay implements ItemListener, L
         // check if we now shoot at a target in the front arc and previously
         // shot a target in side/rear arc that then was primary target
         // if so, ask and tell the user that to-hits will change
-        if (!game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_NO_FORCED_PRIMARY_TARGETS)
+        if (!twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_NO_FORCED_PRIMARY_TARGETS)
                 && (ce() instanceof Mek) || (ce() instanceof Tank)
                 || (ce() instanceof ProtoMek)) {
             EntityAction lastAction = null;
@@ -1186,7 +1186,7 @@ public class FiringDisplay extends AttackPhaseDisplay implements ItemListener, L
 
             if (lastAction instanceof WeaponAttackAction) {
                 WeaponAttackAction oldWaa = (WeaponAttackAction) lastAction;
-                Targetable oldTarget = oldWaa.getTarget(game);
+                Targetable oldTarget = oldWaa.getTarget(twGame);
                 if (!oldTarget.equals(target)) {
                     boolean oldInFront = Compute.isInArc(ce().getPosition(),
                             ce().getSecondaryFacing(), oldTarget, ce().getForwardArc());
@@ -1212,13 +1212,13 @@ public class FiringDisplay extends AttackPhaseDisplay implements ItemListener, L
         if (isStrafing) {
             for (Coords c : strafingCoords) {
                 targets.add(new HexTarget(c, Targetable.TYPE_HEX_CLEAR));
-                Building bldg = game.getBoard().getBuildingAt(c);
+                Building bldg = twGame.getBoard().getBuildingAt(c);
                 if (bldg != null) {
-                    targets.add(new BuildingTarget(c, game.getBoard(), false));
+                    targets.add(new BuildingTarget(c, twGame.getBoard(), false));
                 }
                 // Target all ground units (non-airborne, VTOLs still count)
-                for (Entity t : game.getEntitiesVector(c)) {
-                    boolean infInBuilding = Compute.isInBuilding(game, t)
+                for (Entity t : twGame.getEntitiesVector(c)) {
+                    boolean infInBuilding = Compute.isInBuilding(twGame, t)
                             && (t instanceof Infantry);
                     if (!t.isAirborne() && !infInBuilding) {
                         targets.add(t);
@@ -1240,7 +1240,7 @@ public class FiringDisplay extends AttackPhaseDisplay implements ItemListener, L
                         t.getId(), weaponNum);
             } else {
                 waa = new ArtilleryAttackAction(currentEntity, t.getTargetType(),
-                        t.getId(), weaponNum, game);
+                        t.getId(), weaponNum, twGame);
             }
 
             // check for a bomb payload dialog
@@ -1292,7 +1292,7 @@ public class FiringDisplay extends AttackPhaseDisplay implements ItemListener, L
             // this will be recomputed from the local
             // @attacks EntityAttackLog, but Game actions
             // must be populated to calculate ToHit mods etc.
-            game.addAction(waa);
+            twGame.addAction(waa);
 
             // add the attack to our temporary queue
             addAttack(waa);
@@ -1546,16 +1546,16 @@ public class FiringDisplay extends AttackPhaseDisplay implements ItemListener, L
      */
     public void updateTarget() {
         setFireEnabled(false);
-        Game game = clientgui.getClient().getGame();
+        TWGame twGame = clientgui.getClient().getGame();
         // allow spotting
         if ((ce() != null) && !ce().isSpotting() && ce().canSpot() && (target != null)
-                && game.getOptions().booleanOption(OptionsConstants.BASE_INDIRECT_FIRE)) {
-            boolean hasLos = LosEffects.calculateLOS(game, ce(), target).canSee();
+                && twGame.getOptions().booleanOption(OptionsConstants.BASE_INDIRECT_FIRE)) {
+            boolean hasLos = LosEffects.calculateLOS(twGame, ce(), target).canSee();
             // In double blind, we need to "spot" the target as well as LoS
             if (hasLos
-                    && game.getOptions().booleanOption(OptionsConstants.ADVANCED_DOUBLE_BLIND)
-                    && !Compute.inVisualRange(game, ce(), target)
-                    && !Compute.inSensorRange(game, ce(), target, null)) {
+                    && twGame.getOptions().booleanOption(OptionsConstants.ADVANCED_DOUBLE_BLIND)
+                    && !Compute.inVisualRange(twGame, ce(), target)
+                    && !Compute.inSensorRange(twGame, ce(), target, null)) {
                 hasLos = false;
             }
             setSpotEnabled(hasLos);
@@ -1581,24 +1581,24 @@ public class FiringDisplay extends AttackPhaseDisplay implements ItemListener, L
                 boolean aiming = ash.isAimingAtLocation() && ash.allowAimedShotWith(weapon);
                 ash.setEnableAll(aiming);
                 if (aiming) {
-                    toHit = WeaponAttackAction.toHit(game, currentEntity, target,
+                    toHit = WeaponAttackAction.toHit(twGame, currentEntity, target,
                             weaponId, ash.getAimingAt(), ash.getAimingMode(),
                             false);
                     clientgui.getUnitDisplay().wPan.setTarget(target,
                             Messages.getFormattedString("MekDisplay.AimingAt", ash.getAimingLocation()));
                 } else {
-                    toHit = WeaponAttackAction.toHit(game, currentEntity, target, weaponId, Entity.LOC_NONE,
+                    toHit = WeaponAttackAction.toHit(twGame, currentEntity, target, weaponId, Entity.LOC_NONE,
                             AimingMode.NONE, false);
                     clientgui.getUnitDisplay().wPan.setTarget(target, null);
 
                 }
                 ash.setPartialCover(toHit.getCover());
             } else {
-                toHit = WeaponAttackAction.toHit(game, currentEntity, target, weaponId,
+                toHit = WeaponAttackAction.toHit(twGame, currentEntity, target, weaponId,
                         Entity.LOC_NONE, AimingMode.NONE, false);
                 clientgui.getUnitDisplay().wPan.setTarget(target, null);
             }
-            int effectiveDistance = Compute.effectiveDistance(game, ce(), target);
+            int effectiveDistance = Compute.effectiveDistance(twGame, ce(), target);
             clientgui.getUnitDisplay().wPan.wRangeR.setText("" + effectiveDistance);
             Mounted<?> m = ce().getEquipment(weaponId);
             // If we have a Centurion Weapon System selected, we may need to
@@ -2176,8 +2176,8 @@ public class FiringDisplay extends AttackPhaseDisplay implements ItemListener, L
      * @param pos - the <code>Coords</code> containing targets.
      */
     private Targetable chooseTarget(Coords pos) {
-        final Game game = clientgui.getClient().getGame();
-        boolean friendlyFire = game.getOptions().booleanOption(OptionsConstants.BASE_FRIENDLY_FIRE);
+        final TWGame twGame = clientgui.getClient().getGame();
+        boolean friendlyFire = twGame.getOptions().booleanOption(OptionsConstants.BASE_FRIENDLY_FIRE);
         // Assume that we have *no* choice.
         Targetable choice = null;
         Iterator<Entity> choices;
@@ -2207,9 +2207,9 @@ public class FiringDisplay extends AttackPhaseDisplay implements ItemListener, L
         }
         // Get the available choices, depending on friendly fire
         if (friendlyFire) {
-            choices = game.getEntities(pos);
+            choices = twGame.getEntities(pos);
         } else {
-            choices = game.getEnemyEntities(pos, ce());
+            choices = twGame.getEnemyEntities(pos, ce());
         }
 
         // Convert the choices into a List of targets.
@@ -2249,7 +2249,7 @@ public class FiringDisplay extends AttackPhaseDisplay implements ItemListener, L
 
         // If we clicked on a wooded hex with no other targets, clear woods
         if (targets.isEmpty()) {
-            Hex hex = game.getBoard().getHex(pos);
+            Hex hex = twGame.getBoard().getHex(pos);
             if (hex.containsTerrain(Terrains.WOODS)
                     || hex.containsTerrain(Terrains.JUNGLE)) {
                 targets.add(new HexTarget(pos, Targetable.TYPE_HEX_CLEAR));

@@ -19,7 +19,7 @@
  */
 package megamek.server.victory;
 
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Player;
 import megamek.common.Report;
 
@@ -39,12 +39,12 @@ public class BVDestroyedVictoryCondition implements BvVictoryCondition {
     }
 
     @Override
-    public VictoryResult checkVictory(Game game, Map<String, Object> ctx) {
+    public VictoryResult checkVictory(TWGame twGame, Map<String, Object> ctx) {
         boolean isVictory = false;
         VictoryResult victoryResult = new VictoryResult(true);
         HashSet<Integer> doneTeams = new HashSet<>();
 
-        for (Player player : game.getPlayersList()) {
+        for (Player player : twGame.getPlayersList()) {
             if (player.isObserver()) {
                 continue;
             }
@@ -55,8 +55,8 @@ public class BVDestroyedVictoryCondition implements BvVictoryCondition {
                 }
                 doneTeams.add(team);
             }
-            int enemyBV = getEnemyBV(game, player);
-            int enemyInitialBV = getEnemyInitialBV(game, player);
+            int enemyBV = getEnemyBV(twGame, player);
+            int enemyInitialBV = getEnemyInitialBV(twGame, player);
 
             if ((enemyInitialBV != 0) && ((enemyBV * 100) / enemyInitialBV <= 100 - destroyedPercent)) {
                 isVictory = true;

@@ -18,7 +18,7 @@
 package megamek.common.weapons.flamers;
 
 import megamek.common.AmmoType;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.weapons.AmmoWeapon;
@@ -49,14 +49,14 @@ public abstract class VehicleFlamerWeapon extends AmmoWeapon {
 
     @Override
     protected AttackHandler getCorrectHandler(ToHitData toHit,
-            WeaponAttackAction waa, Game game, TWGameManager manager) {
-        AmmoType atype = (AmmoType) game.getEntity(waa.getEntityId())
+                                              WeaponAttackAction waa, TWGame twGame, TWGameManager manager) {
+        AmmoType atype = (AmmoType) twGame.getEntity(waa.getEntityId())
                 .getEquipment(waa.getWeaponId()).getLinked().getType();
 
         if (atype.getMunitionType().contains(AmmoType.Munitions.M_COOLANT)) {
-            return new VehicleFlamerCoolHandler(toHit, waa, game, manager);
+            return new VehicleFlamerCoolHandler(toHit, waa, twGame, manager);
         } else {
-            return new VehicleFlamerHandler(toHit, waa, game, manager);
+            return new VehicleFlamerHandler(toHit, waa, twGame, manager);
         }
     }
 

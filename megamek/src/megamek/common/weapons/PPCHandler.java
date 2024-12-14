@@ -34,7 +34,7 @@ public class PPCHandler extends EnergyWeaponHandler {
     private static final long serialVersionUID = 5545991061428671743L;
     private int chargedCapacitor = 0;
 
-    public PPCHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public PPCHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
         // remember capacitor state and turn it off here,
         // so a crit in the firing phase does not cause an explosion, per the
@@ -60,7 +60,7 @@ public class PPCHandler extends EnergyWeaponHandler {
     protected int calcDamagePerHit() {
         double toReturn = wtype.getDamage(nRange);
 
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_ENERGY_WEAPONS)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_ENERGY_WEAPONS)
                 && weapon.hasModes()) {
             toReturn = Compute.dialDownDamage(weapon, wtype, nRange);
         }
@@ -77,7 +77,7 @@ public class PPCHandler extends EnergyWeaponHandler {
         }
 
         // Check for Altered Damage from Energy Weapons (TacOps, pg.83)
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_ALTDMG)) {
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_ALTDMG)) {
             if (nRange <= 1) {
                 toReturn++;
             } else if (nRange <= wtype.getMediumRange()) {
@@ -87,11 +87,11 @@ public class PPCHandler extends EnergyWeaponHandler {
             }
         }
 
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE)
                 && (nRange > wtype.getRanges(weapon)[RangeType.RANGE_LONG])) {
             toReturn -= 1;
         }
-        if (game.getOptions().booleanOption(
+        if (twGame.getOptions().booleanOption(
                 OptionsConstants.ADVCOMBAT_TACOPS_LOS_RANGE)
                 && (nRange > wtype.getRanges(weapon)[RangeType.RANGE_EXTREME])) {
             toReturn = (int) Math.floor(toReturn * .75);
@@ -125,12 +125,12 @@ public class PPCHandler extends EnergyWeaponHandler {
     @Override
     protected boolean doChecks(Vector<Report> vPhaseReport) {
         // Resolve roll for disengaged field inhibitors on PPCs, if needed
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_PPC_INHIBITORS)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_PPC_INHIBITORS)
                 && weapon.hasModes()
                 && weapon.curMode().equals("Field Inhibitor OFF")) {
             int rollTarget = 0;
             Roll diceRoll = Compute.rollD6(2);
-            int distance = Compute.effectiveDistance(game, ae, target);
+            int distance = Compute.effectiveDistance(twGame, ae, target);
 
             if (distance >= 3) {
                 rollTarget = 3;

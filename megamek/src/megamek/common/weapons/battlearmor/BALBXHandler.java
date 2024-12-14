@@ -17,7 +17,7 @@ import java.util.Vector;
 
 import megamek.common.BattleArmor;
 import megamek.common.Compute;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Infantry;
 import megamek.common.Report;
 import megamek.common.ToHitData;
@@ -30,7 +30,7 @@ public class BALBXHandler extends WeaponHandler {
 
     private static final String sSalvoType = " pellet(s) ";
 
-    public BALBXHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public BALBXHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 

@@ -336,9 +336,9 @@ public class PointblankShotDisplay extends FiringDisplay {
     @Override
     protected void endMyTurn() {
         // end my turn, then.
-        Game game = clientgui.getClient().getGame();
-        Entity next = game.getNextEntity(game.getTurnIndex());
-        if (game.getPhase().isFiring() && (next != null) && (ce() != null)
+        TWGame twGame = clientgui.getClient().getGame();
+        Entity next = twGame.getNextEntity(twGame.getTurnIndex());
+        if (twGame.getPhase().isFiring() && (next != null) && (ce() != null)
                 && (next.getOwnerId() != ce().getOwnerId())) {
             clientgui.maybeShowUnitDisplay();
         }
@@ -525,7 +525,7 @@ public class PointblankShotDisplay extends FiringDisplay {
      */
     @Override
     void fire() {
-        final Game game = clientgui.getClient().getGame();
+        final TWGame twGame = clientgui.getClient().getGame();
         // get the selected weaponnum
         final int weaponNum = clientgui.getUnitDisplay().wPan.getSelectedWeaponNum();
         WeaponMounted mounted = (WeaponMounted) ce().getEquipment(weaponNum);
@@ -549,7 +549,7 @@ public class PointblankShotDisplay extends FiringDisplay {
                     target.getId(), weaponNum);
         } else {
             waa = new ArtilleryAttackAction(currentEntity, target.getTargetType(),
-                    target.getId(), weaponNum, game);
+                    target.getId(), weaponNum, twGame);
         }
 
         if ((mounted.getLinked() != null)
@@ -587,7 +587,7 @@ public class PointblankShotDisplay extends FiringDisplay {
         addAttack(waa);
 
         // and add it into the game, temporarily
-        game.addAction(waa);
+        twGame.addAction(waa);
 
         // set the weapon as used
         mounted.setUsedThisRound(true);
@@ -659,7 +659,7 @@ public class PointblankShotDisplay extends FiringDisplay {
     @Override
     public void updateTarget() {
         setFireEnabled(false);
-        Game game = clientgui.getClient().getGame();
+        TWGame twGame = clientgui.getClient().getGame();
 
         // update target panel
         final int weaponId = clientgui.getUnitDisplay().wPan.getSelectedWeaponNum();
@@ -671,7 +671,7 @@ public class PointblankShotDisplay extends FiringDisplay {
                 boolean aiming = ash.isAimingAtLocation() && ash.allowAimedShotWith(weapon);
                 ash.setEnableAll(aiming);
                 if (aiming) {
-                    toHit = WeaponAttackAction.toHit(game, currentEntity, target,
+                    toHit = WeaponAttackAction.toHit(twGame, currentEntity, target,
                             weaponId, ash.getAimingAt(), ash.getAimingMode(),
                             false, false, null, null, false, true,
                             WeaponAttackAction.UNASSIGNED, WeaponAttackAction.UNASSIGNED);
@@ -679,7 +679,7 @@ public class PointblankShotDisplay extends FiringDisplay {
                             Messages.getFormattedString("MekDisplay.AimingAt", ash.getAimingLocation()));
 
                 } else {
-                    toHit = WeaponAttackAction.toHit(game, currentEntity, target, weaponId, Entity.LOC_NONE,
+                    toHit = WeaponAttackAction.toHit(twGame, currentEntity, target, weaponId, Entity.LOC_NONE,
                             AimingMode.NONE, false, false,
                             null, null, false, true,
                             WeaponAttackAction.UNASSIGNED, WeaponAttackAction.UNASSIGNED);
@@ -687,13 +687,13 @@ public class PointblankShotDisplay extends FiringDisplay {
                 }
                 ash.setPartialCover(toHit.getCover());
             } else {
-                toHit = WeaponAttackAction.toHit(game, currentEntity, target, weaponId, Entity.LOC_NONE,
+                toHit = WeaponAttackAction.toHit(twGame, currentEntity, target, weaponId, Entity.LOC_NONE,
                         AimingMode.NONE, false, false, null,
                         null, false, true,
                         WeaponAttackAction.UNASSIGNED, WeaponAttackAction.UNASSIGNED);
                 clientgui.getUnitDisplay().wPan.setTarget(target, null);
             }
-            int effectiveDistance = Compute.effectiveDistance(game, ce(), target);
+            int effectiveDistance = Compute.effectiveDistance(twGame, ce(), target);
             clientgui.getUnitDisplay().wPan.wRangeR.setText("" + effectiveDistance);
             WeaponMounted m = ce().getWeapon(weaponId);
             // If we have a Centurion Weapon System selected, we may need to

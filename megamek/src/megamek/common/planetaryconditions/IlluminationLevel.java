@@ -19,7 +19,7 @@
 package megamek.common.planetaryconditions;
 
 import megamek.common.Coords;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Hex;
 import megamek.common.Terrains;
 
@@ -72,31 +72,31 @@ public enum IlluminationLevel {
      *         searchlights, whereas this one considers searchlights as well as
      *         other light sources.
      */
-    public static IlluminationLevel determineIlluminationLevel(final Game game, final Coords coords) {
+    public static IlluminationLevel determineIlluminationLevel(final TWGame twGame, final Coords coords) {
         // fix for NPE when recovering spacecraft while in visual range of enemy
-        if (game.getBoard().inSpace()) {
+        if (twGame.getBoard().inSpace()) {
             return IlluminationLevel.NONE;
         }
 
         // Flares happen first, because they totally negate nighttime penalties
-        if (game.getFlares().stream().anyMatch(flare -> flare.illuminates(coords))) {
+        if (twGame.getFlares().stream().anyMatch(flare -> flare.illuminates(coords))) {
             return IlluminationLevel.FLARE;
         }
 
         // Searchlights reduce nighttime penalties by up to 3 points.
-        if (game.getIlluminatedPositions().contains(coords)) {
+        if (twGame.getIlluminatedPositions().contains(coords)) {
             return IlluminationLevel.SEARCHLIGHT;
         }
 
         // Fires can reduce nighttime penalties by up to 2 points.
-        final Hex hex = game.getBoard().getHex(coords);
+        final Hex hex = twGame.getBoard().getHex(coords);
         if ((hex != null) && hex.containsTerrain(Terrains.FIRE)) {
             return IlluminationLevel.FIRE;
         }
 
         // If we are adjacent to a burning hex, we are also illuminated
         final boolean neighbouringFire = coords.allAdjacent().stream()
-                .map(adjacent -> game.getBoard().getHex(adjacent))
+                .map(adjacent -> twGame.getBoard().getHex(adjacent))
                 .filter(Objects::nonNull)
                 .anyMatch(adjacent -> adjacent.containsTerrain(Terrains.FIRE));
 

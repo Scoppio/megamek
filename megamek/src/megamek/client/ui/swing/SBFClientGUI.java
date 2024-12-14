@@ -49,7 +49,7 @@ import megamek.client.ui.swing.sbf.SBFMovementDisplay;
 import megamek.client.ui.swing.util.MegaMekController;
 import megamek.client.ui.swing.widget.SBFReportPanel;
 import megamek.common.Coords;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.annotations.Nullable;
 import megamek.common.enums.GamePhase;
 import megamek.common.event.GameListener;
@@ -176,7 +176,7 @@ public class SBFClientGUI extends AbstractClientGUI implements ActionListener {
         super.initializeFrame();
     }
 
-    protected Game bvGame = new Game();
+    protected TWGame bvTWGame = new TWGame();
 
     @Override
     public void initialize() {
@@ -184,9 +184,9 @@ public class SBFClientGUI extends AbstractClientGUI implements ActionListener {
         super.initialize();
         try {
             client.getGame().addGameListener(gameListener);
-            bvGame.setBoard(bvGame.getBoard(0));
+            bvtwGame.setBoard(bvtwGame.getBoard(0));
 
-            bv = new BoardView(bvGame, MegaMekGUI.getKeyDispatcher(), null);
+            bv = new BoardView(bvtwGame, MegaMekGUI.getKeyDispatcher(), null);
             bv.setTooltipProvider(new SBFBoardViewTooltip(client.getGame(), bv));
             boardViews.put(0, bv);
             bv.addOverlay(new KeyBindingsOverlay(bv));

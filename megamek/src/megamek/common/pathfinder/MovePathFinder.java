@@ -32,7 +32,7 @@ public class MovePathFinder<C> extends AbstractPathFinder<CoordsWithFacing, C, M
      * turn left twice instead.
      */
     private static final int MAX_TURN_COUNT = 3;
-    
+
     /**
      * Node defined by coordinates and unit facing.
      * @author Saginatio
@@ -141,10 +141,10 @@ public class MovePathFinder<C> extends AbstractPathFinder<CoordsWithFacing, C, M
      * Current implementation uses MoveStep.isMovementPossible() to verify legality.
      */
     public static class MovePathLegalityFilter extends Filter<MovePath> {
-        Game game;
+        TWGame twGame;
 
-        public MovePathLegalityFilter(Game game) {
-            this.game = game;
+        public MovePathLegalityFilter(TWGame twGame) {
+            this.twGame = twGame;
         }
 
         @Override
@@ -173,7 +173,7 @@ public class MovePathFinder<C> extends AbstractPathFinder<CoordsWithFacing, C, M
                 previousPosition = entity.getPosition();
             }
             return (edge.getLastStep().isMovementPossible(
-                    game, previousPosition, previousElevation, edge.getCachedEntityState()));
+                twGame, previousPosition, previousElevation, edge.getCachedEntityState()));
         }
     }
 
@@ -312,7 +312,7 @@ public class MovePathFinder<C> extends AbstractPathFinder<CoordsWithFacing, C, M
             return result;
         }
     }
-    
+
     /**
      * Creates a new instance of MovePathFinder. Sets DestinationMap to
      * {@link MovePathDestinationMap} and adds {@link MovePathLegalityFilter}.
@@ -322,7 +322,7 @@ public class MovePathFinder<C> extends AbstractPathFinder<CoordsWithFacing, C, M
     public MovePathFinder(EdgeRelaxer<C, MovePath> edgeRelaxer,
                           AdjacencyMap<MovePath> edgeAdjacencyMap,
                           Comparator<MovePath> comparator,
-                          Game game) {
+                          IGame IGame) {
         super(new MovePathDestinationMap(),
               edgeRelaxer,
               edgeAdjacencyMap,

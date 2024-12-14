@@ -226,13 +226,13 @@ public class ScenarioV1 extends HashMap<String, Collection<String>> implements S
     @Override
     public IGame createGame() throws ScenarioLoaderException {
         logger.info("Loading scenario from " + file);
-        Game game = new Game();
-        game.setBoardDirect(createBoard(this));
+        TWGame twGame = new TWGame();
+        twGame.setBoardDirect(createBoard(this));
 
         // build the faction players
         Collection<Player> players = createPlayers(this);
         for (Player player : players) {
-            game.addPlayer(player.getId(), player);
+            twGame.addPlayer(player.getId(), player);
         }
 
         // build the entities
@@ -243,7 +243,7 @@ public class ScenarioV1 extends HashMap<String, Collection<String>> implements S
                 entity.setOwner(player);
                 entity.setId(entityId);
                 ++entityId;
-                game.addEntity(entity);
+                twGame.addEntity(entity);
                 // Grounded DropShips don't set secondary positions unless they're part of a
                 // game and can verify
                 // they're not on a space map.
@@ -253,29 +253,29 @@ public class ScenarioV1 extends HashMap<String, Collection<String>> implements S
             }
         }
         // game's ready
-        game.getOptions().initialize();
+        twGame.getOptions().initialize();
         String optionFile = getString(PARAM_GAME_OPTIONS_FILE);
         if (optionFile == null) {
-            game.getOptions().loadOptions();
+            twGame.getOptions().loadOptions();
         } else {
-            game.getOptions().loadOptions(new MegaMekFile(file.getParentFile(), optionFile).getFile(), true);
+            twGame.getOptions().loadOptions(new MegaMekFile(file.getParentFile(), optionFile).getFile(), true);
         }
         fixedGameOptions = parseBoolean(this, PARAM_GAME_OPTIONS_FIXED, false);
 
         // set wind
-        parsePlanetaryConditions(game, this);
-        game.getPlanetaryConditions().determineWind();
+        parsePlanetaryConditions(twGame, this);
+        twGame.getPlanetaryConditions().determineWind();
         fixedPlanetCond = parseBoolean(this, PARAM_PLANETCOND_FIXED, false);
         singlePlayer = parseBoolean(this, PARAM_SINGLEPLAYER, false);
 
         // Set up the teams (for initiative)
-        game.setupTeams();
-        game.setPhase(GamePhase.STARTING_SCENARIO);
-        game.setupDeployment();
-        game.setExternalGameId(parseExternalGameId(this));
-        game.setVictoryContext(new HashMap<>());
-        game.createVictoryConditions();
-        return game;
+        twGame.setupTeams();
+        twGame.setPhase(GamePhase.STARTING_SCENARIO);
+        twGame.setupDeployment();
+        twGame.setExternalGameId(parseExternalGameId(this));
+        twGame.setVictoryContext(new HashMap<>());
+        twGame.createVictoryConditions();
+        return twGame;
     }
 
     /**
@@ -295,9 +295,9 @@ public class ScenarioV1 extends HashMap<String, Collection<String>> implements S
 
     // TODO : legal/valid ammo type handling and game options, since they are set at
     // this point
-    private AmmoType getValidAmmoType(Game game, Mounted<?> mounted, String ammoString) {
+    private AmmoType getValidAmmoType(IGame IGame, Mounted<?> mounted, String ammoString) {
         final Entity e = mounted.getEntity();
-        final int year = game.getOptions().intOption(OptionsConstants.ALLOWED_YEAR);
+        final int year = IGame.getOptions().intOption(OptionsConstants.ALLOWED_YEAR);
         final EquipmentType currentAmmoType = mounted.getType();
         final Mounted<?> currentWeapon = mounted.getLinkedBy();
         final EquipmentType currentWeaponType = (null != currentWeapon) ? currentWeapon.getType() : null;
@@ -308,13 +308,13 @@ public class ScenarioV1 extends HashMap<String, Collection<String>> implements S
         } else if (!(newAmmoType instanceof AmmoType)) {
             logger.error(String.format("Equipment %s is not an ammo type", newAmmoType.getName()));
             return null;
-        } else if (!newAmmoType.isLegal(year, SimpleTechLevel.getGameTechLevel(game), e.isClan(),
-                e.isMixedTech(), game.getOptions().booleanOption(OptionsConstants.ALLOWED_SHOW_EXTINCT))) {
+        } else if (!newAmmoType.isLegal(year, SimpleTechLevel.getGameTechLevel(IGame), e.isClan(),
+                e.isMixedTech(), IGame.getOptions().booleanOption(OptionsConstants.ALLOWED_SHOW_EXTINCT))) {
             logger.warn(String.format("Ammo %s (TL %d) is not legal for year %d (TL %d)",
                     newAmmoType.getName(), newAmmoType.getTechLevel(year), year,
-                    TechConstants.getGameTechLevel(game, e.isClan())));
+                    TechConstants.getGameTechLevel(IGame, e.isClan())));
             return null;
-        } else if (e.isClan() && !game.getOptions().booleanOption(OptionsConstants.ALLOWED_CLAN_IGNORE_EQ_LIMITS)) {
+        } else if (e.isClan() && !IGame.getOptions().booleanOption(OptionsConstants.ALLOWED_CLAN_IGNORE_EQ_LIMITS)) {
             // Check for clan weapon restrictions
             // Construct EnumSet with all the relevant
             final EnumSet<AmmoType.Munitions> muniType = ((AmmoType) newAmmoType).getMunitionType();
@@ -337,7 +337,7 @@ public class ScenarioV1 extends HashMap<String, Collection<String>> implements S
         }
 
         if (AmmoType.canDeliverMinefield((AmmoType) newAmmoType)
-                && !game.getOptions().booleanOption(OptionsConstants.ADVANCED_MINEFIELDS)) {
+                && !IGame.getOptions().booleanOption(OptionsConstants.ADVANCED_MINEFIELDS)) {
             logger.warn(String.format("Minefield-creating ammo type %s forbidden by game rules",
                     newAmmoType.getName()));
             return null;
@@ -527,7 +527,7 @@ public class ScenarioV1 extends HashMap<String, Collection<String>> implements S
         }
     }
 
-    private void parsePlanetaryConditions(Game g, ScenarioV1 p) {
+    private void parsePlanetaryConditions(TWGame g, ScenarioV1 p) {
         if (p.containsKey(PARAM_PLANETCOND_TEMP)) {
             g.getPlanetaryConditions().setTemperature(Integer.parseInt(p.getString(PARAM_PLANETCOND_TEMP)));
         }

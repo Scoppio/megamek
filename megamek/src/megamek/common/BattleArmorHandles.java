@@ -30,7 +30,7 @@ class BattleArmorHandles implements Transporter {
 
     /** The troopers being carried. */
     protected int carriedUnit = Entity.NONE;
-    transient Game game;
+    transient TWGame twGame;
 
     private static final String NO_VACANCY_STRING = "A squad is loaded";
     private static final String HAVE_VACANCY_STRING = "One battle armor squad";
@@ -54,7 +54,7 @@ class BattleArmorHandles implements Transporter {
     @Override
     public final List<Entity> getLoadedUnits() {
         List<Entity> units = new ArrayList<>(1);
-        Entity entity = game.getEntity(carriedUnit);
+        Entity entity = twGame.getEntity(carriedUnit);
         if (entity != null) {
             units.add(entity);
         }
@@ -64,7 +64,7 @@ class BattleArmorHandles implements Transporter {
     @Override
     public final boolean unload(Entity unit) {
         // Are we carrying the unit?
-        Entity trooper = game.getEntity(carriedUnit);
+        Entity trooper = twGame.getEntity(carriedUnit);
         if ((trooper == null) || !trooper.equals(unit)) {
             // Nope.
             return false;
@@ -92,7 +92,7 @@ class BattleArmorHandles implements Transporter {
 
     @Override
     public boolean isWeaponBlockedAt(int loc, boolean isRear) {
-        Entity carriedBA = game.getEntity(carriedUnit);
+        Entity carriedBA = twGame.getEntity(carriedUnit);
         if (carriedBA == null) {
             return false;
         } else {
@@ -114,7 +114,7 @@ class BattleArmorHandles implements Transporter {
 
     @Override
     public final @Nullable Entity getExteriorUnitAt(int loc, boolean isRear) {
-        return isWeaponBlockedAt(loc, isRear) ? game.getEntity(carriedUnit) : null;
+        return isWeaponBlockedAt(loc, isRear) ? twGame.getEntity(carriedUnit) : null;
     }
 
     @Override
@@ -133,7 +133,7 @@ class BattleArmorHandles implements Transporter {
     }
 
     @Override
-    public void setGame(Game game) {
-        this.game = game;
+    public void setGame(TWGame twGame) {
+        this.twGame = twGame;
     }
 }

@@ -27,12 +27,8 @@ import java.util.Set;
 
 import megamek.client.bot.princess.AeroPathUtil;
 import megamek.client.bot.princess.FireControl;
-import megamek.common.Coords;
-import megamek.common.Game;
-import megamek.common.Hex;
-import megamek.common.MovePath;
+import megamek.common.*;
 import megamek.common.MovePath.MoveStepType;
-import megamek.common.Terrains;
 import megamek.logging.MMLogger;
 
 /**
@@ -44,13 +40,13 @@ import megamek.logging.MMLogger;
 public class InfantryPathFinder {
     private static final MMLogger logger = MMLogger.create(InfantryPathFinder.class);
 
-    private Game game;
+    private IGame IGame;
     private List<MovePath> infantryPaths;
 
     private Set<Coords> visitedCoords = new HashSet<>();
 
-    private InfantryPathFinder(Game game) {
-        this.game = game;
+    private InfantryPathFinder(IGame IGame) {
+        this.IGame = IGame;
     }
 
     public Collection<MovePath> getAllComputedPathsUncategorized() {
@@ -97,7 +93,7 @@ public class InfantryPathFinder {
             infantryPaths.addAll(rotatedPaths);
 
             // add "flee" option if we haven't done anything else
-            if (game.getBoard().isOnBoardEdge(startingEdge.getFinalCoords())
+            if (IGame.getBoard().isOnBoardEdge(startingEdge.getFinalCoords())
                     && startingEdge.getStepVector().isEmpty()) {
                 MovePath fleePath = startingEdge.clone();
                 fleePath.addStep(MoveStepType.FLEE);
@@ -119,9 +115,9 @@ public class InfantryPathFinder {
         }
     }
 
-    public static InfantryPathFinder getInstance(Game game) {
+    public static InfantryPathFinder getInstance(IGame IGame) {
 
-        return new InfantryPathFinder(game);
+        return new InfantryPathFinder(IGame);
     }
 
     /**
@@ -165,7 +161,7 @@ public class InfantryPathFinder {
             // - are we going into a building?
             // - are we going onto a bridge?
             // - make sure we're adjusting facing relative to the unit's current facing
-            Hex destinationHex = game.getBoard().getHexInDir(startingPath.getFinalCoords(),
+            Hex destinationHex = IGame.getBoard().getHexInDir(startingPath.getFinalCoords(),
                     FireControl.correctFacing(startingPath.getFinalFacing() + direction));
 
             // if we're going off board, we may as well not bother continuing additionally,

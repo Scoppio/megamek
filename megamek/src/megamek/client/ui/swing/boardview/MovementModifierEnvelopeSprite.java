@@ -65,7 +65,7 @@ public class MovementModifierEnvelopeSprite extends HexSprite {
         int modi = Compute.getTargetMovementModifier(mp.getHexesMoved(),
                 mp.isJumping(),
                 mp.getEntity() instanceof VTOL,
-                boardView.game).getValue();
+                boardView.twGame).getValue();
         //Add evasion bonus for 'Mek with dual cockpit
         if (mp.getEntity().getCrew().getCrewType().equals(CrewType.DUAL)
                 && mp.getEntity().getCrew().hasDedicatedPilot()

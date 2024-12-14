@@ -23,7 +23,7 @@ import megamek.client.ui.swing.calculationReport.DummyCalculationReport;
 import megamek.client.ui.swing.calculationReport.FlexibleCalculationReport;
 import megamek.common.Entity;
 import megamek.common.ForceAssignable;
-import megamek.common.Game;
+import megamek.common.IGame;
 import megamek.common.alphaStrike.ASDamage;
 import megamek.common.alphaStrike.AlphaStrikeElement;
 import megamek.common.alphaStrike.BattleForceSUA;
@@ -40,13 +40,13 @@ import static megamek.common.alphaStrike.BattleForceSUA.*;
 public final class SBFFormationConverter {
 
     private final Force force;
-    private final Game game;
+    private final IGame IGame;
     private final CalculationReport report;
     private SBFFormation formation = new SBFFormation();
 
-    public SBFFormationConverter(Force force, Game game) {
+    public SBFFormationConverter(Force force, IGame IGame) {
         this.force = force;
-        this.game = game;
+        this.IGame = IGame;
         report = new FlexibleCalculationReport();
     }
 
@@ -57,13 +57,13 @@ public final class SBFFormationConverter {
      *  in each subforce but no further subforces.
      */
     public SBFFormation convert() {
-        if (!canConvertToSbfFormation(force, game)) {
+        if (!canConvertToSbfFormation(force, IGame)) {
             return null;
         }
         report.addHeader("Strategic BattleForce Conversion for ");
         report.addHeader(force.getName());
 
-        Forces forces = game.getForces();
+        Forces forces = IGame.getForces();
         for (Force subforce : forces.getFullSubForces(force)) {
             var thisUnit = new ArrayList<AlphaStrikeElement>();
             var thisUnitBaseSkill = new ArrayList<AlphaStrikeElement>();
@@ -151,12 +151,12 @@ public final class SBFFormationConverter {
     }
 
     /** Returns true if the given force can be converted to an SBF Formation. */
-    public static boolean canConvertToSbfFormation(Force force, Game game) {
-        if ((force == null) || (game == null) || force.isEmpty()
-                || (game.getForces().getForce(force.getId()) != force)) {
+    public static boolean canConvertToSbfFormation(Force force, IGame IGame) {
+        if ((force == null) || (IGame == null) || force.isEmpty()
+                || (IGame.getForces().getForce(force.getId()) != force)) {
             return false;
         }
-        Forces forces = game.getForces();
+        Forces forces = IGame.getForces();
         // The force must not have direct subordinate entities
         boolean invalid = !force.getEntities().isEmpty();
         List<ForceAssignable> entities = forces.getFullEntities(force);

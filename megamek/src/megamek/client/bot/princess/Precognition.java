@@ -62,7 +62,7 @@ public class Precognition implements Runnable {
      * Princess share the same game reference, then this will cause concurrency
      * issues.
      */
-    private Game game;
+    private TWGame twGame;
     private final ReentrantLock GAME_LOCK = new ReentrantLock();
 
     /**
@@ -87,7 +87,7 @@ public class Precognition implements Runnable {
 
     public Precognition(Princess owner) {
         this.owner = owner;
-        this.game = new Game();
+        this.twGame = new TWGame();
         getGame().addGameListener(new GameListenerAdapter() {
             @Override
             public void gameEntityChange(GameEntityChangeEvent changeEvent) {
@@ -132,7 +132,7 @@ public class Precognition implements Runnable {
                     final Player player = getPlayer(c.getIntValue(0));
                     if (player != null) {
                         player.setDone(c.getBooleanValue(1));
-                        game.processGameEvent(new GamePlayerChangeEvent(player, player));
+                        twGame.processGameEvent(new GamePlayerChangeEvent(player, player));
                     }
                     break;
                 case PLAYER_ADD:
@@ -659,18 +659,18 @@ public class Precognition implements Runnable {
         GAME_LOCK.lock();
         try {
             logger.debug("GAME_LOCK write locked.");
-            game.reset();
+            twGame.reset();
         } finally {
             GAME_LOCK.unlock();
             logger.debug("GAME_LOCK write unlocked.");
         }
     }
 
-    private Game getGame() {
+    private TWGame getGame() {
         GAME_LOCK.lock();
         try {
             logger.debug("GAME_LOCK read locked.");
-            return game;
+            return twGame;
         } finally {
             GAME_LOCK.unlock();
             logger.debug("GAME_LOCK read unlocked.");
@@ -827,16 +827,16 @@ public class Precognition implements Runnable {
         boolean addAction = true;
         for (EntityAction ea : vector) {
             int entityId = ea.getEntityId();
-            if ((ea instanceof TorsoTwistAction) && game.hasEntity(entityId)) {
+            if ((ea instanceof TorsoTwistAction) && twGame.hasEntity(entityId)) {
                 TorsoTwistAction tta = (TorsoTwistAction) ea;
-                Entity entity = game.getEntity(entityId);
+                Entity entity = twGame.getEntity(entityId);
                 entity.setSecondaryFacing(tta.getFacing());
-            } else if ((ea instanceof FlipArmsAction) && game.hasEntity(entityId)) {
+            } else if ((ea instanceof FlipArmsAction) && twGame.hasEntity(entityId)) {
                 FlipArmsAction faa = (FlipArmsAction) ea;
-                Entity entity = game.getEntity(entityId);
+                Entity entity = twGame.getEntity(entityId);
                 entity.setArmsFlipped(faa.getIsFlipped());
-            } else if ((ea instanceof DodgeAction) && game.hasEntity(entityId)) {
-                Entity entity = game.getEntity(entityId);
+            } else if ((ea instanceof DodgeAction) && twGame.hasEntity(entityId)) {
+                Entity entity = twGame.getEntity(entityId);
                 entity.dodging = true;
                 addAction = false;
             } else if (ea instanceof AttackAction) {
@@ -851,9 +851,9 @@ public class Precognition implements Runnable {
             if (addAction) {
                 // track in the appropriate list
                 if (!isCharge) {
-                    game.addAction(ea);
+                    twGame.addAction(ea);
                 } else {
-                    game.addCharge((AttackAction) ea);
+                    twGame.addCharge((AttackAction) ea);
                 }
             }
         }
@@ -879,6 +879,6 @@ public class Precognition implements Runnable {
 
     @SuppressWarnings("unchecked")
     private void receiveUpdateGroundObjects(Packet packet) {
-        game.setGroundObjects((Map<Coords, List<ICarryable>>) packet.getObject(0));
+        twGame.setGroundObjects((Map<Coords, List<ICarryable>>) packet.getObject(0));
     }
 }

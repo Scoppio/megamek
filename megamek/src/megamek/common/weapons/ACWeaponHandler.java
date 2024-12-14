@@ -33,7 +33,7 @@ public class ACWeaponHandler extends AmmoWeaponHandler {
     @Serial
     private static final long serialVersionUID = 7326881584091651519L;
 
-    public ACWeaponHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public ACWeaponHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 
@@ -59,11 +59,11 @@ public class ACWeaponHandler extends AmmoWeaponHandler {
             toReturn = Math.min(toReturn + (toHit.getMoS() / 3), toReturn * 2);
         }
         toReturn = applyGlancingBlowModifier(toReturn, target.isConventionalInfantry());
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE)
             && nRange > wtype.getRanges(weapon)[RangeType.RANGE_LONG]) {
             toReturn = (int) Math.floor(toReturn * .75);
         }
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS_RANGE)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS_RANGE)
                 && (nRange > wtype.getRanges(weapon)[RangeType.RANGE_EXTREME])) {
             toReturn = (int) Math.floor(toReturn * .5);
         }

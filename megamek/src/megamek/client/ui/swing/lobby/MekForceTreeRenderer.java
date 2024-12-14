@@ -33,10 +33,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import megamek.MMConstants;
 import megamek.client.ui.swing.tooltip.UnitToolTip;
 import megamek.client.ui.swing.util.UIUtil;
-import megamek.common.Configuration;
-import megamek.common.Entity;
-import megamek.common.Game;
-import megamek.common.Player;
+import megamek.common.*;
 import megamek.common.force.Force;
 import megamek.common.icons.Camouflage;
 import megamek.common.options.OptionsConstants;
@@ -65,7 +62,7 @@ public class MekForceTreeRenderer extends DefaultTreeCellRenderer {
             boolean leaf, int row, boolean hasFocus) {
 
         isSelected = sel;
-        Game game = lobby.getClientgui().getClient().getGame();
+        IGame IGame = lobby.getClientgui().getClient().getGame();
         localPlayer = lobby.getClientgui().getClient().getLocalPlayer();
         selectionColor = UIManager.getColor("Tree.selectionBackground");
         setOpaque(true);
@@ -93,7 +90,7 @@ public class MekForceTreeRenderer extends DefaultTreeCellRenderer {
                 size = size / 2;
             }
             boolean showAsUnknown = owner.isEnemyOf(localPlayer)
-                    && game.getOptions().booleanOption(OptionsConstants.BASE_BLIND_DROP);
+                    && IGame.getOptions().booleanOption(OptionsConstants.BASE_BLIND_DROP);
             if (showAsUnknown) {
                 setIcon(getToolkit().getImage(UNKNOWN_UNIT), size - 5);
             } else {

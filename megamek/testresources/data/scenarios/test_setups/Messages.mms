@@ -23,7 +23,7 @@ end:
 messages:
   - header: Scenario Messages 1
     text: |
-      In this test setup scenario, several messages are shown at various points of the game.
+      In this test setup scenario, several messages are shown at various points of the twGame.
 
       This is supposed to be a test for the message system and the trigger system.
     trigger:

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import megamek.common.Game;
+import megamek.common.IGame;
 import megamek.common.MekSummaryCache;
 import megamek.common.scenario.ScenarioLoader;
 import megamek.common.scenario.ScenarioLoaderException;
@@ -85,10 +85,10 @@ public class ScenarioLoaderTest {
             ScenarioLoader loader = new ScenarioLoader(file);
             ScenarioV1 scenario = (ScenarioV1) loader.load();
             try {
-                Game game = (Game) scenario.createGame();
+                IGame IGame = scenario.createGame();
                 TWGameManager gameManager = new TWGameManager();
                 Server server = new Server("test", port + 1, gameManager);
-                server.setGame(game);
+                server.setGame(IGame);
                 scenario.applyDamage(gameManager);
                 server.die();
             } catch (Exception ex) {

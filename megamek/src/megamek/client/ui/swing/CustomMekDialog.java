@@ -1051,28 +1051,28 @@ public class CustomMekDialog extends AbstractButtonDialog implements ActionListe
     }
 
     public Entity getNextEntity(boolean forward) {
-        Game game = client.getGame();
-        boolean bd = game.getOptions().booleanOption(OptionsConstants.BASE_BLIND_DROP);
-        boolean rbd = game.getOptions().booleanOption(OptionsConstants.BASE_REAL_BLIND_DROP);
+        TWGame twGame = client.getGame();
+        boolean bd = twGame.getOptions().booleanOption(OptionsConstants.BASE_BLIND_DROP);
+        boolean rbd = twGame.getOptions().booleanOption(OptionsConstants.BASE_REAL_BLIND_DROP);
         Player p = client.getLocalPlayer();
 
         Entity nextOne;
         Entity entity;
         if (forward) {
             entity = entities.get(entities.size() - 1);
-            nextOne = game.getNextEntityFromList(entity);
+            nextOne = twGame.getNextEntityFromList(entity);
         } else {
             entity = entities.get(0);
-            nextOne = game.getPreviousEntityFromList(entity);
+            nextOne = twGame.getPreviousEntityFromList(entity);
         }
         while ((nextOne != null) && !entities.contains(nextOne)) {
             if (nextOne.getOwner().equals(p) || (!(bd || rbd) && nextOne.getOwner().equals(entity.getOwner()))) {
                 return nextOne;
             }
             if (forward) {
-                nextOne = game.getNextEntityFromList(nextOne);
+                nextOne = twGame.getNextEntityFromList(nextOne);
             } else {
-                nextOne = game.getPreviousEntityFromList(nextOne);
+                nextOne = twGame.getPreviousEntityFromList(nextOne);
             }
         }
         return null;

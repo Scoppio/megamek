@@ -77,14 +77,14 @@ public class EntityClassTurn extends GameTurn {
      * Determine if the given entity is a valid one to use for this turn.
      *
      * @param entity the <code>Entity</code> being tested for the move.
-     * @param game   The {@link Game} the entity belongs to
+     * @param twGame   The {@link TWGame} the entity belongs to
      * @return <code>true</code> if the entity can be moved.
      */
     @Override
-    public boolean isValidEntity(final @Nullable Entity entity, final Game game,
+    public boolean isValidEntity(final @Nullable Entity entity, final TWGame twGame,
                                  final boolean useValidNonInfantryCheck) {
         // The entity must pass the requirements of the parent class and be in the mask.
-        return super.isValidEntity(entity, game, useValidNonInfantryCheck)
+        return super.isValidEntity(entity, twGame, useValidNonInfantryCheck)
                 && isValidClass(getClassCode(entity));
     }
 

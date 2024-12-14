@@ -24,7 +24,7 @@ import java.util.Vector;
 
 import megamek.common.Compute;
 import megamek.common.CriticalSlot;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.HitData;
 import megamek.common.IBomber;
 import megamek.common.Mounted;
@@ -47,7 +47,7 @@ public class AmmoWeaponHandler extends WeaponHandler {
 
     Mounted<?> ammo;
 
-    public AmmoWeaponHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public AmmoWeaponHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
         generalDamageType = HitData.DAMAGE_BALLISTIC;
     }

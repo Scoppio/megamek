@@ -586,11 +586,11 @@ public class MovementDisplay extends ActionPhaseDisplay {
         boolean forwardIni = false;
         GameOptions opts = null;
         if (clientgui != null) {
-            Game game = clientgui.getClient().getGame();
+            IGame IGame = clientgui.getClient().getGame();
             Player localPlayer = clientgui.getClient().getLocalPlayer();
-            forwardIni = (game.getTeamForPlayer(localPlayer) != null)
-                    && (game.getTeamForPlayer(localPlayer).size() > 1);
-            opts = game.getOptions();
+            forwardIni = (IGame.getTeamForPlayer(localPlayer) != null)
+                    && (IGame.getTeamForPlayer(localPlayer).size() > 1);
+            opts = IGame.getOptions();
         }
 
         ArrayList<MegaMekButton> buttonList = new ArrayList<>();
@@ -2146,8 +2146,8 @@ public class MovementDisplay extends ActionPhaseDisplay {
     }
 
     private void updateTakeCoverButton() {
-        final Game game = clientgui.getClient().getGame();
-        final GameOptions gOpts = game.getOptions();
+        final TWGame twGame = clientgui.getClient().getGame();
+        final GameOptions gOpts = twGame.getOptions();
         boolean isInfantry = (ce() instanceof Infantry);
 
         // Infantry - Taking Cover
@@ -2163,7 +2163,7 @@ public class MovementDisplay extends ActionPhaseDisplay {
                 elevation = cmd.getFinalElevation();
             }
             getBtn(MoveCommand.MOVE_TAKE_COVER).setEnabled(
-                    Infantry.hasValidCover(game, pos, elevation));
+                    Infantry.hasValidCover(twGame, pos, elevation));
         } else {
             getBtn(MoveCommand.MOVE_TAKE_COVER).setEnabled(false);
         }
@@ -2940,7 +2940,7 @@ public class MovementDisplay extends ActionPhaseDisplay {
             return;
         }
 
-        final Game game = clientgui.getClient().getGame();
+        final TWGame twGame = clientgui.getClient().getGame();
         final Coords pos = finalPosition();
         int elev = ce.getElevation();
         int mpUsed = ce.mpUsed;
@@ -2950,7 +2950,7 @@ public class MovementDisplay extends ActionPhaseDisplay {
         }
         final boolean canMount = isFinalPositionOnBoard() && !ce.isAirborne()
                 && (mpUsed <= Math.ceil(ce.getWalkMP() / 2.0))
-                && !Compute.getMountableUnits(ce, pos, elev + game.getBoard().getHex(pos).getLevel(), game).isEmpty();
+                && !Compute.getMountableUnits(ce, pos, elev + twGame.getBoard().getHex(pos).getLevel(), twGame).isEmpty();
         setMountEnabled(canMount);
     }
 
@@ -3080,11 +3080,11 @@ public class MovementDisplay extends ActionPhaseDisplay {
     }
 
     private @Nullable Entity getLoadedUnit() {
-        final Game game = clientgui.getClient().getGame();
+        final TWGame twGame = clientgui.getClient().getGame();
         Entity choice = null;
 
         Vector<Entity> choices = new Vector<>();
-        for (Entity other : game.getEntitiesVector(cmd.getFinalCoords())) {
+        for (Entity other : twGame.getEntitiesVector(cmd.getFinalCoords())) {
             if (other.isLoadableThisTurn() && (ce() != null)
                     && ce().canLoad(other, false)) {
                 choices.addElement(other);
@@ -3193,7 +3193,7 @@ public class MovementDisplay extends ActionPhaseDisplay {
      *         value may be null if there are no eligible targets
      */
     private Entity getTowedUnit() {
-        final Game game = clientgui.getClient().getGame();
+        final TWGame twGame = clientgui.getClient().getGame();
         Entity choice = null;
 
         List<Entity> choices = new ArrayList<>();
@@ -3201,7 +3201,7 @@ public class MovementDisplay extends ActionPhaseDisplay {
         // We have to account for the positions of the whole train when looking to add
         // new trailers
         for (Coords pos : ce().getHitchLocations()) {
-            for (Entity other : game.getEntitiesVector(pos)) {
+            for (Entity other : twGame.getEntitiesVector(pos)) {
                 if (ce() != null && ce().canTow(other.getId())) {
                     choices.add(other);
                 }
@@ -3261,10 +3261,10 @@ public class MovementDisplay extends ActionPhaseDisplay {
             public String toString() {
                 // the string should tell the user if the hitch is mounted front or rear
                 if (getHitch().getRearMounted()) {
-                    return String.format("%s Trailer Hitch #[%d] (rear)", game.getEntity(id).getShortName(),
+                    return String.format("%s Trailer Hitch #[%d] (rear)", twGame.getEntity(id).getShortName(),
                             getNumber());
                 }
-                return String.format("%s Trailer Hitch #[%d] (front)", game.getEntity(id).getShortName(), getNumber());
+                return String.format("%s Trailer Hitch #[%d] (front)", twGame.getEntity(id).getShortName(), getNumber());
             }
         }
 
@@ -3275,7 +3275,7 @@ public class MovementDisplay extends ActionPhaseDisplay {
         ArrayList<Entity> thisTrain = new ArrayList<>();
         thisTrain.add(ce());
         for (int id : ce().getAllTowedUnits()) {
-            Entity tr = game.getEntity(id);
+            Entity tr = twGame.getEntity(id);
             thisTrain.add(tr);
         }
         // and store all the valid Hitch transporters that each one has
@@ -3546,7 +3546,7 @@ public class MovementDisplay extends ActionPhaseDisplay {
      * is ended and hops on. need a new function
      */
     private synchronized void updateRecoveryButton() {
-        final Game game = clientgui.getClient().getGame();
+        final TWGame twGame = clientgui.getClient().getGame();
         final Entity ce = ce();
         if (null == ce) {
             return;
@@ -3564,7 +3564,7 @@ public class MovementDisplay extends ActionPhaseDisplay {
                 loadeePos = Compute.getFinalPosition(ce.getPosition(), cmd.getFinalVectors());
             }
             boolean isGood = false;
-            for (Entity other : game.getEntitiesVector(loadeePos)) {
+            for (Entity other : twGame.getEntitiesVector(loadeePos)) {
                 // Is the other unit friendly and not the current entity?
                 // must be done with its movement
                 // it also must be same heading and velocity
@@ -3615,8 +3615,8 @@ public class MovementDisplay extends ActionPhaseDisplay {
      * a squadron or another solo fighter
      */
     private synchronized void updateJoinButton() {
-        final Game game = clientgui.getClient().getGame();
-        if (!game.getOptions().booleanOption(OptionsConstants.ADVAERORULES_STRATOPS_CAPITAL_FIGHTER)) {
+        final TWGame twGame = clientgui.getClient().getGame();
+        if (!twGame.getOptions().booleanOption(OptionsConstants.ADVAERORULES_STRATOPS_CAPITAL_FIGHTER)) {
             return;
         }
 
@@ -3630,13 +3630,13 @@ public class MovementDisplay extends ActionPhaseDisplay {
         }
 
         Coords loadeePos = cmd.getFinalCoords();
-        if (game.useVectorMove()) {
+        if (twGame.useVectorMove()) {
             // not where you are, but where you will be
             loadeePos = Compute.getFinalPosition(ce.getPosition(),
                     cmd.getFinalVectors());
         }
         boolean isGood = false;
-        for (Entity other : game.getEntitiesVector(loadeePos)) {
+        for (Entity other : twGame.getEntitiesVector(loadeePos)) {
             // Is the other unit friendly and not the current entity?
             // must be done with its movement
             // it also must be same heading and velocity
@@ -3647,7 +3647,7 @@ public class MovementDisplay extends ActionPhaseDisplay {
                 // now lets check velocity
                 // depends on movement rules
                 Aero oa = (Aero) other;
-                if (game.useVectorMove()) {
+                if (twGame.useVectorMove()) {
                     // can you do equality with vectors?
                     if (Compute.sameVectors(cmd.getFinalVectors(), oa.getVectors())) {
                         setJoinEnabled(true);
@@ -3990,7 +3990,7 @@ public class MovementDisplay extends ActionPhaseDisplay {
      * get the unit id that the player wants to be recovered by
      */
     private int getRecoveryUnit() {
-        final Game game = clientgui.getClient().getGame();
+        final TWGame twGame = clientgui.getClient().getGame();
         final Entity ce = ce();
         List<Entity> choices = new ArrayList<>();
 
@@ -4000,7 +4000,7 @@ public class MovementDisplay extends ActionPhaseDisplay {
             // not where you are, but where you will be
             loadeePos = Compute.getFinalPosition(ce.getPosition(), cmd.getFinalVectors());
         }
-        for (Entity other : game.getEntitiesVector(loadeePos)) {
+        for (Entity other : twGame.getEntitiesVector(loadeePos)) {
             // Is the other unit friendly and not the current entity?
             // must be done with its movement
             // it also must be same heading and velocity
@@ -4066,7 +4066,7 @@ public class MovementDisplay extends ActionPhaseDisplay {
      * @return the unit id that the player wants to join
      */
     private int getUnitJoined() {
-        final Game game = clientgui.getClient().getGame();
+        final TWGame twGame = clientgui.getClient().getGame();
         final Entity ce = ce();
         List<Entity> choices = new ArrayList<>();
 
@@ -4076,7 +4076,7 @@ public class MovementDisplay extends ActionPhaseDisplay {
             // not where you are, but where you will be
             loadeePos = Compute.getFinalPosition(ce.getPosition(), cmd.getFinalVectors());
         }
-        for (Entity other : game.getEntitiesVector(loadeePos)) {
+        for (Entity other : twGame.getEntitiesVector(loadeePos)) {
             // Is the other unit friendly and not the current entity?
             // must be done with its movement
             // it also must be same heading and velocity
@@ -4206,7 +4206,7 @@ public class MovementDisplay extends ActionPhaseDisplay {
      * @param pos - the <code>Coords</code> containing targets.
      */
     private Targetable chooseTarget(Coords pos) {
-        final Game game = clientgui.getClient().getGame();
+        final TWGame twGame = clientgui.getClient().getGame();
         final Entity ce = ce();
 
         // Assume that we have *no* choice.
@@ -4216,7 +4216,7 @@ public class MovementDisplay extends ActionPhaseDisplay {
 
         // Convert the choices into a List of targets.
         ArrayList<Targetable> targets = new ArrayList<>();
-        for (Entity ent : game.getEntitiesVector(pos)) {
+        for (Entity ent : twGame.getEntitiesVector(pos)) {
             if ((ce == null) || !ce.equals(ent)) {
                 targets.add(ent);
             }
@@ -4607,8 +4607,8 @@ public class MovementDisplay extends ActionPhaseDisplay {
     }
 
     private void computeCFWarningHexes(Entity ce) {
-        Game game = clientgui.getClient().getGame();
-        List<Coords> warnList = CollapseWarning.findCFWarningsMovement(game, ce, game.getBoard());
+        TWGame twGame = clientgui.getClient().getGame();
+        List<Coords> warnList = CollapseWarning.findCFWarningsMovement(twGame, ce, twGame.getBoard());
         clientgui.showCollapseWarning(warnList);
     }
 
@@ -5550,7 +5550,7 @@ public class MovementDisplay extends ActionPhaseDisplay {
         // Collect the stranded entities into the vector.
         Iterator<Entity> entities = clientgui.getClient().getSelectedEntities(
                 new EntitySelector() {
-                    private final Game game = clientgui.getClient().getGame();
+                    private final TWGame game = clientgui.getClient().getGame();
                     private final GameTurn turn = clientgui.getClient().getGame().getTurn();
                     private final int ownerId = clientgui.getClient().getLocalPlayer().getId();
 
@@ -5976,7 +5976,7 @@ public class MovementDisplay extends ActionPhaseDisplay {
     }
 
     /** Shortcut to clientgui.getClient().getGame(). */
-    private Game game() {
+    private TWGame game() {
         return clientgui.getClient().getGame();
     }
 

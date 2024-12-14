@@ -21,7 +21,7 @@ import megamek.server.totalwarfare.TWGameManager;
 
 public class QuicksandProcessor extends DynamicTerrainProcessor {
 
-    private Game game;
+    private TWGame twGame;
     Vector<Report> vPhaseReport;
 
     public QuicksandProcessor(TWGameManager gameManager) {
@@ -30,7 +30,7 @@ public class QuicksandProcessor extends DynamicTerrainProcessor {
 
     @Override
     public void doEndPhaseChanges(Vector<Report> vPhaseReport) {
-        game = gameManager.getGame();
+        TWGame = gameManager.getGame();
         this.vPhaseReport = vPhaseReport;
         resolveQuicksand();
         this.vPhaseReport = null;
@@ -41,7 +41,7 @@ public class QuicksandProcessor extends DynamicTerrainProcessor {
      * Check or quicksand stuff
      */
     private void resolveQuicksand() {
-        Board board = game.getBoard();
+        Board board = twGame.getBoard();
         int width = board.getWidth();
         int height = board.getHeight();
 
@@ -55,7 +55,7 @@ public class QuicksandProcessor extends DynamicTerrainProcessor {
                 // then for any new quicksand this turn (terrain level of 2)
                 if (currentHex.terrainLevel(Terrains.SWAMP) == 3) {
                     // sink any units that occupy this hex
-                    for (Entity entity : game.getEntitiesVector(currentCoords)) {
+                    for (Entity entity : twGame.getEntitiesVector(currentCoords)) {
                         if (entity.isStuck()) {
                             gameManager.doSinkEntity(entity);
                         }

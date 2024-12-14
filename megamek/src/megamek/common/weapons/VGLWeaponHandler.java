@@ -31,7 +31,7 @@ import megamek.common.Coords;
 import megamek.common.Entity;
 import megamek.common.HexTarget;
 import megamek.common.HitData;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Infantry;
 import megamek.common.Report;
 import megamek.common.Targetable;
@@ -51,7 +51,7 @@ public class VGLWeaponHandler extends AmmoWeaponHandler {
     @Serial
     private static final long serialVersionUID = -4934490646657484486L;
 
-    public VGLWeaponHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public VGLWeaponHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
         generalDamageType = HitData.DAMAGE_NONE;
     }
@@ -94,7 +94,7 @@ public class VGLWeaponHandler extends AmmoWeaponHandler {
 
 
         for (Coords c : affectedCoords) {
-            Building bldg = game.getBoard().getBuildingAt(c);
+            Building bldg = twGame.getBoard().getBuildingAt(c);
             if (atype.getMunitionType().contains(AmmoType.Munitions.M_SMOKE)) {
                 gameManager.deliverSmokeGrenade(c, vPhaseReport);
             } else if (atype.getMunitionType().contains(AmmoType.Munitions.M_CHAFF)) {
@@ -116,7 +116,7 @@ public class VGLWeaponHandler extends AmmoWeaponHandler {
                 vPhaseReport.addAll(dmgReports);
                 // If there's a building, delivery an inferno to it
                 if (bldg != null) {
-                    grenadeTarget = new BuildingTarget(c, game.getBoard(),
+                    grenadeTarget = new BuildingTarget(c, twGame.getBoard(),
                             Targetable.TYPE_BLDG_IGNITE);
                     dmgReports = gameManager.deliverInfernoMissiles(ae,
                             grenadeTarget, 1);
@@ -131,11 +131,11 @@ public class VGLWeaponHandler extends AmmoWeaponHandler {
                     vPhaseReport.addAll(dmgReports);
                 }
                 // Delivery an inferno to each entity in the affected hex
-                for (Entity entTarget : game.getEntitiesVector(c)) {
+                for (Entity entTarget : twGame.getEntitiesVector(c)) {
                     // Infantry in a building take damage when the building is
                     //  targeted, so should be ignored here
                     if (bldg != null && (entTarget instanceof Infantry)
-                            && Compute.isInBuilding(game, entTarget)) {
+                            && Compute.isInBuilding(twGame, entTarget)) {
                         continue;
                     }
                     dmgReports = gameManager
@@ -152,9 +152,9 @@ public class VGLWeaponHandler extends AmmoWeaponHandler {
                 }
             } else { // Assume fragmentation grenade
                 // Damage each Entity in the target coord
-                for (Entity entTarget : game.getEntitiesVector(c)) {
+                for (Entity entTarget : twGame.getEntitiesVector(c)) {
                     boolean inBuilding = (bldg != null)
-                            && Compute.isInBuilding(game, entTarget, c);
+                            && Compute.isInBuilding(twGame, entTarget, c);
 
                     hit = entTarget.rollHitLocation(toHit.getHitTable(),
                             toHit.getSideTable(), waa.getAimedLocation(),

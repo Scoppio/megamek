@@ -38,7 +38,7 @@ public class NewtonianAerospacePathRanker extends BasicPathRanker {
      * Find the closest enemy to a unit with a path that ends at the given position.
      */
     @Override
-    public Entity findClosestEnemy(Entity me, Coords position, Game game) {
+    public Entity findClosestEnemy(Entity me, Coords position, IGame IGame) {
         int range = 9999;
         Entity closest = null;
         List<Entity> enemies = getOwner().getEnemyEntities();
@@ -67,7 +67,7 @@ public class NewtonianAerospacePathRanker extends BasicPathRanker {
      */
     @Override
     double calculateMyDamagePotential(MovePath path, Entity enemy,
-            int distance, Game game) {
+            int distance, TWGame twGame) {
         Entity me = path.getEntity();
 
         int maxRange = getOwner().getMaxWeaponRange(me, enemy.isAirborne());
@@ -76,7 +76,7 @@ public class NewtonianAerospacePathRanker extends BasicPathRanker {
         }
 
         // If I don't have LoS, I can't do damage. We're on a space map so this probably is unnecessary.
-        LosEffects losEffects = LosEffects.calculateLOS(game, me, enemy, path.getFinalCoords(),
+        LosEffects losEffects = LosEffects.calculateLOS(twGame, me, enemy, path.getFinalCoords(),
                 enemy.getPosition(), false);
         if (!losEffects.canSee()) {
             return 0;

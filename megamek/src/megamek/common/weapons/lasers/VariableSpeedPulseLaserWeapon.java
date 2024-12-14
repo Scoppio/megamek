@@ -13,7 +13,7 @@
  */
 package megamek.common.weapons.lasers;
 
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.weapons.AttackHandler;
@@ -35,9 +35,9 @@ public class VariableSpeedPulseLaserWeapon extends LaserWeapon {
     }
 
     @Override
-    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, Game game,
+    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, TWGame twGame,
                                               TWGameManager manager) {
-        return new VariableSpeedPulseLaserWeaponHandler(toHit, waa, game, manager);
+        return new VariableSpeedPulseLaserWeaponHandler(toHit, waa, twGame, manager);
     }
 
     @Override

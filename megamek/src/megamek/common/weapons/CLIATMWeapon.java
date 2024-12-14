@@ -21,7 +21,7 @@ package megamek.common.weapons;
 
 import megamek.common.AmmoType;
 import megamek.common.alphaStrike.AlphaStrikeElement;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Mounted;
 import megamek.common.TechAdvancement;
 import megamek.common.ToHitData;
@@ -67,11 +67,11 @@ public abstract class CLIATMWeapon extends MissileWeapon {
      */
     @Override
     protected AttackHandler getCorrectHandler(ToHitData toHit,
-            WeaponAttackAction waa, Game game, TWGameManager manager) {
+                                              WeaponAttackAction waa, TWGame twGame, TWGameManager manager) {
 
         // MML does different handlers here. I think I'll go with implementing different
         // ammo in the Handler.
-        return new CLIATMHandler(toHit, waa, game, manager);
+        return new CLIATMHandler(toHit, waa, twGame, manager);
     }
 
     @Override

@@ -29,7 +29,7 @@ public class MekMortarAirburstHandler extends AmmoWeaponHandler {
 
     private static final long serialVersionUID = -2073773899108954657L;
 
-    public MekMortarAirburstHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public MekMortarAirburstHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 
@@ -127,7 +127,7 @@ public class MekMortarAirburstHandler extends AmmoWeaponHandler {
         Vector<Report> newReports;
         int numRounds = wtype.getRackSize();
         // Damage building directly
-        Building bldg = game.getBoard().getBuildingAt(targetPos);
+        Building bldg = twGame.getBoard().getBuildingAt(targetPos);
         if (bldg != null) {
             newReports = gameManager.damageBuilding(bldg, numRounds, " receives ", targetPos);
             adjustReports(newReports);
@@ -135,7 +135,7 @@ public class MekMortarAirburstHandler extends AmmoWeaponHandler {
         }
 
         // Damage Terrain if applicable
-        Hex h = game.getBoard().getHex(targetPos);
+        Hex h = twGame.getBoard().getHex(targetPos);
         newReports = new Vector<>();
         if ((h != null) && h.hasTerrainFactor()) {
             r = new Report(3384);
@@ -151,14 +151,14 @@ public class MekMortarAirburstHandler extends AmmoWeaponHandler {
         adjustReports(newReports);
         vPhaseReport.addAll(newReports);
 
-        for (Entity target : game.getEntitiesVector(targetPos)) {
+        for (Entity target : twGame.getEntitiesVector(targetPos)) {
             // Ignore airborne units
             if (target.isAirborne() || target.isAirborneVTOLorWIGE()) {
                 continue;
             }
 
             // Units in a building apply damage to building
-            if (Compute.isInBuilding(game, target, targetPos)) {
+            if (Compute.isInBuilding(twGame, target, targetPos)) {
                 Player tOwner = target.getOwner();
                 String colorcode = tOwner.getColour().getHexString(0x00F0F0F0);
                 newReports = gameManager.damageBuilding(bldg, numRounds, " shields "

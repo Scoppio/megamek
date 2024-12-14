@@ -32,7 +32,7 @@ public class HGRHandler extends GRHandler {
      * @param g
      * @param m
      */
-    public HGRHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public HGRHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 
@@ -63,7 +63,7 @@ public class HGRHandler extends GRHandler {
             }
             PilotingRollData psr = new PilotingRollData(ae.getId(), nMod,
                     "fired HeavyGauss unbraced", false);
-            game.addPSR(psr);
+            twGame.addPSR(psr);
         }
         return false;
     }

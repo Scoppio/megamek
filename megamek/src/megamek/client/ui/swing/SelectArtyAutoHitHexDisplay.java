@@ -28,11 +28,7 @@ import megamek.client.ui.swing.util.KeyCommandBind;
 import megamek.client.ui.swing.util.UIUtil;
 import megamek.client.ui.swing.widget.MegaMekButton;
 import megamek.client.ui.swing.widget.SkinSpecification;
-import megamek.common.Board;
-import megamek.common.Coords;
-import megamek.common.Game;
-import megamek.common.Player;
-import megamek.common.SpecialHexDisplay;
+import megamek.common.*;
 import megamek.common.containers.PlayerIDandList;
 import megamek.common.event.GamePhaseChangeEvent;
 import megamek.common.event.GameTurnChangeEvent;
@@ -183,10 +179,10 @@ public class SelectArtyAutoHitHexDisplay extends StatusBarPhaseDisplay {
         p = clientgui.getClient().getLocalPlayer();
         // By default, we should get 5 hexes per 4 mapsheets (4 mapsheets is
         // 16*17*4 hexes, so 1088)
-        Game game = clientgui.getClient().getGame();
-        Board board = game.getBoard();
-        int preDesignateArea = game.getOptions().intOption(OptionsConstants.ADVCOMBAT_MAP_AREA_PREDESIGNATE);
-        int hexesPer = game.getOptions().intOption(OptionsConstants.ADVCOMBAT_NUM_HEXES_PREDESIGNATE);
+        IGame IGame = clientgui.getClient().getGame();
+        Board board = IGame.getBoard();
+        int preDesignateArea = IGame.getOptions().intOption(OptionsConstants.ADVCOMBAT_MAP_AREA_PREDESIGNATE);
+        int hexesPer = IGame.getOptions().intOption(OptionsConstants.ADVCOMBAT_NUM_HEXES_PREDESIGNATE);
         double mapArea = board.getWidth() * board.getHeight();
         startingHexes = (int) Math.ceil((mapArea) / preDesignateArea) * hexesPer;
         artyAutoHitHexes.clear();

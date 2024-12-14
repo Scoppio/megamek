@@ -33,7 +33,7 @@ public class ACCaselessHandler extends ACWeaponHandler {
     @Serial
     private static final long serialVersionUID = -6614562346449113878L;
 
-    public ACCaselessHandler (ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public ACCaselessHandler (ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 

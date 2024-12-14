@@ -18,7 +18,7 @@
  */
 package megamek.server.scriptedevent;
 
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Player;
 import megamek.logging.MMLogger;
 import megamek.server.trigger.Trigger;
@@ -46,12 +46,12 @@ import java.util.Map;
 public record VictoryTriggeredEvent(Trigger trigger, boolean endsGame, String playerName) implements TriggeredEvent, VictoryCondition {
 
     @Override
-    public VictoryResult checkVictory(Game game, Map<String, Object> context) {
-        if (trigger.isTriggered(game, TriggerSituation.ROUND_END)) {
+    public VictoryResult checkVictory(TWGame twGame, Map<String, Object> context) {
+        if (trigger.isTriggered(twGame, TriggerSituation.ROUND_END)) {
             VictoryResult victoryResult = new VictoryResult(true);
-            int winningTeam = game.playerForPlayername(playerName).map(Player::getTeam).orElse(Player.TEAM_NONE);
+            int winningTeam = twGame.playerForPlayername(playerName).map(Player::getTeam).orElse(Player.TEAM_NONE);
             if (winningTeam == Player.TEAM_NONE) {
-                int winningPlayer = game.idForPlayername(playerName).orElse(Player.PLAYER_NONE);
+                int winningPlayer = twGame.idForPlayername(playerName).orElse(Player.PLAYER_NONE);
                 if (winningPlayer == Player.PLAYER_NONE) {
                     MMLogger.create().error("Could not find winning player or team");
                     return VictoryResult.noResult();

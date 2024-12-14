@@ -15,12 +15,8 @@ package megamek.common.weapons.battlearmor;
 
 import java.util.Vector;
 
-import megamek.common.Compute;
-import megamek.common.Game;
-import megamek.common.Infantry;
-import megamek.common.Report;
-import megamek.common.TargetRoll;
-import megamek.common.ToHitData;
+import megamek.common.*;
+import megamek.common.TWGame;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.weapons.DamageType;
 import megamek.common.weapons.WeaponHandler;
@@ -39,14 +35,14 @@ public class BAMGHandler extends WeaponHandler {
      * @param g
      * @param m
      */
-    public BAMGHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public BAMGHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
         damageType = DamageType.ANTI_INFANTRY;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#calcDamagePerHit()
      */
     @Override
@@ -78,7 +74,7 @@ public class BAMGHandler extends WeaponHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#addHeat()
      */
     @Override
@@ -94,7 +90,7 @@ public class BAMGHandler extends WeaponHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#reportMiss(java.util.Vector)
      */
     @Override
@@ -109,6 +105,6 @@ public class BAMGHandler extends WeaponHandler {
             r.subject = subjectId;
             r.add(nDamPerHit * 3);
             vPhaseReport.add(r);
-        }       
+        }
     }
 }

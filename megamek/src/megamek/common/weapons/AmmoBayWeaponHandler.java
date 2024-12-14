@@ -37,7 +37,7 @@ public class AmmoBayWeaponHandler extends BayWeaponHandler {
      * @param g
      * @param m
      */
-    public AmmoBayWeaponHandler(ToHitData t, WeaponAttackAction w, Game g,
+    public AmmoBayWeaponHandler(ToHitData t, WeaponAttackAction w, TWGame g,
             TWGameManager m) {
         super(t, w, g, m);
     }

@@ -30,28 +30,28 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Vector;
 
+import megamek.common.TWGame;
 import org.junit.jupiter.api.Test;
 
 import megamek.client.ui.swing.util.PlayerColour;
-import megamek.common.Game;
 import megamek.common.Player;
 import megamek.common.force.Forces;
 import megamek.common.options.GameOptions;
 import megamek.server.totalwarfare.TWGameManager;
 
-class GameManagerTest {
+class TWGameManagerTest {
 
-    protected Game createMockedGame() {
-        Game testGame = mock(Game.class);
-        Forces testForces = new Forces(testGame);
-        when(testGame.getGameListeners()).thenReturn(new Vector<>());
-        when(testGame.getEntitiesVector()).thenReturn(Collections.emptyList());
-        when(testGame.getPlayersList()).thenReturn(Collections.emptyList());
-        when(testGame.getAttacks()).thenReturn(Collections.emptyEnumeration());
-        when(testGame.getAttacksVector()).thenReturn(new Vector<>());
-        when(testGame.getForces()).thenReturn(testForces);
-        when(testGame.getOptions()).thenReturn(new GameOptions());
-        return testGame;
+    protected TWGame createMockedGame() {
+        TWGame testTWGame = mock(twGame.class);
+        Forces testForces = new Forces(testTWGame);
+        when(testtwGame.getGameListeners()).thenReturn(new Vector<>());
+        when(testtwGame.getEntitiesVector()).thenReturn(Collections.emptyList());
+        when(testtwGame.getPlayersList()).thenReturn(Collections.emptyList());
+        when(testtwGame.getAttacks()).thenReturn(Collections.emptyEnumeration());
+        when(testtwGame.getAttacksVector()).thenReturn(new Vector<>());
+        when(testtwGame.getForces()).thenReturn(testForces);
+        when(testtwGame.getOptions()).thenReturn(new GameOptions());
+        return testTWGame;
     }
 
     @Test
@@ -60,18 +60,18 @@ class GameManagerTest {
         VictoryResult testVictoryResultFalse = new VictoryResult(false);
         VictoryResult testVictoryResultTrue = new VictoryResult(true);
 
-        Game testGame = createMockedGame();
+        TWGame testTWGame = createMockedGame();
 
         // test whether the server.victory() returns false when mocking VictoryResult as
         // false
-        when(testGame.getVictoryResult()).thenReturn(testVictoryResultFalse);
-        gameManager.setGame(testGame);
+        when(testtwGame.getVictoryResult()).thenReturn(testVictoryResultFalse);
+        gameManager.setGame(testTWGame);
         assertFalse(gameManager.victory());
 
         // test whether the server.victory() returns true when mocking VictoryResult as
         // true
-        when(testGame.getVictoryResult()).thenReturn(testVictoryResultTrue);
-        gameManager.setGame(testGame);
+        when(testtwGame.getVictoryResult()).thenReturn(testVictoryResultTrue);
+        gameManager.setGame(testTWGame);
         assertTrue(gameManager.victory());
     }
 
@@ -79,38 +79,38 @@ class GameManagerTest {
     void testVictoryDrawReport() {
         TWGameManager gameManager = new TWGameManager();
         VictoryResult testVictoryResultTrue = new VictoryResult(true);
-        Game testGame = createMockedGame();
-        when(testGame.getVictoryResult()).thenReturn(testVictoryResultTrue);
+        TWGame testTWGame = createMockedGame();
+        when(testtwGame.getVictoryResult()).thenReturn(testVictoryResultTrue);
 
-        gameManager.setGame(testGame);
+        gameManager.setGame(testTWGame);
         gameManager.victory();
-        verify(testGame, times(1)).setVictoryPlayerId(Player.PLAYER_NONE);
-        verify(testGame, times(1)).setVictoryTeam(Player.TEAM_NONE);
+        verify(testTWGame, times(1)).setVictoryPlayerId(Player.PLAYER_NONE);
+        verify(testTWGame, times(1)).setVictoryTeam(Player.TEAM_NONE);
     }
 
     @Test
     void testVictoryFalseReport() {
         TWGameManager gameManager = new TWGameManager();
         VictoryResult testVictoryResultTrue = new VictoryResult(false);
-        Game testGame = createMockedGame();
-        when(testGame.getVictoryResult()).thenReturn(testVictoryResultTrue);
+        TWGame testTWGame = createMockedGame();
+        when(testtwGame.getVictoryResult()).thenReturn(testVictoryResultTrue);
 
-        gameManager.setGame(testGame);
+        gameManager.setGame(testTWGame);
         gameManager.victory();
-        verify(testGame, times(1)).cancelVictory();
+        verify(testTWGame, times(1)).cancelVictory();
     }
 
     @Test
     void testCancelVictory() {
         TWGameManager gameManager = new TWGameManager();
         VictoryResult testVictoryResultTrue = new VictoryResult(false);
-        Game testGame = createMockedGame();
-        when(testGame.getVictoryResult()).thenReturn(testVictoryResultTrue);
-        when(testGame.isForceVictory()).thenReturn(true);
+        TWGame testTWGame = createMockedGame();
+        when(testtwGame.getVictoryResult()).thenReturn(testVictoryResultTrue);
+        when(testtwGame.isForceVictory()).thenReturn(true);
 
-        gameManager.setGame(testGame);
+        gameManager.setGame(testTWGame);
         gameManager.victory();
-        verify(testGame, times(1)).cancelVictory();
+        verify(testTWGame, times(1)).cancelVictory();
     }
 
     @Test
@@ -121,9 +121,9 @@ class GameManagerTest {
 
         // Mock a win victory result
         // Only 1 report should be generated as the team is set to TEAM_NONE
-        Game testGame = createMockedGame();
+        TWGame testTWGame = createMockedGame();
         VictoryResult victoryResult = mock(VictoryResult.class);
-        when(victoryResult.processVictory(testGame)).thenCallRealMethod();
+        when(victoryResult.processVictory(testTWGame)).thenCallRealMethod();
         when(victoryResult.getReports()).thenReturn(new ArrayList<>());
         when(victoryResult.isVictory()).thenReturn(true);
         when(victoryResult.isDraw()).thenReturn(false);
@@ -134,10 +134,10 @@ class GameManagerTest {
         when(mockedPlayer.getName()).thenReturn("The champion");
         when(mockedPlayer.getColour()).thenReturn(PlayerColour.BLUE);
 
-        when(testGame.getVictoryResult()).thenReturn(victoryResult);
-        when(testGame.getPlayer(winner)).thenReturn(mockedPlayer);
+        when(testtwGame.getVictoryResult()).thenReturn(victoryResult);
+        when(testtwGame.getPlayer(winner)).thenReturn(mockedPlayer);
 
-        gameManager.setGame(testGame);
+        gameManager.setGame(testTWGame);
         gameManager.victory();
 
         assertSame(1, gameManager.getvPhaseReport().size());
@@ -149,7 +149,7 @@ class GameManagerTest {
 
         when(victoryResult.getWinningTeam()).thenReturn(10);
         when(victoryResult.getReports()).thenReturn(new ArrayList<>());
-        gameManager2.setGame(testGame);
+        gameManager2.setGame(testTWGame);
         gameManager2.victory();
 
         assertSame(2, gameManager2.getvPhaseReport().size());

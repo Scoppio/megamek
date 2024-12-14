@@ -286,7 +286,7 @@ public class TeamLoadOutGenerator {
     // endsubregion Bombs
     // endregion Constants
 
-    private static Game game;
+    private static TWGame twGame;
 
     protected GameOptions gameOptions = null;
     protected int allowedYear = AbstractUnitSelectorDialog.ALLOWED_YEAR_ANY;
@@ -298,25 +298,25 @@ public class TeamLoadOutGenerator {
     protected boolean trueRandom = false;
     protected String defaultBotMunitionsFile = null;
 
-    public TeamLoadOutGenerator(Game ownerGame) {
-        game = ownerGame;
-        updateOptionValues(game.getOptions());
+    public TeamLoadOutGenerator(TWGame ownerTWGame) {
+        TWGame = ownerTWGame;
+        updateOptionValues(twGame.getOptions());
     }
 
-    public TeamLoadOutGenerator(Game ownerGame, String defaultSettings) {
-        this(ownerGame);
+    public TeamLoadOutGenerator(TWGame ownertwGame, String defaultSettings) {
+        this(ownerTWGame);
         this.defaultBotMunitionsFile = defaultSettings;
     }
 
     public void updateOptionValues() {
-        updateOptionValues(game.getOptions());
+        updateOptionValues(twGame.getOptions());
     }
 
     public void updateOptionValues(GameOptions gameOpts) {
         gameOptions = gameOpts;
         allowedYear = gameOptions.intOption(OptionsConstants.ALLOWED_YEAR);
         gameTechLevel = TechConstants.getSimpleLevel(gameOptions.stringOption(OptionsConstants.ALLOWED_TECHLEVEL));
-        legalLevel = SimpleTechLevel.getGameTechLevel(game);
+        legalLevel = SimpleTechLevel.getGameTechLevel(twGame);
         eraBasedTechLevel = gameOptions.booleanOption(OptionsConstants.ALLOWED_ERA_BASED);
         advAeroRules = gameOptions.booleanOption(OptionsConstants.ADVAERORULES_AERO_ARTILLERY_MUNITIONS);
         showExtinct = gameOptions.booleanOption((OptionsConstants.ALLOWED_SHOW_EXTINCT));
@@ -507,12 +507,12 @@ public class TeamLoadOutGenerator {
 
     // region generateParameters
     public ReconfigurationParameters generateParameters(Team t) {
-        ArrayList<Entity> ownTeamEntities = (ArrayList<Entity>) IteratorUtils.toList(game.getTeamEntities(t));
-        return generateParameters(game, gameOptions, ownTeamEntities, t.getFaction(), t);
+        ArrayList<Entity> ownTeamEntities = (ArrayList<Entity>) IteratorUtils.toList(twGame.getTeamEntities(t));
+        return generateParameters(twGame, gameOptions, ownTeamEntities, t.getFaction(), t);
     }
 
     public ReconfigurationParameters generateParameters(ArrayList<Entity> ownEntities, String ownFaction, Team t) {
-        return generateParameters(game, gameOptions, ownEntities, ownFaction, t);
+        return generateParameters(twGame, gameOptions, ownEntities, ownFaction, t);
     }
 
     /**
@@ -528,7 +528,7 @@ public class TeamLoadOutGenerator {
      *         forces
      */
     public static ReconfigurationParameters generateParameters(
-            Game g,
+            TWGame g,
             GameOptions gOpts,
             ArrayList<Entity> ownEntities,
             String friendlyFaction,
@@ -552,7 +552,7 @@ public class TeamLoadOutGenerator {
     }
 
     public static ReconfigurationParameters generateParameters(
-            Game g,
+            TWGame g,
             GameOptions gOpts,
             ArrayList<Entity> ownEntities,
             String friendlyFaction,
@@ -764,7 +764,7 @@ public class TeamLoadOutGenerator {
 
     // region generateMunitionTree
     public MunitionTree generateMunitionTree(ReconfigurationParameters rp, Team t) {
-        ArrayList<Entity> ownTeamEntities = (ArrayList<Entity>) IteratorUtils.toList(game.getTeamEntities(t));
+        ArrayList<Entity> ownTeamEntities = (ArrayList<Entity>) IteratorUtils.toList(twGame.getTeamEntities(t));
         return generateMunitionTree(rp, ownTeamEntities, "");
     }
 
@@ -1061,7 +1061,7 @@ public class TeamLoadOutGenerator {
         reconfigurationParameters.allowedYear = allowedYear;
 
         ArrayList<Entity> updateEntities = (ArrayList<Entity>) IteratorUtils.toList(
-                game.getTeamEntities(team));
+                twGame.getTeamEntities(team));
 
         MunitionTree mt = generateMunitionTree(reconfigurationParameters, updateEntities, adfFile);
         reconfigureEntities(updateEntities, faction, mt, reconfigurationParameters);
@@ -1123,7 +1123,7 @@ public class TeamLoadOutGenerator {
     public void randomizeBotTeamConfiguration(Team team, String faction) {
         ReconfigurationParameters rp = generateParameters(team);
         ArrayList<Entity> updateEntities = (ArrayList<Entity>) IteratorUtils.toList(
-                game.getTeamEntities(team));
+                twGame.getTeamEntities(team));
         reconfigureEntities(updateEntities, faction, generateRandomizedMT(), rp);
     }
 

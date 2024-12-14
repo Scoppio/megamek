@@ -47,7 +47,7 @@ public class ArtilleryBayWeapon extends AmmoBayWeapon {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * megamek.common.weapons.Weapon#getCorrectHandler(megamek.common.ToHitData,
      * megamek.common.actions.WeaponAttackAction, megamek.common.Game,
@@ -55,8 +55,8 @@ public class ArtilleryBayWeapon extends AmmoBayWeapon {
      */
     @Override
     protected AttackHandler getCorrectHandler(ToHitData toHit,
-                                              WeaponAttackAction waa, Game game, TWGameManager manager) {
-        Entity ae = game.getEntity(waa.getEntityId());
+                                              WeaponAttackAction waa, TWGame twGame, TWGameManager manager) {
+        Entity ae = twGame.getEntity(waa.getEntityId());
         boolean useHoming = false;
         for (WeaponMounted bayW : ((WeaponMounted) ae.getEquipment(waa.getWeaponId())).getBayWeapons()) {
             // check the currently loaded ammo
@@ -71,14 +71,14 @@ public class ArtilleryBayWeapon extends AmmoBayWeapon {
             break;
         }
         if (useHoming) {
-            if (game.getPhase().isFiring()) {
-                return new ArtilleryBayWeaponDirectHomingHandler(toHit, waa, game, manager);
+            if (twGame.getPhase().isFiring()) {
+                return new ArtilleryBayWeaponDirectHomingHandler(toHit, waa, twGame, manager);
             }
-            return new ArtilleryBayWeaponIndirectHomingHandler(toHit, waa, game, manager);
-        } else if (game.getPhase().isFiring()) {
-            return new ArtilleryBayWeaponDirectFireHandler(toHit, waa, game, manager);
+            return new ArtilleryBayWeaponIndirectHomingHandler(toHit, waa, twGame, manager);
+        } else if (twGame.getPhase().isFiring()) {
+            return new ArtilleryBayWeaponDirectFireHandler(toHit, waa, twGame, manager);
         } else {
-            return new ArtilleryBayWeaponIndirectFireHandler(toHit, waa, game, manager);
+            return new ArtilleryBayWeaponIndirectFireHandler(toHit, waa, twGame, manager);
         }
     }
 }

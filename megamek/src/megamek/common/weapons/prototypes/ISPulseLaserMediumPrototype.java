@@ -23,7 +23,7 @@
  */
 package megamek.common.weapons.prototypes;
 
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.SimpleTechLevel;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
@@ -82,7 +82,7 @@ public class ISPulseLaserMediumPrototype extends PulseLaserWeapon {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * megamek.common.weapons.Weapon#getCorrectHandler(megamek.common.ToHitData,
      * megamek.common.actions.WeaponAttackAction, megamek.common.Game,
@@ -90,8 +90,8 @@ public class ISPulseLaserMediumPrototype extends PulseLaserWeapon {
      */
     @Override
     protected AttackHandler getCorrectHandler(ToHitData toHit,
-            WeaponAttackAction waa, Game game, TWGameManager manager) {
-        return new PrototypeLaserHandler(toHit, waa, game, manager);
+                                              WeaponAttackAction waa, TWGame twGame, TWGameManager manager) {
+        return new PrototypeLaserHandler(toHit, waa, twGame, manager);
     }
 
     @Override

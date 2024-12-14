@@ -21,7 +21,7 @@ package megamek.client.ui.swing.lobby;
 import megamek.client.Client;
 import megamek.client.ui.Messages;
 import megamek.client.ui.swing.util.UIUtil;
-import megamek.common.Game;
+import megamek.common.IGame;
 import megamek.common.Player;
 import megamek.common.alphaStrike.AlphaStrikeElement;
 import megamek.common.options.GameOptions;
@@ -43,10 +43,10 @@ public class MekTableASUnitEntry {
         StringBuilder result = new StringBuilder("<HTML><NOBR>");
 
         Client client = lobby.getClientgui().getClient();
-        Game game = client.getGame();
-        GameOptions options = game.getOptions();
+        IGame IGame = client.getGame();
+        GameOptions options = IGame.getOptions();
         Player localPlayer = client.getLocalPlayer();
-        Player owner = game.getPlayer(element.getOwnerId());
+        Player owner = IGame.getPlayer(element.getOwnerId());
         boolean hideEntity = owner.isEnemyOf(localPlayer)
                 && options.booleanOption(OptionsConstants.BASE_BLIND_DROP);
 

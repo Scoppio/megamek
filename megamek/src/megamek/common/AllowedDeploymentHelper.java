@@ -26,7 +26,7 @@ import java.util.List;
 
 import static megamek.common.DeploymentElevationType.*;
 
-public record AllowedDeploymentHelper(Entity entity, Coords coords, Board board, Hex hex, Game game) {
+public record AllowedDeploymentHelper(Entity entity, Coords coords, Board board, Hex hex, TWGame twGame) {
 
     /**
      * Returns a list of elevations/altitudes that the given entity can deploy to at the given coords. This can be anything from the
@@ -62,7 +62,7 @@ public record AllowedDeploymentHelper(Entity entity, Coords coords, Board board,
             result.addAll(allowedGroundElevations());
         }
         result.removeIf(o -> entity.isLocationProhibited(coords, o.elevation()));
-        result.removeIf(o -> Compute.stackingViolation(game, entity, o.elevation(), coords, null, entity.climbMode()) != null);
+        result.removeIf(o -> Compute.stackingViolation(twGame, entity, o.elevation(), coords, null, entity.climbMode()) != null);
 
         if (entity.getMovementMode().isWiGE()) {
             addAirborneWigeOptions(result);

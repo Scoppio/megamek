@@ -33,14 +33,14 @@ public class MPodHandler extends LBXHandler {
      * @param g
      * @param m
      */
-    public MPodHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public MPodHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
         sSalvoType = " pellet(s) ";
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#calcHits(Vector<Report>
      * vPhaseReport)
      */
@@ -64,12 +64,12 @@ public class MPodHandler extends LBXHandler {
         if (bGlancing) {
             hitMod -= 4;
         }
-        
+
         if (bLowProfileGlancing) {
             hitMod -= 4;
         }
 
-        PlanetaryConditions conditions = game.getPlanetaryConditions();
+        PlanetaryConditions conditions = twGame.getPlanetaryConditions();
         if (conditions.getEMI().isEMI()) {
             hitMod -= 2;
         }

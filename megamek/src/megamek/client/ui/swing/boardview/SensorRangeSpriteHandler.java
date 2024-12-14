@@ -22,7 +22,7 @@ import megamek.client.ui.swing.GUIPreferences;
 import megamek.common.Compute;
 import megamek.common.Coords;
 import megamek.common.Entity;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.enums.GamePhase;
 import megamek.common.options.GameOptions;
 import megamek.common.options.OptionsConstants;
@@ -35,20 +35,20 @@ import java.util.List;
 import java.util.Set;
 
 public class SensorRangeSpriteHandler extends BoardViewSpriteHandler implements IPreferenceChangeListener {
-    
-    private final Game game;
+
+    private final TWGame twGame;
 
     // The last-used values are cached so they're available when the sensor range view is turned on
     private Entity currentEntity;
     private Coords currentPosition;
-    
-    public SensorRangeSpriteHandler(BoardView boardView, Game game) {
+
+    public SensorRangeSpriteHandler(BoardView boardView, TWGame twGame) {
         super(boardView);
-        this.game = game;
+        this.twGame = twGame;
     }
 
     private boolean shouldShowSensorRange() {
-        GamePhase phase = game.getPhase();
+        GamePhase phase = twGame.getPhase();
         return GUIP.getShowSensorRange() &&
                 (phase.isDeployment() || phase.isMovement() || phase.isTargeting()
                         || phase.isFiring() || phase.isOffboard());
@@ -86,7 +86,7 @@ public class SensorRangeSpriteHandler extends BoardViewSpriteHandler implements 
         int maxSensorRange = 0;
         int minAirSensorRange = 0;
         int maxAirSensorRange = 0;
-        GameOptions gameOptions = game.getOptions();
+        GameOptions gameOptions = twGame.getOptions();
 
         if (gameOptions.booleanOption(OptionsConstants.ADVANCED_TACOPS_SENSORS)
                 || (gameOptions.booleanOption(OptionsConstants.ADVAERORULES_STRATOPS_ADVANCED_SENSORS)) && entity.isSpaceborne()) {
@@ -113,7 +113,7 @@ public class SensorRangeSpriteHandler extends BoardViewSpriteHandler implements 
 
         lBrackets.add(new RangeHelper(minSensorRange, maxSensorRange));
 
-        if (game.getPlanetaryConditions().getLight().isDuskOrFullMoonOrMoonlessOrPitchBack()) {
+        if (twGame.getPlanetaryConditions().getLight().isDuskOrFullMoonOrMoonlessOrPitchBack()) {
             maxSensorRange = Compute.getMaxVisualRange(entity, true);
         } else {
             maxSensorRange = 0;
@@ -126,10 +126,10 @@ public class SensorRangeSpriteHandler extends BoardViewSpriteHandler implements 
         int j = 0;
 
         // find max range possible on map, no need to check beyond it
-        int rangeToCorner = (new Coords(0, game.getBoard().getHeight())).distance(assumedPosition);
+        int rangeToCorner = (new Coords(0, twGame.getBoard().getHeight())).distance(assumedPosition);
         rangeToCorner = Math.max(rangeToCorner, (new Coords(0, 0)).distance(assumedPosition));
-        rangeToCorner = Math.max(rangeToCorner, (new Coords(game.getBoard().getWidth(), 0)).distance(assumedPosition));
-        rangeToCorner = Math.max(rangeToCorner, (new Coords(game.getBoard().getWidth(), game.getBoard().getHeight())).distance(assumedPosition));
+        rangeToCorner = Math.max(rangeToCorner, (new Coords(twGame.getBoard().getWidth(), 0)).distance(assumedPosition));
+        rangeToCorner = Math.max(rangeToCorner, (new Coords(twGame.getBoard().getWidth(), twGame.getBoard().getHeight())).distance(assumedPosition));
 
         for (RangeHelper rangeH : lBrackets) {
             sensorRanges.add(new HashSet<>());
@@ -144,7 +144,7 @@ public class SensorRangeSpriteHandler extends BoardViewSpriteHandler implements 
             }
 
             // Remove hexes that are not on the board
-            sensorRanges.get(j).removeIf(h -> !game.getBoard().contains(h));
+            sensorRanges.get(j).removeIf(h -> !twGame.getBoard().contains(h));
             j++;
         }
 

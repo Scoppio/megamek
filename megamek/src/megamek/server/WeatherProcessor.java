@@ -33,7 +33,7 @@ import megamek.server.totalwarfare.TWGameManager;
  */
 public class WeatherProcessor extends DynamicTerrainProcessor {
 
-    private Game game;
+    private TWGame twGame;
     Vector<Report> vPhaseReport;
 
     //track turns of snow, sleet, and ice
@@ -49,7 +49,7 @@ public class WeatherProcessor extends DynamicTerrainProcessor {
 
     @Override
     public void doEndPhaseChanges(Vector<Report> vPhaseReport) {
-        game = gameManager.getGame();
+        TWGame = gameManager.getGame();
         this.vPhaseReport = vPhaseReport;
         resolveWeather();
         this.vPhaseReport = null;
@@ -57,8 +57,8 @@ public class WeatherProcessor extends DynamicTerrainProcessor {
     }
 
     private void resolveWeather() {
-        PlanetaryConditions conditions = game.getPlanetaryConditions();
-        Board board = game.getBoard();
+        PlanetaryConditions conditions = twGame.getPlanetaryConditions();
+        Board board = twGame.getBoard();
         int width = board.getWidth();
         int height = board.getHeight();
         boolean lightSnow = false;
@@ -71,7 +71,7 @@ public class WeatherProcessor extends DynamicTerrainProcessor {
 
         // first we need to increment the conditions
         if (conditions.getWeather().isModerateSnowOrSnowFlurries()
-                && game.getBoard().onGround()) {
+                && twGame.getBoard().onGround()) {
             modSnowTurn = modSnowTurn + 1;
             if (modSnowTurn == 9) {
                 lightSnow = true;
@@ -82,7 +82,7 @@ public class WeatherProcessor extends DynamicTerrainProcessor {
             }
         }
         if (conditions.getWeather().isHeavySnow()
-                && game.getBoard().onGround()) {
+                && twGame.getBoard().onGround()) {
             heavySnowTurn = heavySnowTurn + 1;
             if (heavySnowTurn == 4) {
                 lightSnow = true;
@@ -95,14 +95,14 @@ public class WeatherProcessor extends DynamicTerrainProcessor {
             }
         }
         if (conditions.getWeather().isSleet()
-                && game.getBoard().onGround()) {
+                && twGame.getBoard().onGround()) {
             sleetTurn = sleetTurn + 1;
             if (sleetTurn == 14) {
                 ice = true;
             }
         }
         if (conditions.getWeather().isIceStorm()
-                && game.getBoard().onGround()) {
+                && twGame.getBoard().onGround()) {
             iceTurn = iceTurn + 1;
             if (iceTurn == 9) {
                 ice = true;

@@ -41,7 +41,7 @@ public class ASEWMissileWeaponHandler extends ThunderBoltWeaponHandler {
      * @param g - The current game
      * @param m - The current GameManager instance
      */
-    public ASEWMissileWeaponHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public ASEWMissileWeaponHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 

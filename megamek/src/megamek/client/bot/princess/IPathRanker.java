@@ -21,25 +21,21 @@ package megamek.client.bot.princess;
 import java.util.ArrayList;
 import java.util.List;
 
-import megamek.common.Coords;
-import megamek.common.Entity;
-import megamek.common.Game;
-import megamek.common.MovePath;
-import megamek.common.Targetable;
+import megamek.common.*;
 
 public interface IPathRanker {
 
-    ArrayList<RankedPath> rankPaths(List<MovePath> movePaths, Game game, int maxRange, double fallTolerance,
-            List<Entity> enemies, List<Entity> friends);
+    ArrayList<RankedPath> rankPaths(List<MovePath> movePaths, TWGame twGame, int maxRange, double fallTolerance,
+                                    List<Entity> enemies, List<Entity> friends);
 
     /**
      * Performs initialization to help speed later calls of rankPath for this
      * unit on this turn. Rankers that extend this class should override this
      * function
      */
-    void initUnitTurn(Entity unit, Game game);
+    void initUnitTurn(Entity unit, IGame IGame);
 
-    double distanceToClosestEnemy(Entity entity, Coords position, Game game);
+    double distanceToClosestEnemy(Entity entity, Coords position, IGame IGame);
 
     /**
      * Returns distance to the unit's home edge.
@@ -47,10 +43,10 @@ public interface IPathRanker {
      *
      * @param position Final coordinates of the proposed move.
      * @param homeEdge Unit's home edge.
-     * @param game The current {@link Game}
+     * @param IGame The current {@link TWGame}
      * @return The distance, in hexes to the unit's home edge.
      */
-    int distanceToHomeEdge(Coords position, CardinalEdge homeEdge, Game game);
+    int distanceToHomeEdge(Coords position, CardinalEdge homeEdge, IGame IGame);
 
     /**
      * Returns the best path of a list of ranked paths.
@@ -63,10 +59,10 @@ public interface IPathRanker {
     /**
      * Find the closest enemy to a unit with a path
      */
-    Targetable findClosestEnemy(Entity me, Coords position, Game game);
+    Targetable findClosestEnemy(Entity me, Coords position, IGame IGame);
 
     /**
      * Find the closest enemy to a unit with a path
      */
-    Targetable findClosestEnemy(Entity me, Coords position, Game game, boolean includeStrategicTargets);
+    Targetable findClosestEnemy(Entity me, Coords position, IGame IGame, boolean includeStrategicTargets);
 }

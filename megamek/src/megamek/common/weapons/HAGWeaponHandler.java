@@ -16,7 +16,7 @@ package megamek.common.weapons;
 import java.util.Vector;
 
 import megamek.common.Compute;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Infantry;
 import megamek.common.Report;
 import megamek.common.ToHitData;
@@ -35,14 +35,14 @@ public class HAGWeaponHandler extends AmmoWeaponHandler {
      * @param w
      * @param g
      */
-    public HAGWeaponHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public HAGWeaponHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
         sSalvoType = " projectiles ";
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#calcnCluster()
      */
     @Override
@@ -52,7 +52,7 @@ public class HAGWeaponHandler extends AmmoWeaponHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#calcDamagePerHit()
      */
     @Override
@@ -72,7 +72,7 @@ public class HAGWeaponHandler extends AmmoWeaponHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#calcHits(java.util.Vector)
      */
     @Override

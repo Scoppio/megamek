@@ -18,8 +18,6 @@
  */
 package megamek.client.ui.swing.boardview;
 
-import static megamek.client.ui.swing.util.UIUtil.uiWhite;
-
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,15 +26,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import megamek.client.ui.Messages;
 import megamek.client.ui.swing.ClientGUI;
 import megamek.client.ui.swing.GUIPreferences;
 import megamek.client.ui.swing.tooltip.HexTooltip;
-import megamek.client.ui.swing.tooltip.PilotToolTip;
 import megamek.client.ui.swing.tooltip.UnitToolTip;
-import megamek.client.ui.swing.util.KeyCommandBind;
 import megamek.client.ui.swing.util.UIUtil;
 import megamek.common.*;
 import megamek.common.actions.ArtilleryAttackAction;
@@ -48,26 +43,26 @@ public class TWBoardViewTooltip implements BoardViewTooltipProvider {
     private final GUIPreferences GUIP = GUIPreferences.getInstance();
 
     private final ClientGUI clientGui;
-    private final Game game;
+    private final TWGame twGame;
     private final BoardView bv;
 
-    public TWBoardViewTooltip(Game game, @Nullable ClientGUI clientGui, BoardView boardView) {
+    public TWBoardViewTooltip(TWGame twGame, @Nullable ClientGUI clientGui, BoardView boardView) {
         this.clientGui = clientGui;
-        this.game = game;
+        this.twGame = twGame;
         this.bv = boardView;
     }
 
     @Override
     public String getTooltip(Point point, Coords movementTarget) {
         final Coords coords = bv.getCoordsAt(point);
-        if (!game.getBoard().contains(coords)) {
+        if (!twGame.getBoard().contains(coords)) {
             return null;
         }
 
         String fontSizeAttr = String.format("class=%s", GUIP.getUnitToolTipFontSizeMod());
         Entity selectedEntity = (clientGui != null) ? clientGui.getDisplayedUnit() : null;
         Player localPlayer = localPlayer();
-        Hex mhex = game.getBoard().getHex(coords);
+        Hex mhex = twGame.getBoard().getHex(coords);
 
         String result = "";
 
@@ -86,22 +81,22 @@ public class TWBoardViewTooltip implements BoardViewTooltipProvider {
                 int maxSensorRange = 0;
                 int minSensorRange = 0;
 
-                if (game.getOptions().booleanOption(OptionsConstants.ADVANCED_TACOPS_SENSORS)) {
+                if (twGame.getOptions().booleanOption(OptionsConstants.ADVANCED_TACOPS_SENSORS)) {
                     LosEffects los = bv.getFovHighlighting().getCachedLosEffects(selectedEntity.getPosition(), coords);
                     int bracket = Compute.getSensorRangeBracket(selectedEntity, null,
                         bv.getFovHighlighting().cachedAllECMInfo);
-                    int range = Compute.getSensorRangeByBracket(game, selectedEntity, null, los);
+                    int range = Compute.getSensorRangeByBracket(twGame, selectedEntity, null, los);
 
                     maxSensorRange = bracket * range;
                     minSensorRange = Math.max((bracket - 1) * range, 0);
-                    if (game.getOptions().booleanOption(OptionsConstants.ADVANCED_INCLUSIVE_SENSOR_RANGE)) {
+                    if (twGame.getOptions().booleanOption(OptionsConstants.ADVANCED_INCLUSIVE_SENSOR_RANGE)) {
                         minSensorRange = 0;
                     }
                 }
 
                 boolean isMovement = false;
                 int disPM = 0;
-                if (game.getPhase().isMovement() && (movementTarget != null)) {
+                if (twGame.getPhase().isMovement() && (movementTarget != null)) {
 
                     disPM = movementTarget.distance(coords);
                     isMovement = true;
@@ -140,8 +135,8 @@ public class TWBoardViewTooltip implements BoardViewTooltipProvider {
 
         // Show the player(s) that may deploy here
         // in the artillery autohit designation phase
-        if (game.getPhase().isSetArtilleryAutohitHexes() && (mhex != null)) {
-            result += HexTooltip.getAttilleryHit(GUIP, game, coords);
+        if (twGame.getPhase().isSetArtilleryAutohitHexes() && (mhex != null)) {
+            result += HexTooltip.getAttilleryHit(GUIP, twGame, coords);
         }
 
         // check if it's on any flares
@@ -156,13 +151,13 @@ public class TWBoardViewTooltip implements BoardViewTooltipProvider {
         int maxShown = 4;
         boolean hidden = false;
 
-        Set<Entity> coordEnts = new HashSet<>(game.getEntitiesVector(coords, true));
+        Set<Entity> coordEnts = new HashSet<>(twGame.getEntitiesVector(coords, true));
         for (Entity entity : coordEnts) {
             entityCount++;
 
             // List only the first four units
             if (entityCount <= maxShown) {
-                if (EntityVisibilityUtils.detectedOrHasVisual(localPlayer, game, entity)) {
+                if (EntityVisibilityUtils.detectedOrHasVisual(localPlayer, twGame, entity)) {
                     StringBuffer sbEntity = new StringBuffer();
                     appendEntityTooltip(sbEntity, entity);
                     result += sbEntity.toString();
@@ -208,13 +203,13 @@ public class TWBoardViewTooltip implements BoardViewTooltipProvider {
         }
 
         // Artillery attacks
-        for (ArtilleryAttackAction aaa : getArtilleryAttacksAtLocation(game, coords)) {
+        for (ArtilleryAttackAction aaa : getArtilleryAttacksAtLocation(twGame, coords)) {
             // Default texts if no real names can be found
             String wpName = Messages.getString("BoardView1.Artillery");
             String ammoName = "Unknown";
 
             // Get real weapon and ammo name
-            final Entity artyEnt = game.getEntity(aaa.getEntityId());
+            final Entity artyEnt = twGame.getEntity(aaa.getEntityId());
             if (artyEnt != null) {
                 if (aaa.getWeaponId() > -1) {
                     wpName = artyEnt.getEquipment(aaa.getWeaponId()).getName();
@@ -277,8 +272,8 @@ public class TWBoardViewTooltip implements BoardViewTooltipProvider {
             result += UIUtil.tag("TABLE", attr,  row);
         }
 
-        final Collection<SpecialHexDisplay> shdList = game.getBoard().getSpecialHexDisplay(coords);
-        int round = game.getRoundCount();
+        final Collection<SpecialHexDisplay> shdList = twGame.getBoard().getSpecialHexDisplay(coords);
+        int round = twGame.getRoundCount();
         if (shdList != null) {
             String sSpecialHex = "";
             boolean isHexAutoHit = (localPlayer != null) && localPlayer.getArtyAutoHitHexes().contains(coords);
@@ -290,7 +285,7 @@ public class TWBoardViewTooltip implements BoardViewTooltipProvider {
                 // The exception is auto hits.  There will be an icon for auto
                 // hits, so we need to draw a tooltip
                 if (!shd.isObscured(localPlayer)
-                        && (shd.drawNow(game.getPhase(), round, localPlayer, GUIP)
+                        && (shd.drawNow(twGame.getPhase(), round, localPlayer, GUIP)
                         || (isHexAutoHit && isTypeAutoHit))) {
                     if (shd.getType() == SpecialHexDisplay.Type.PLAYER_NOTE) {
                         if (Objects.equals(localPlayer, shd.getOwner())) {
@@ -328,12 +323,12 @@ public class TWBoardViewTooltip implements BoardViewTooltipProvider {
         return txt.toString();
     }
 
-    private List<ArtilleryAttackAction> getArtilleryAttacksAtLocation(Game game, Coords c) {
+    private List<ArtilleryAttackAction> getArtilleryAttacksAtLocation(TWGame twGame, Coords c) {
         List<ArtilleryAttackAction> v = new ArrayList<>();
 
-        for (Enumeration<ArtilleryAttackAction> attacks = game.getArtilleryAttacks(); attacks.hasMoreElements(); ) {
+        for (Enumeration<ArtilleryAttackAction> attacks = twGame.getArtilleryAttacks(); attacks.hasMoreElements(); ) {
             ArtilleryAttackAction a = attacks.nextElement();
-            Targetable target = game.getTarget(a.getTargetType(), a.getTargetId());
+            Targetable target = twGame.getTarget(a.getTargetType(), a.getTargetId());
 
             if ((target != null) && c.equals(target.getPosition())) {
                 v.add(a);
@@ -350,7 +345,7 @@ public class TWBoardViewTooltip implements BoardViewTooltipProvider {
             return;
         }
 
-        txt.append(HexTooltip.getTerrainTip(mhex, GUIP, game));
+        txt.append(HexTooltip.getTerrainTip(mhex, GUIP, twGame));
     }
 
     /**
@@ -397,7 +392,7 @@ public class TWBoardViewTooltip implements BoardViewTooltipProvider {
             // the artyautohithexes phase. These could be displayed if the player
             // uses the /reset command in some situations
             if ((selectedUnit != null)
-                    && !game.getPhase().isSetArtilleryAutohitHexes()
+                    && !twGame.getPhase().isSetArtilleryAutohitHexes()
                     && Objects.equals(localPlayer(), selectedUnit.getOwner())
                     && (selectedWeapon.getType() instanceof WeaponType)
                     && selectedWeapon.getType().hasFlag(WeaponType.F_ARTILLERY)) {

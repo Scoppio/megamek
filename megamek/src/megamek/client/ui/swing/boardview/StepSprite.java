@@ -1,15 +1,15 @@
-/*  
-* MegaMek - Copyright (C) 2020 - The MegaMek Team  
-*  
-* This program is free software; you can redistribute it and/or modify it under  
-* the terms of the GNU General Public License as published by the Free Software  
-* Foundation; either version 2 of the License, or (at your option) any later  
-* version.  
-*  
-* This program is distributed in the hope that it will be useful, but WITHOUT  
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS  
-* FOR A PARTICULAR PURPOSE. See the GNU General Public License for more  
-* details.  
+/*
+* MegaMek - Copyright (C) 2020 - The MegaMek Team
+*
+* This program is free software; you can redistribute it and/or modify it under
+* the terms of the GNU General Public License as published by the Free Software
+* Foundation; either version 2 of the License, or (at your option) any later
+* version.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+* FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+* details.
 */
 package megamek.client.ui.swing.boardview;
 
@@ -31,8 +31,8 @@ import java.awt.image.BufferedImage;
  * entering, exiting or turning.
  */
 class StepSprite extends Sprite {
-    
-    private final static GUIPreferences GUIP = GUIPreferences.getInstance(); 
+
+    private final static GUIPreferences GUIP = GUIPreferences.getInstance();
     private static AffineTransform shadowOffset = new AffineTransform();
     private static AffineTransform upDownOffset = new AffineTransform();
     private static AffineTransform stepOffset = new AffineTransform();
@@ -116,7 +116,7 @@ class StepSprite extends Sprite {
 
         Color col = GUIP.getColorForMovement(movementType, isMASCOrSuperCharger, isBackwards);
 
-        if (bv.game.useVectorMove()) {
+        if (bv.twGame.useVectorMove()) {
             drawActiveVectors(step, graph);
         }
 
@@ -192,7 +192,7 @@ class StepSprite extends Sprite {
                     drawArrowShape(g2D, facingArrow, col);
                 }
 
-                if (bv.game.useVectorMove()) {
+                if (bv.twGame.useVectorMove()) {
                     drawMovementCost(step, isLastStep, new Point(0, 0), graph, col, false);
                 }
                 break;
@@ -287,7 +287,7 @@ class StepSprite extends Sprite {
         }
 
         if (isLastLegalStep) {
-            drawTMMAndRolls(step, jumped, bv.game, new Point(0, 0), graph, col, true);
+            drawTMMAndRolls(step, jumped, bv.twGame, new Point(0, 0), graph, col, true);
         }
 
         baseScaleImage = bv.getPanel().createImage(tempImage.getSource());
@@ -297,7 +297,7 @@ class StepSprite extends Sprite {
         tempImage.flush();
     }
 
-    /** Draws the given form in the given Color col with a shadow. */ 
+    /** Draws the given form in the given Color col with a shadow. */
     private void drawArrowShape(Graphics2D graph, Shape form, Color col) {
         graph.setColor(Color.darkGray);
         Shape currentArrow = stepOffset.createTransformedShape(form);
@@ -307,7 +307,7 @@ class StepSprite extends Sprite {
         currentArrow = shadowOffset.createTransformedShape(currentArrow);
         graph.fill(currentArrow);
     }
-    
+
     private void drawAnnouncement(Graphics2D graph, String text, MoveStep step, Color col) {
         if (step.isPastDanger()) {
             text = "(" + text + ")";
@@ -443,7 +443,7 @@ class StepSprite extends Sprite {
         graph.drawString(costString, costX - 1, stepPos.y + 38);
     }
 
-    private void drawTMMAndRolls(MoveStep step, boolean jumped, Game game,
+    private void drawTMMAndRolls(MoveStep step, boolean jumped, IGame IGame,
                                  Point stepPos, Graphics graph, Color col, boolean shiftFlag) {
 
         StringBuilder subscriptStringBuf = new StringBuilder();
@@ -451,7 +451,7 @@ class StepSprite extends Sprite {
         int distance = step.getDistance();
         boolean isVTOL = false; //step.getEntity().;
 
-        ToHitData toHitData = Compute.getTargetMovementModifier(distance, jumped, isVTOL, game);
+        ToHitData toHitData = Compute.getTargetMovementModifier(distance, jumped, isVTOL, IGame);
         subscriptStringBuf.append((toHitData.getValue() < 0) ? '-' : '+');
         subscriptStringBuf.append(toHitData.getValue());
 

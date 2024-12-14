@@ -30,7 +30,8 @@ import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import megamek.codeUtilities.StringUtility;
-import megamek.common.Game;
+import megamek.common.TWGame;
+import megamek.common.IGame;
 import megamek.common.Player;
 import megamek.common.Report;
 import megamek.logging.MMLogger;
@@ -42,7 +43,7 @@ public class EmailService {
 
         private RoundReportMessage(InternetAddress from,
                 Player to,
-                Game game,
+                TWGame twGame,
                 Vector<Report> reports,
                 int sequenceNumber,
                 Session session) throws Exception {
@@ -60,15 +61,15 @@ public class EmailService {
 
             setHeader(
                     "Message-ID",
-                    newMessageId(from, to, game, sequenceNumber));
+                    newMessageId(from, to, twGame, sequenceNumber));
             if (sequenceNumber > 0) {
                 setHeader(
                         "In-Reply-To",
-                        newMessageId(from, to, game, sequenceNumber - 1));
+                        newMessageId(from, to, twGame, sequenceNumber - 1));
             }
 
             Report subjectReport;
-            var round = game.getRoundCount();
+            var round = twGame.getRoundCount();
             if (round < 1) {
                 subjectReport = new Report(990);
             } else {
@@ -92,13 +93,13 @@ public class EmailService {
 
         private static String newMessageId(InternetAddress from,
                 Player to,
-                Game game,
+                TWGame twGame,
                 int actualSequenceNumber) {
             final var address = from.getAddress();
             return String.format(
                     "<megamek.%s.%d.%d.%d@%s>",
-                    game.getUUIDString(),
-                    game.getRoundCount(),
+                    twGame.getUUIDString(),
+                    twGame.getRoundCount(),
                     to.getId(),
                     actualSequenceNumber,
                     address.substring(address.indexOf("@") + 1));
@@ -138,9 +139,9 @@ public class EmailService {
         mailWorker.start();
     }
 
-    public Vector<Player> getEmailablePlayers(Game game) {
+    public Vector<Player> getEmailablePlayers(IGame IGame) {
         Vector<Player> emailable = new Vector<>();
-        for (var player : game.getPlayersList()) {
+        for (var player : IGame.getPlayersList()) {
             if (!StringUtility.isNullOrBlank(player.getEmail()) && !player.isBot()
                     && !player.isObserver()) {
                 emailable.add(player);
@@ -149,7 +150,7 @@ public class EmailService {
         return emailable;
     }
 
-    public Message newReportMessage(Game game, Vector<Report> reports, Player player) throws Exception {
+    public Message newReportMessage(TWGame twGame, Vector<Report> reports, Player player) throws Exception {
         int nextSequence = 0;
         synchronized (messageSequences) {
             var messageSequence = messageSequences.get(player);
@@ -159,7 +160,7 @@ public class EmailService {
             messageSequences.put(player, nextSequence);
         }
         return new RoundReportMessage(
-                from, player, game, reports, nextSequence, mailSession);
+                from, player, twGame, reports, nextSequence, mailSession);
     }
 
     public void send(final Message message) {

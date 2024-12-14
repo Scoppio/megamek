@@ -33,6 +33,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 
+import megamek.common.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -41,10 +42,6 @@ import megamek.client.bot.princess.BehaviorSettingsFactory;
 import megamek.client.bot.princess.CardinalEdge;
 import megamek.client.bot.princess.ChatCommands;
 import megamek.client.bot.princess.Princess;
-import megamek.common.Board;
-import megamek.common.Coords;
-import megamek.common.Game;
-import megamek.common.Player;
 import megamek.common.event.GamePlayerChatEvent;
 
 /**
@@ -55,7 +52,7 @@ import megamek.common.event.GamePlayerChatEvent;
 class ChatProcessorTest {
 
         private static BotClient mockBotHal;
-        private static final Game MOCK_GAME = mock(Game.class);
+        private static final IGame MOCK_GAME = mock(twGame.class);
 
         private static Player mockBotPlayerHal;
         private static Player mockBotPlayerVGer;

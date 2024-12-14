@@ -20,7 +20,7 @@ description: >
 
 singleplayer: yes                           # default: yes; the first player is the human player and all other players
                                             # are Princess bots. This will skip the Player/Camo assignment dialog
-                                            # and the "Host game" dialog and directly connect
+                                            # and the "Host TWGame" dialog and directly connect
                                             # to a localhost Server and use the correct player name.
                                             # Other players can still join and replace the OpFor but will not receive
                                             # any messages intended for the single player
@@ -134,14 +134,14 @@ map:
       newlevel: 2
       # obviously, at least one of newterrain and newlevel must be given
 
-# Optional: game options
-# when not given, the options from the latest game are used
+# Optional: TWGame options
+# when not given, the options from the latest TWGame are used
 options:
   #from: Example_options.xml
   file: Example_options.xml
   # The file is always loaded first, the following list overrides individual settings
   on:
-    # Activate options by listing them; the values must be those from OptionsConstants, as used for the game type
+    # Activate options by listing them; the values must be those from OptionsConstants, as used for the TWGame type
     - double_blind
     - single_blind_bots
   off:
@@ -207,7 +207,7 @@ factions:
               - [2,2]
               - [5,5]
 
-    minefields:                               # optional, availability depending on game type
+    minefields:                               # optional, availability depending on TWGame type
     - conventional: 2
     - command: 0
     - vibra: 2
@@ -225,11 +225,11 @@ factions:
           modify: atend
           units: [ 101, 102, 103, 104, 105, 106 ]
           atleast: 4
-        # the onlyatend modifier means that this victory condition will not end the game by itself; instead
-        # it will only be checked once the game has ended for any other reason, such as a game end trigger
+        # the onlyatend modifier means that this victory condition will not end the TWGame by itself; instead
+        # it will only be checked once the TWGame has ended for any other reason, such as a TWGame end trigger
         # (for example, a round count end)
-        # sometimes, victory conditions and game end conditions are are easier to write when they are kept
-        # apart; other times, this modifier can be omitted; then, this condition will end the game
+        # sometimes, victory conditions and TWGame end conditions are are easier to write when they are kept
+        # apart; other times, this modifier can be omitted; then, this condition will end the TWGame
         modify: onlyatend
 
     units:
@@ -395,11 +395,11 @@ events:
 # Game End, Victory and Victory/Defeat/Other Messages
 # are three separate things.
 
-# The game ends when any of the game end trigger conditions is met *at the end of a round*. Note that end
+# The TWGame ends when any of the TWGame end trigger conditions is met *at the end of a round*. Note that end
 # triggers *must not* use the "once" nor the "atend" modifier, but they can use the "not" modifier.
-# When the game ends, all victory conditions are checked to see which team wins. If no conditions are met, the
-# game is a draw.
-# In addition to the end triggers, the game can also end when a victory condition is met at the end of a round
+# When the TWGame ends, all victory conditions are checked to see which team wins. If no conditions are met, the
+# TWGame is a draw.
+# In addition to the end triggers, the TWGame can also end when a victory condition is met at the end of a round
 # and that victory condition does not have the onlyatend modifier, see the victory: tag below.
 
 # end: is always followed by an array of triggers, i.e. dashes must be used: - trigger:
@@ -441,8 +441,8 @@ messages:
     image: tosaveaprince_splash.png
     # The trigger controls when to show the message
     # Most messages should appear only once, so using the "once" modifier usually makes sense.
-    # Victory/defeat messages should use the atend modifier to be shown only when the game has ended.
-    # Note that the message itself does not end the game or control victory, it is just displayed.
+    # Victory/defeat messages should use the atend modifier to be shown only when the TWGame has ended.
+    # Note that the message itself does not end the TWGame or control victory, it is just displayed.
     trigger:
       type: fledunits
       modify: [ atend, once ]
@@ -452,7 +452,7 @@ messages:
 # ###############################################
 # Victory conditions; they always come as a list (use dashes). Listing them outside the factions can be
 # done as an alternative or in addition to victory conditions listed with the factions. The exception
-# is a draw condition that should directly end the game which cannot be given as part of the factions
+# is a draw condition that should directly end the TWGame which cannot be given as part of the factions
 # but must be given as described here
 victory:
   # When a victory condition is a win, it must give the player (= Team) it applies to.
@@ -462,17 +462,17 @@ victory:
       modify: atend
       units: [ 101, 102, 103, 104, 105, 106 ]
       atleast: 4
-    # the onlyatend modifier means that this victory condition will not end the game by itself; instead
-    # it will only be checked once the game has ended for any other reason, such as a game end trigger
+    # the onlyatend modifier means that this victory condition will not end the TWGame by itself; instead
+    # it will only be checked once the TWGame has ended for any other reason, such as a TWGame end trigger
     # (for example, a round count end)
-    # sometimes, victory conditions and game end conditions are are easier to write when they are kept
-    # apart; other times, this modifier can be omitted; then, this condition will end the game
+    # sometimes, victory conditions and TWGame end conditions are are easier to write when they are kept
+    # apart; other times, this modifier can be omitted; then, this condition will end the TWGame
     modify: onlyatend
 
   # When a victory condition does not give the player, it is a draw condition. In this case, it is
-  # automatically game-ending (this is because, when the game is ended, it is automatically considered
+  # automatically TWGame-ending (this is because, when the TWGame is ended, it is automatically considered
   # a draw when no actual win condition is met. No explicit draw condition needs to be given.
-  # Draw conditions are only needed when they are supposed to also end the game). So, it should not
+  # Draw conditions are only needed when they are supposed to also end the TWGame). So, it should not
   # use the onlyatend modifier
   - trigger:
       type: unitkilled
@@ -480,7 +480,7 @@ victory:
 
 # ###############################################
 # Triggers
-# are used to end the game, decide victory and show messages
+# are used to end the TWGame, decide victory and show messages
 # The following examples show all available triggers. Note that triggers by themselves (as given below)
 # are not valid, they must always be attached to something else (message, end, victory) as shown above.
 
@@ -527,7 +527,7 @@ trigger:
   count: 1
 
 trigger:
-  # the gamestart trigger activates right at the start of the game, before deployment
+  # the gamestart trigger activates right at the start of the TWGame, before deployment
   type: gamestart
 
 trigger:
@@ -557,7 +557,7 @@ trigger:
   #   once: make this trigger only ever fire once (useful e.g. for messages)
   #   not: invert this trigger, making it activate if and only if its conditions are not met
   #     with [not, once] the trigger will be inverted and fire only once; the order of these modifiers is irrelevant
-  #   atend: this trigger will only fire when the game has ended (useful for victory/defeat messages)
+  #   atend: this trigger will only fire when the TWGame has ended (useful for victory/defeat messages)
   # The modifiers can be given as a single value or an array
   modify: once
   # or:

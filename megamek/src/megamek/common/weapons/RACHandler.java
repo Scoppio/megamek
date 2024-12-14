@@ -15,11 +15,8 @@ package megamek.common.weapons;
 
 import java.util.Vector;
 
-import megamek.common.Entity;
-import megamek.common.Game;
-import megamek.common.Infantry;
-import megamek.common.Report;
-import megamek.common.ToHitData;
+import megamek.common.*;
+import megamek.common.TWGame;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.server.totalwarfare.TWGameManager;
 
@@ -36,7 +33,7 @@ public class RACHandler extends UltraWeaponHandler {
      * @param g
      * @param m
      */
-    public RACHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public RACHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 

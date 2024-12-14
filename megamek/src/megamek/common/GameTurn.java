@@ -47,12 +47,12 @@ public class GameTurn extends AbstractPlayerTurn {
      * Determine if the specified entity is a valid one to use for this turn.
      *
      * @param entity the <code>Entity</code> that may take this turn.
-     * @param game The {@link Game} the turn belongs to
+     * @param twGame The {@link TWGame} the turn belongs to
      * @return <code>true</code> if the specified entity can take this turn.
      *         <code>false</code> if the entity is not valid for this turn.
      */
-    public boolean isValidEntity(final @Nullable Entity entity, final Game game) {
-        return isValidEntity(entity, game, true);
+    public boolean isValidEntity(final @Nullable Entity entity, final TWGame twGame) {
+        return isValidEntity(entity, twGame, true);
     }
 
     /**
@@ -68,32 +68,32 @@ public class GameTurn extends AbstractPlayerTurn {
      * specified by a boolean input parameter.
      *
      * @param entity the <code>Entity</code> that may take this turn.
-     * @param game The {@link Game} the turn belongs to
+     * @param twGame The {@link TWGame} the turn belongs to
      * @param useValidNonInfantryCheck Boolean that determines if we should check to see if infantry
      *                                can be moved yet
      * @return <code>true</code> if the specified entity can take this turn.
      *         <code>false</code> if the entity is not valid for this turn.
      */
-    public boolean isValidEntity(final @Nullable Entity entity, final Game game,
+    public boolean isValidEntity(final @Nullable Entity entity, final TWGame twGame,
                                  final boolean useValidNonInfantryCheck) {
         return (entity != null) && (entity.getOwnerId() == playerId()) && entity.isSelectableThisTurn()
                 // This next bit enforces the "A players Infantry/ProtoMeks move after that player's other units" options.
-                && !(useValidNonInfantryCheck && game.getPhase().isMovement()
-                && (((entity instanceof Infantry) && game.getOptions().booleanOption(OptionsConstants.INIT_INF_MOVE_LATER))
-                || ((entity instanceof ProtoMek) && game.getOptions().booleanOption(OptionsConstants.INIT_PROTOS_MOVE_LATER)))
-                && game.checkForValidNonInfantryAndOrProtoMeks(playerId()));
+                && !(useValidNonInfantryCheck && twGame.getPhase().isMovement()
+                && (((entity instanceof Infantry) && twGame.getOptions().booleanOption(OptionsConstants.INIT_INF_MOVE_LATER))
+                || ((entity instanceof ProtoMek) && twGame.getOptions().booleanOption(OptionsConstants.INIT_PROTOS_MOVE_LATER)))
+                && twGame.checkForValidNonInfantryAndOrProtoMeks(playerId()));
     }
 
     @Override
     public boolean isValidEntity(InGameObject unit, IGame game) {
-        return (unit instanceof Entity) && (game instanceof Game) && isValidEntity((Entity) unit, (Game) game);
+        return (unit instanceof Entity) && (game instanceof TWGame) && isValidEntity((Entity) unit, (TWGame) game);
     }
 
     /**
      * @return true if the player and entity are both valid.
      */
-    public boolean isValid(final int playerId, final @Nullable Entity entity, final Game game) {
-        return isValid(playerId, game) && isValidEntity(entity, game);
+    public boolean isValid(final int playerId, final @Nullable Entity entity, final TWGame twGame) {
+        return isValid(playerId, twGame) && isValidEntity(entity, twGame);
     }
 
     public boolean isMultiTurn() {

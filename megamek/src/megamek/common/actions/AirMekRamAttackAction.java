@@ -39,22 +39,22 @@ public class AirMekRamAttackAction extends DisplacementAttackAction {
     /**
      * To-hit number for a ram, assuming that movement has been handled
      *
-     * @param game The current {@link Game}
+     * @param twGame The current {@link TWGame}
      */
-    public ToHitData toHit(Game game) {
-        final Entity entity = game.getEntity(getEntityId());
-        return toHit(game, game.getTarget(getTargetType(), getTargetId()),
+    public ToHitData toHit(TWGame twGame) {
+        final Entity entity = twGame.getEntity(getEntityId());
+        return toHit(twGame, twGame.getTarget(getTargetType(), getTargetId()),
                      entity.getPosition(), entity.getElevation(), entity.moved);
     }
 
     /**
      * To-hit number for a ram, assuming that movement has been handled
      *
-     * @param game The current {@link Game}
+     * @param twGame The current {@link TWGame}
      */
-    public ToHitData toHit(Game game, Targetable target, Coords src,
+    public ToHitData toHit(TWGame twGame, Targetable target, Coords src,
                            int elevation, EntityMovementType movement) {
-        final Entity ae = getEntity(game);
+        final Entity ae = getEntity(twGame);
 
         // arguments legal?
         if (ae == null) {
@@ -79,7 +79,7 @@ public class AirMekRamAttackAction extends DisplacementAttackAction {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "Invalid Target");
         }
 
-        if (!game.getOptions().booleanOption(OptionsConstants.BASE_FRIENDLY_FIRE)) {
+        if (!twGame.getOptions().booleanOption(OptionsConstants.BASE_FRIENDLY_FIRE)) {
             // a friendly unit can never be the target of a direct attack.
             if ((target.getTargetType() == Targetable.TYPE_ENTITY)
                 && ((((Entity) target).getOwnerId() == ae.getOwnerId())
@@ -91,7 +91,7 @@ public class AirMekRamAttackAction extends DisplacementAttackAction {
             }
         }
 
-        Hex targHex = game.getBoard().getHex(target.getPosition());
+        Hex targHex = twGame.getBoard().getHex(target.getPosition());
         // we should not be using the attacker's hex here since the attacker
         // will end up in
         // the target's hex
@@ -100,12 +100,12 @@ public class AirMekRamAttackAction extends DisplacementAttackAction {
         final int targetElevation = target.getElevation()
                                     + targHex.getLevel();
         final int targetHeight = targetElevation + target.getHeight();
-        Building bldg = game.getBoard().getBuildingAt(getTargetPos());
+        Building bldg = twGame.getBoard().getBuildingAt(getTargetPos());
         ToHitData toHit = null;
         boolean targIsBuilding = ((getTargetType() == Targetable.TYPE_FUEL_TANK)
                 || (getTargetType() == Targetable.TYPE_BUILDING));
 
-        boolean inSameBuilding = Compute.isInSameBuilding(game, ae, te);
+        boolean inSameBuilding = Compute.isInSameBuilding(twGame, ae, te);
 
         // can't target yourself
         if (ae.equals(te)) {
@@ -189,11 +189,11 @@ public class AirMekRamAttackAction extends DisplacementAttackAction {
 
         // Can't target units in buildings (from the outside).
         if ((null != bldg) && (!targIsBuilding)
-            && Compute.isInBuilding(game, te)) {
-            if (!Compute.isInBuilding(game, ae)) {
+            && Compute.isInBuilding(twGame, te)) {
+            if (!Compute.isInBuilding(twGame, ae)) {
                 return new ToHitData(TargetRoll.IMPOSSIBLE,
                                      "Target is inside building");
-            } else if (!game.getBoard().getBuildingAt(ae.getPosition())
+            } else if (!twGame.getBoard().getBuildingAt(ae.getPosition())
                             .equals(bldg)) {
                 return new ToHitData(TargetRoll.IMPOSSIBLE,
                                      "Target is inside differnt building");
@@ -218,17 +218,17 @@ public class AirMekRamAttackAction extends DisplacementAttackAction {
         toHit = new ToHitData(5, "base");
 
         // attacker movement
-        toHit.append(Compute.getAttackerMovementModifier(game, ae.getId(),
+        toHit.append(Compute.getAttackerMovementModifier(twGame, ae.getId(),
                                                          movement));
 
         // target movement
-        toHit.append(Compute.getTargetMovementModifier(game, targetId));
+        toHit.append(Compute.getTargetMovementModifier(twGame, targetId));
 
         // attacker terrain
-        toHit.append(Compute.getAttackerTerrainModifier(game, ae.getId()));
+        toHit.append(Compute.getAttackerTerrainModifier(twGame, ae.getId()));
 
         // target terrain
-        toHit.append(Compute.getTargetTerrainModifier(game, te, 0,
+        toHit.append(Compute.getTargetTerrainModifier(twGame, te, 0,
                                                       inSameBuilding));
 
         // attacker is spotting
@@ -255,7 +255,7 @@ public class AirMekRamAttackAction extends DisplacementAttackAction {
         // target immobile
         toHit.append(Compute.getImmobileMod(te));
 
-        Compute.modifyPhysicalBTHForAdvantages(ae, te, toHit, game);
+        Compute.modifyPhysicalBTHForAdvantages(ae, te, toHit, twGame);
 
         // evading bonuses (
         if (te.isEvading()) {
@@ -293,9 +293,9 @@ public class AirMekRamAttackAction extends DisplacementAttackAction {
     /**
      * Checks if a ram can hit the target, taking account of movement
      */
-    public ToHitData toHit(Game game, MovePath md) {
-        final Entity ae = game.getEntity(getEntityId());
-        final Targetable target = getTarget(game);
+    public ToHitData toHit(TWGame twGame, MovePath md) {
+        final Entity ae = twGame.getEntity(getEntityId());
+        final Targetable target = getTarget(twGame);
         Coords ramSrc = ae.getPosition();
         int ramEl = ae.getElevation();
         MoveStep ramStep = null;
@@ -313,7 +313,7 @@ public class AirMekRamAttackAction extends DisplacementAttackAction {
         }
 
         // determine last valid step
-        md.compile(game, ae);
+        md.compile(twGame, ae);
         for (final Enumeration<MoveStep> i = md.getSteps(); i.hasMoreElements(); ) {
             final MoveStep step = i.nextElement();
             if (step.getMovementType(md.isEndStep(step)) == EntityMovementType.MOVE_ILLEGAL) {
@@ -356,7 +356,7 @@ public class AirMekRamAttackAction extends DisplacementAttackAction {
         }
 
         return toHit(
-                game,
+                TWGame,
                 target,
                 ramSrc,
                 ramEl,

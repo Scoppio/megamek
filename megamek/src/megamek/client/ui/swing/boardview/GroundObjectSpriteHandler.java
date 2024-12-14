@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import megamek.common.Coords;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.ICarryable;
 import megamek.common.event.GameBoardChangeEvent;
 
@@ -30,11 +30,11 @@ public class GroundObjectSpriteHandler extends BoardViewSpriteHandler {
 
     // Cache the ground object list as it does not change very often
     private Map<Coords, List<ICarryable>> currentGroundObjectList;
-    private final Game game;
+    private final TWGame twGame;
 
-    public GroundObjectSpriteHandler(BoardView boardView, Game game) {
+    public GroundObjectSpriteHandler(BoardView boardView, TWGame twGame) {
         super(boardView);
-        this.game = game;
+        this.twGame = twGame;
     }
 
     public void setGroundObjectSprites(Map<Coords, List<ICarryable>> objectCoordList) {
@@ -60,17 +60,17 @@ public class GroundObjectSpriteHandler extends BoardViewSpriteHandler {
 
     @Override
     public void initialize() {
-    	game.addGameListener(this);
+    	twGame.addGameListener(this);
     }
 
     @Override
     public void dispose() {
         clear();
-        game.removeGameListener(this);
+        twGame.removeGameListener(this);
     }
 
     @Override
     public void gameBoardChanged(GameBoardChangeEvent e) {
-    	setGroundObjectSprites(game.getGroundObjects());
+    	setGroundObjectSprites(twGame.getGroundObjects());
     }
 }

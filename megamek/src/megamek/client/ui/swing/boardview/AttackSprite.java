@@ -63,8 +63,8 @@ class AttackSprite extends Sprite {
         entityId = attack.getEntityId();
         targetType = attack.getTargetType();
         targetId = attack.getTargetId();
-        ae = this.boardView1.game.getEntity(attack.getEntityId());
-        target = this.boardView1.game.getTarget(targetType, targetId);
+        ae = this.boardView1.twGame.getEntity(attack.getEntityId());
+        target = this.boardView1.twGame.getTarget(targetType, targetId);
         aCoord = ae.getPosition();
         tCoord = target.getPosition();
         aHex = new IdealHex(aCoord);
@@ -240,7 +240,7 @@ class AttackSprite extends Sprite {
 
     @Override
     public StringBuffer getTooltip() {
-        GamePhase phase = this.boardView1.game.getPhase();
+        GamePhase phase = this.boardView1.twGame.getPhase();
         String result = "";
         String sAttacherDesc = "";
 

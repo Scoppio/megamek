@@ -21,7 +21,7 @@ import megamek.server.totalwarfare.TWGameManager;
 
 public class ScreenProcessor extends DynamicTerrainProcessor {
 
-    private Game game;
+    private IGame IGame;
     Vector<Report> vPhaseReport;
 
     public ScreenProcessor(TWGameManager gameManager) {
@@ -30,18 +30,18 @@ public class ScreenProcessor extends DynamicTerrainProcessor {
 
     @Override
     public void doEndPhaseChanges(Vector<Report> vPhaseReport) {
-        game = gameManager.getGame();
+        IGame = gameManager.getGame();
         this.vPhaseReport = vPhaseReport;
         resolveScreen();
         this.vPhaseReport = null;
-        
+
     }
 
     /**
      * Check to see if screen clears
      */
     private void resolveScreen() {
-        Board board = game.getBoard();
+        Board board = IGame.getBoard();
         int width = board.getWidth();
         int height = board.getHeight();
 

@@ -31,15 +31,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import megamek.client.ui.Messages;
-import megamek.common.AmmoType;
-import megamek.common.Entity;
-import megamek.common.EquipmentType;
-import megamek.common.Game;
-import megamek.common.LocationFullException;
-import megamek.common.MiscType;
-import megamek.common.Mounted;
-import megamek.common.SimpleTechLevel;
-import megamek.common.WeaponType;
+import megamek.common.*;
 import megamek.common.equipment.AmmoMounted;
 import megamek.common.equipment.WeaponMounted;
 import megamek.common.options.OptionsConstants;
@@ -57,12 +49,12 @@ public class BayMunitionsChoicePanel extends JPanel {
     private static final long serialVersionUID = -7741380967676720496L;
 
     private final Entity entity;
-    private final Game game;
+    private final IGame IGame;
     private final List<AmmoRowPanel> rows = new ArrayList<>();
 
-    public BayMunitionsChoicePanel(Entity entity, Game game) {
+    public BayMunitionsChoicePanel(Entity entity, IGame IGame) {
         this.entity = entity;
-        this.game = game;
+        this.IGame = IGame;
 
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -232,21 +224,21 @@ public class BayMunitionsChoicePanel extends JPanel {
          */
         private boolean includeMunition(AmmoType ammoType) {
             if (!ammoType
-                    .canAeroUse(game.getOptions().booleanOption(OptionsConstants.ADVAERORULES_AERO_ARTILLERY_MUNITIONS))
+                    .canAeroUse(IGame.getOptions().booleanOption(OptionsConstants.ADVAERORULES_AERO_ARTILLERY_MUNITIONS))
                     || (ammoType.getAmmoType() != at)
                     || (ammoType.getRackSize() != rackSize)
                     || ((ammoType.getTechBase() != techBase)
                             && (ammoType.getTechBase() != AmmoType.TECH_BASE_ALL)
                             && (techBase != AmmoType.TECH_BASE_ALL))
-                    || !ammoType.isLegal(game.getOptions().intOption(OptionsConstants.ALLOWED_YEAR),
-                            SimpleTechLevel.getGameTechLevel(game),
+                    || !ammoType.isLegal(IGame.getOptions().intOption(OptionsConstants.ALLOWED_YEAR),
+                            SimpleTechLevel.getGameTechLevel(IGame),
                             techBase == AmmoType.TECH_BASE_CLAN,
                             techBase == AmmoType.TECH_BASE_ALL,
-                            game.getOptions().booleanOption(OptionsConstants.ALLOWED_SHOW_EXTINCT))) {
+                            IGame.getOptions().booleanOption(OptionsConstants.ALLOWED_SHOW_EXTINCT))) {
                 return false;
             }
             if (ammoType.hasFlag(AmmoType.F_NUCLEAR)
-                    && !game.getOptions().booleanOption(
+                    && !IGame.getOptions().booleanOption(
                             OptionsConstants.ADVAERORULES_AT2_NUKES)) {
                 return false;
             }
@@ -306,7 +298,7 @@ public class BayMunitionsChoicePanel extends JPanel {
                 return atype.getDesc();
             }
 
-            if (game.getOptions().booleanOption(OptionsConstants.ADVAERORULES_AERO_ARTILLERY_MUNITIONS)) {
+            if (IGame.getOptions().booleanOption(OptionsConstants.ADVAERORULES_AERO_ARTILLERY_MUNITIONS)) {
                 if (atype.getAmmoType() == AmmoType.T_ARROW_IV
                         || atype.getAmmoType() == AmmoType.T_LONG_TOM
                         || atype.getAmmoType() == AmmoType.T_SNIPER

@@ -29,17 +29,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+import megamek.common.*;
 import org.junit.jupiter.api.Test;
 
-import megamek.common.BipedMek;
-import megamek.common.Coords;
-import megamek.common.Entity;
-import megamek.common.Game;
-import megamek.common.Mek;
-import megamek.common.QuadMek;
-import megamek.common.Tank;
-import megamek.common.Targetable;
-import megamek.common.ToHitData;
+import megamek.common.TWGame;
 import megamek.common.actions.KickAttackAction;
 import megamek.common.actions.PunchAttackAction;
 
@@ -61,7 +54,7 @@ class PhysicalInfoTest {
         ToHitData mockToHit = mock(ToHitData.class);
         when(mockFireControl.guessToHitModifierPhysical(any(Entity.class), any(EntityState.class),
                 any(Targetable.class), any(EntityState.class), any(PhysicalAttackType.class),
-                any(Game.class)))
+                any(twGame.class)))
                 .thenReturn(mockToHit);
         when(mockToHit.getValue()).thenReturn(7);
 
@@ -79,7 +72,7 @@ class PhysicalInfoTest {
 
         EntityState mockTargetState = mock(EntityState.class);
 
-        Game mockGame = mock(Game.class);
+        TWGame mockTWGame = mock(twGame.class);
 
         PhysicalInfo testPhysicalInfo = spy(new PhysicalInfo(mockPrincess));
         testPhysicalInfo.setShooter(mockShooter);
@@ -92,16 +85,16 @@ class PhysicalInfoTest {
 
         PunchAttackAction punchAction = mock(PunchAttackAction.class);
         doReturn(punchAction).when(testPhysicalInfo).buildAction(eq(punch), anyInt(), any(Targetable.class));
-        when(punchAction.toHit(any(Game.class))).thenReturn(mockToHit);
+        when(punchAction.toHit(any(twGame.class))).thenReturn(mockToHit);
 
         KickAttackAction kickAction = mock(KickAttackAction.class);
         doReturn(kickAction).when(testPhysicalInfo).buildAction(eq(kick), anyInt(), any(Targetable.class));
-        when(kickAction.toHit(any(Game.class))).thenReturn(mockToHit);
+        when(kickAction.toHit(any(twGame.class))).thenReturn(mockToHit);
 
         // Test a vanilla punch.
         testPhysicalInfo.setShooter(mockShooter);
         testPhysicalInfo.setAttackType(punch);
-        testPhysicalInfo.initDamage(punch, mockShooterState, mockTargetState, true, mockGame);
+        testPhysicalInfo.initDamage(punch, mockShooterState, mockTargetState, true, mockTWGame);
         assertEquals(0.583, testPhysicalInfo.getProbabilityToHit(), TOLERANCE);
         assertEquals(5.0, testPhysicalInfo.getMaxDamage(), TOLERANCE);
         assertEquals(0.0099, testPhysicalInfo.getExpectedCriticals(), TOLERANCE);
@@ -111,7 +104,7 @@ class PhysicalInfoTest {
         // Test a vanilla kick.
         testPhysicalInfo.setShooter(mockShooter);
         testPhysicalInfo.setAttackType(kick);
-        testPhysicalInfo.initDamage(kick, mockShooterState, mockTargetState, true, mockGame);
+        testPhysicalInfo.initDamage(kick, mockShooterState, mockTargetState, true, mockTWGame);
         assertEquals(0.583, testPhysicalInfo.getProbabilityToHit(), TOLERANCE);
         assertEquals(10.0, testPhysicalInfo.getMaxDamage(), TOLERANCE);
         assertEquals(0.0099, testPhysicalInfo.getExpectedCriticals(), TOLERANCE);
@@ -122,7 +115,7 @@ class PhysicalInfoTest {
         when(mockShooter.getWeight()).thenReturn(100.0);
         testPhysicalInfo.setShooter(mockShooter);
         testPhysicalInfo.setAttackType(punch);
-        testPhysicalInfo.initDamage(punch, mockShooterState, mockTargetState, true, mockGame);
+        testPhysicalInfo.initDamage(punch, mockShooterState, mockTargetState, true, mockTWGame);
         assertEquals(0.583, testPhysicalInfo.getProbabilityToHit(), TOLERANCE);
         assertEquals(10.0, testPhysicalInfo.getMaxDamage(), TOLERANCE);
         assertEquals(0.0099, testPhysicalInfo.getExpectedCriticals(), TOLERANCE);
@@ -137,7 +130,7 @@ class PhysicalInfoTest {
         when(mockShooter.getWeight()).thenReturn(100.0);
         testPhysicalInfo.setShooter(mockShooter);
         testPhysicalInfo.setAttackType(punch);
-        testPhysicalInfo.initDamage(punch, mockShooterState, mockTargetState, true, mockGame);
+        testPhysicalInfo.initDamage(punch, mockShooterState, mockTargetState, true, mockTWGame);
         assertEquals(0.583, testPhysicalInfo.getProbabilityToHit(), TOLERANCE);
         assertEquals(10.0, testPhysicalInfo.getMaxDamage(), TOLERANCE);
         assertEquals(0.5929, testPhysicalInfo.getExpectedCriticals(), TOLERANCE);
@@ -146,7 +139,7 @@ class PhysicalInfoTest {
 
         // Test a non-biped trying to punch.
         testPhysicalInfo.setShooter(mock(QuadMek.class));
-        testPhysicalInfo.initDamage(punch, mockShooterState, mockTargetState, true, mockGame);
+        testPhysicalInfo.initDamage(punch, mockShooterState, mockTargetState, true, mockTWGame);
         assertEquals(0.0, testPhysicalInfo.getProbabilityToHit(), TOLERANCE);
         assertEquals(0.0, testPhysicalInfo.getMaxDamage(), TOLERANCE);
         assertEquals(0.0, testPhysicalInfo.getExpectedCriticals(), TOLERANCE);
@@ -155,7 +148,7 @@ class PhysicalInfoTest {
 
         // Test not being able to hit.
         when(mockToHit.getValue()).thenReturn(13);
-        testPhysicalInfo.initDamage(punch, mockShooterState, mockTargetState, true, mockGame);
+        testPhysicalInfo.initDamage(punch, mockShooterState, mockTargetState, true, mockTWGame);
         assertEquals(0.0, testPhysicalInfo.getProbabilityToHit(), TOLERANCE);
         assertEquals(0.0, testPhysicalInfo.getMaxDamage(), TOLERANCE);
         assertEquals(0.0, testPhysicalInfo.getExpectedCriticals(), TOLERANCE);
@@ -164,7 +157,7 @@ class PhysicalInfoTest {
 
         // Test a non-mek.
         testPhysicalInfo.setShooter(mock(Tank.class));
-        testPhysicalInfo.initDamage(punch, mockShooterState, mockTargetState, true, mockGame);
+        testPhysicalInfo.initDamage(punch, mockShooterState, mockTargetState, true, mockTWGame);
         assertEquals(0.0, testPhysicalInfo.getProbabilityToHit(), TOLERANCE);
         assertEquals(0.0, testPhysicalInfo.getMaxDamage(), TOLERANCE);
         assertEquals(0.0, testPhysicalInfo.getExpectedCriticals(), TOLERANCE);

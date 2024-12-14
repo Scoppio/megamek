@@ -35,7 +35,7 @@ import java.util.Set;
 public class FiringSolutionSpriteHandler extends BoardViewSpriteHandler implements IPreferenceChangeListener {
 
     private final Client client;
-    private final Game game;
+    private final TWGame twGame;
 
     // Cache the entity; thus, when firing solutions are turned on the sprites can easily be created
     private Entity currentEntity;
@@ -43,7 +43,7 @@ public class FiringSolutionSpriteHandler extends BoardViewSpriteHandler implemen
     public FiringSolutionSpriteHandler(BoardView boardView, Client client) {
         super(boardView);
         this.client = client;
-        this.game = client.getGame();
+        this.twGame = client.getGame();
     }
 
     public void showFiringSolutions(Entity entity) {
@@ -55,7 +55,7 @@ public class FiringSolutionSpriteHandler extends BoardViewSpriteHandler implemen
 
         // Determine which entities are spotted
         Set<Integer> spottedEntities = new HashSet<>();
-        for (Entity spotter : game.getEntitiesVector()) {
+        for (Entity spotter : twGame.getEntitiesVector()) {
             if (!spotter.isEnemyOf(entity) && spotter.isSpotting()) {
                 spottedEntities.add(spotter.getSpotTargetId());
             }
@@ -63,9 +63,9 @@ public class FiringSolutionSpriteHandler extends BoardViewSpriteHandler implemen
 
         // Calculate firing solutions
         Map<Integer, FiringSolution> solutions = new HashMap<>();
-        for (Entity target : game.getEntitiesVector()) {
+        for (Entity target : twGame.getEntitiesVector()) {
             if (shouldShowTarget(target, entity)) {
-                ToHitData thd = WeaponAttackAction.toHit(game, entity.getId(), target);
+                ToHitData thd = WeaponAttackAction.toHit(twGame, entity.getId(), target);
                 thd.setLocation(target.getPosition());
                 thd.setRange(entity.getPosition().distance(target.getPosition()));
                 solutions.put(target.getId(), new FiringSolution(thd, spottedEntities.contains(target.getId())));

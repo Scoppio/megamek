@@ -34,7 +34,7 @@ import megamek.client.ui.swing.GUIPreferences;
 import megamek.client.ui.swing.lobby.LobbyUtility;
 import megamek.client.ui.swing.util.ScalingPopup;
 import megamek.common.Entity;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.event.*;
 import megamek.common.force.Force;
 import megamek.common.force.Forces;
@@ -52,7 +52,7 @@ public class ForceDisplayPanel extends JPanel implements GameListener, IPreferen
     JTree forceTree;
     private ForceTreeMouseAdapter mekForceTreeMouseListener = new ForceTreeMouseAdapter();
     private ClientGUI clientgui;
-    private Game game;
+    private TWGame twGame;
     private static final GUIPreferences GUIP = GUIPreferences.getInstance();
 
     public ForceDisplayPanel(ClientGUI clientgui) {
@@ -60,7 +60,7 @@ public class ForceDisplayPanel extends JPanel implements GameListener, IPreferen
             return;
         }
         this.clientgui = clientgui;
-        this.game = clientgui.getClient().getGame();
+        this.twGame = clientgui.getClient().getGame();
 
         setupForce();
         refreshTree();
@@ -102,7 +102,7 @@ public class ForceDisplayPanel extends JPanel implements GameListener, IPreferen
             }
         }
 
-        Forces forces = game.getForces();
+        Forces forces = twGame.getForces();
         forces.correct();
         List<Integer> expandedForces = new ArrayList<>();
 
@@ -145,7 +145,7 @@ public class ForceDisplayPanel extends JPanel implements GameListener, IPreferen
      * and expansion state of the force tree after an update.
      */
     private TreePath getPath(Object outdatedEntry) {
-        Forces forces = game.getForces();
+        Forces forces = twGame.getForces();
         if (outdatedEntry instanceof Force) {
             if (!forces.contains((Force) outdatedEntry)) {
                 return null;
@@ -161,17 +161,17 @@ public class ForceDisplayPanel extends JPanel implements GameListener, IPreferen
             return new TreePath(pathObjs);
         } else if (outdatedEntry instanceof Entity) {
             int entityId = ((Entity) outdatedEntry).getId();
-            if (game.getEntity(entityId) == null) {
+            if (twGame.getEntity(entityId) == null) {
                 return null;
             }
-            List<Force> chain = forces.forceChain(game.getEntity(entityId));
+            List<Force> chain = forces.forceChain(twGame.getEntity(entityId));
             Object[] pathObjs = new Object[chain.size() + 2];
             int index = 0;
             pathObjs[index++] = forceTreeModel.getRoot();
             for (Force force : chain) {
                 pathObjs[index++] = force;
             }
-            pathObjs[index++] = game.getEntity(entityId);
+            pathObjs[index++] = twGame.getEntity(entityId);
             return new TreePath(pathObjs);
         } else {
             throw new IllegalArgumentException(Messages.getString("ChatLounge.TreePath.methodRequiresEntityForce"));
@@ -185,7 +185,7 @@ public class ForceDisplayPanel extends JPanel implements GameListener, IPreferen
         item.setActionCommand(Integer.toString(en.getId()));
         item.addActionListener(evt -> {
             try {
-                Entity entity = game.getEntity(Integer.parseInt(evt.getActionCommand()));
+                Entity entity = twGame.getEntity(Integer.parseInt(evt.getActionCommand()));
                 LobbyUtility.mekReadout(entity, 0, false, clientgui.getFrame());
             } catch (Exception ex) {
                 logger.error(ex, "");

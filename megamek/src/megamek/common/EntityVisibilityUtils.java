@@ -37,19 +37,19 @@ public class EntityVisibilityUtils {
      * Game Master is excluded.
      *
      * @param localPlayer The player to check.
-     * @param game        The current {@link Game}
+     * @param IGame        The current {@link TWGame}
      * @param entity      The entity to check
      * @return Whether or not the player can see the entity.
      */
-    public static boolean detectedOrHasVisual(Player localPlayer, Game game, Entity entity) {
+    public static boolean detectedOrHasVisual(Player localPlayer, IGame IGame, Entity entity) {
         boolean canSee = (localPlayer == null)
-                || !game.getOptions().booleanOption(OptionsConstants.ADVANCED_DOUBLE_BLIND)
+                || !IGame.getOptions().booleanOption(OptionsConstants.ADVANCED_DOUBLE_BLIND)
                 || !entity.getOwner().isEnemyOf(localPlayer)
                 || entity.hasSeenEntity(localPlayer)
                 || entity.hasDetectedEntity(localPlayer);
 
         canSee &= (localPlayer == null)
-                || !game.getOptions().booleanOption(OptionsConstants.ADVANCED_HIDDEN_UNITS)
+                || !IGame.getOptions().booleanOption(OptionsConstants.ADVANCED_HIDDEN_UNITS)
                 || !entity.getOwner().isEnemyOf(localPlayer)
                 || !entity.isHidden();
 

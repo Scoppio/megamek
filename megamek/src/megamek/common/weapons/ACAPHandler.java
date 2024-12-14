@@ -15,15 +15,8 @@ package megamek.common.weapons;
 
 import java.util.Vector;
 
-import megamek.common.AmmoType;
-import megamek.common.Building;
-import megamek.common.Compute;
-import megamek.common.Entity;
-import megamek.common.HitData;
-import megamek.common.Game;
-import megamek.common.Hex;
-import megamek.common.Report;
-import megamek.common.ToHitData;
+import megamek.common.*;
+import megamek.common.TWGame;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.server.totalwarfare.TWGameManager;
 
@@ -34,7 +27,7 @@ import megamek.server.totalwarfare.TWGameManager;
 public class ACAPHandler extends ACWeaponHandler {
     private static final long serialVersionUID = -4251291510045646817L;
 
-    public ACAPHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public ACAPHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
         generalDamageType = HitData.DAMAGE_ARMOR_PIERCING;
     }
@@ -80,9 +73,9 @@ public class ACAPHandler extends ACWeaponHandler {
 
         // if the target was in partial cover, then we already handled
         // damage absorption by the partial cover, if it would have already happened
-        Hex targetHex = game.getBoard().getHex(target.getPosition());
+        Hex targetHex = twGame.getBoard().getHex(target.getPosition());
         boolean targetStickingOutOfBuilding = unitStickingOutOfBuilding(targetHex, entityTarget);
-                
+
         nDamage = absorbBuildingDamage(nDamage, entityTarget, bldgAbsorbs, vPhaseReport, bldg,
                 targetStickingOutOfBuilding);
 

@@ -14,7 +14,7 @@
 package megamek.common.weapons.c3;
 
 import megamek.common.AmmoType;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.SimpleTechLevel;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
@@ -72,8 +72,8 @@ public class ISC3RemoteSensorLauncher extends MissileWeapon {
      */
     @Override
     protected AttackHandler getCorrectHandler(ToHitData toHit,
-            WeaponAttackAction waa, Game game, TWGameManager manager) {
-        return super.getCorrectHandler(toHit, waa, game, manager);
+                                              WeaponAttackAction waa, TWGame twGame, TWGameManager manager) {
+        return super.getCorrectHandler(toHit, waa, twGame, manager);
         // FIXME: Implement handler
     }
 }

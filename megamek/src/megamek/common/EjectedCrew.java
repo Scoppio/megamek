@@ -79,10 +79,10 @@ public class EjectedCrew extends Infantry {
         }
         setOriginalRideId(originalRide.getId());
         setOriginalRideExternalId(originalRide.getExternalIdAsString());
-        Game tmpGame = originalRide.getGame();
-        if (tmpGame != null
+        IGame tmpIGame = originalRide.getGame();
+        if (tmpIGame != null
                 && (!(this instanceof MekWarrior)
-                        || tmpGame.getOptions().booleanOption(OptionsConstants.ADVANCED_ARMED_MEKWARRIORS))) {
+                        || tmpIGame.getOptions().booleanOption(OptionsConstants.ADVANCED_ARMED_MEKWARRIORS))) {
             try {
                 addEquipment(EquipmentType.get(EquipmentTypeLookup.INFANTRY_ASSAULT_RIFLE),
                         Infantry.LOC_INFANTRY);
@@ -129,7 +129,7 @@ public class EjectedCrew extends Infantry {
         initializeInternal(Integer.MAX_VALUE, Infantry.LOC_INFANTRY);
     }
 
-    public EjectedCrew(Crew crew, Player owner, Game game) {
+    public EjectedCrew(Crew crew, Player owner, IGame IGame) {
         super();
         setCrew(crew);
         setChassis(VEE_EJECT_NAME);
@@ -147,10 +147,10 @@ public class EjectedCrew extends Infantry {
             }
             setInternal(crew.getSize() - dead, Infantry.LOC_INFANTRY);
         }
-        Game tmpGame = game;
-        if (tmpGame != null
+        IGame tmpIGame = IGame;
+        if (tmpIGame != null
                 && (!(this instanceof MekWarrior)
-                        || tmpGame.getOptions().booleanOption(OptionsConstants.ADVANCED_ARMED_MEKWARRIORS))) {
+                        || tmpIGame.getOptions().booleanOption(OptionsConstants.ADVANCED_ARMED_MEKWARRIORS))) {
             try {
                 addEquipment(EquipmentType.get(EquipmentTypeLookup.INFANTRY_ASSAULT_RIFLE),
                         Infantry.LOC_INFANTRY);

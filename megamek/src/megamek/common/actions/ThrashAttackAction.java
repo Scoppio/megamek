@@ -43,12 +43,12 @@ public class ThrashAttackAction extends AbstractAttackAction {
      * attack will force a PSR check for the prone Mek; if the PSR is missed,
      * the Mek takes normal falling damage.
      *
-     * @param game The current {@link Game} containing all entities.
+     * @param twGame The current {@link TWGame} containing all entities.
      * @return the <code>ToHitData</code> containing the target roll.
      */
-    public ToHitData toHit(Game game) {
-        final Entity ae = getEntity(game);
-        final Targetable target = getTarget(game);
+    public ToHitData toHit(TWGame twGame) {
+        final Entity ae = getEntity(twGame);
+        final Targetable target = getTarget(twGame);
         // arguments legal?
         if (ae == null) {
             logger.error("Attacker not valid");
@@ -64,7 +64,7 @@ public class ThrashAttackAction extends AbstractAttackAction {
             te = (Entity) target;
         }
 
-        if (!game.getOptions().booleanOption(OptionsConstants.BASE_FRIENDLY_FIRE)) {
+        if (!twGame.getOptions().booleanOption(OptionsConstants.BASE_FRIENDLY_FIRE)) {
             // a friendly unit can never be the target of a direct attack.
             if ((target.getTargetType() == Targetable.TYPE_ENTITY)
                     && ((((Entity) target).getOwnerId() == ae.getOwnerId())
@@ -107,7 +107,7 @@ public class ThrashAttackAction extends AbstractAttackAction {
         }
 
         // Check terrain.
-        Hex hex = game.getBoard().getHex(ae.getPosition());
+        Hex hex = twGame.getBoard().getHex(ae.getPosition());
         if (hex.containsTerrain(Terrains.WOODS)
                 || hex.containsTerrain(Terrains.JUNGLE)
                 || hex.containsTerrain(Terrains.ROUGH)

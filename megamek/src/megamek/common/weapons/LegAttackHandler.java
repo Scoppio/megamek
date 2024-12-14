@@ -27,7 +27,7 @@ import megamek.common.Crew;
 import megamek.common.Entity;
 import megamek.common.EquipmentType;
 import megamek.common.HitData;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Mek;
 import megamek.common.Report;
 import megamek.common.ToHitData;
@@ -42,7 +42,7 @@ import megamek.server.totalwarfare.TWGameManager;
 public class LegAttackHandler extends WeaponHandler {
     private static final long serialVersionUID = 4429993211361286138L;
 
-    public LegAttackHandler(ToHitData toHit, WeaponAttackAction waa, Game g, TWGameManager m) {
+    public LegAttackHandler(ToHitData toHit, WeaponAttackAction waa, TWGame g, TWGameManager m) {
         super(toHit, waa, g, m);
     }
 

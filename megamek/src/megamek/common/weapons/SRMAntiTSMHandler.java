@@ -34,7 +34,7 @@ public class SRMAntiTSMHandler extends SRMSmokeWarheadHandler {
     @Serial
     private static final long serialVersionUID = 6380017303917455020L;
 
-    public SRMAntiTSMHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public SRMAntiTSMHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
         sSalvoType = " anti-TSM missile(s) ";
         damageType = DamageType.ANTI_TSM;
@@ -57,7 +57,7 @@ public class SRMAntiTSMHandler extends SRMSmokeWarheadHandler {
         // Add ams mod
         nMissilesModifier += getAMSHitsMod(vPhaseReport);
 
-        if (game.getOptions().booleanOption(OptionsConstants.ADVAERORULES_AERO_SANITY)) {
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVAERORULES_AERO_SANITY)) {
             Entity entityTarget = (target.getTargetType() == Targetable.TYPE_ENTITY) ? (Entity) target
                     : null;
             if (entityTarget != null && entityTarget.isLargeCraft()) {

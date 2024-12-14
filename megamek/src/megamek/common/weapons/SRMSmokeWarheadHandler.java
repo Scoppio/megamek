@@ -34,7 +34,7 @@ public class SRMSmokeWarheadHandler extends SRMHandler {
     @Serial
     private static final long serialVersionUID = -40939686257250837L;
 
-    public SRMSmokeWarheadHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public SRMSmokeWarheadHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 
@@ -54,7 +54,7 @@ public class SRMSmokeWarheadHandler extends SRMHandler {
         } else {
             // scatterable SRMs scatter like dive bombs
             coords = Compute.scatter(coords, 1);
-            if (game.getBoard().contains(coords)) {
+            if (twGame.getBoard().contains(coords)) {
                 // misses and scatters to another hex
                 Report r = new Report(3195);
                 r.subject = subjectId;

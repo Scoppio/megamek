@@ -369,7 +369,7 @@ public class ComputeECM {
         // ECCM that counter an ECM need to get removed from allEcmInfo later
         LinkedList<ECMInfo> eccmToRemove = new LinkedList<>();
 
-        Game game = null;
+        TWGame twGame = null;
         for (Entity e : entities) {
             ECMInfo ecmInfo = e.getECMInfo();
             if (ecmInfo != null) {
@@ -380,18 +380,18 @@ public class ComputeECM {
                 allEcmInfo.add(eccmInfo);
                 allEccmInfo.add(eccmInfo);
             }
-            if (game == null) {
-                game = e.getGame();
+            if (TWGame == null) {
+                TWGame = e.getGame();
             }
         }
 
         // If either case is true, the rest is meaningless
-        if ((entities.size() < 1) || (game == null)) {
+        if ((entities.size() < 1) || (TWGame == null)) {
             return allEcmInfo;
         }
 
         // Add ECMInfo for chaff
-        for (SmokeCloud cloud : game.getSmokeCloudList()) {
+        for (SmokeCloud cloud : twGame.getSmokeCloudList()) {
             if (cloud.getSmokeLevel() == SmokeCloud.SMOKE_CHAFF_LIGHT) {
                 for (Coords c : cloud.getCoordsList()) {
                     ECMInfo ecmInfo = new ECMInfo(1, c, null, 1, 0);
@@ -407,7 +407,7 @@ public class ComputeECM {
         Collections.reverse(allEcmInfo);
 
         // If ECCM is on, we may have to remove some ECM that is negated
-        if (game.getOptions().booleanOption(OptionsConstants.ADVANCED_TACOPS_ECCM)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVANCED_TACOPS_ECCM)
                 && !allEccmInfo.isEmpty()) {
             Iterator<ECMInfo> ecmIterator = allEcmInfo.iterator();
             Iterator<ECMInfo> eccmIterator;

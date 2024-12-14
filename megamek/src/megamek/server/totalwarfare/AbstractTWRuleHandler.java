@@ -19,7 +19,7 @@
 
 package megamek.server.totalwarfare;
 
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Report;
 
 import java.util.Vector;
@@ -52,7 +52,7 @@ abstract class AbstractTWRuleHandler  {
         gameManager.addNewLines();
     }
 
-    Game getGame() {
+    TWGame getGame() {
         return gameManager.getGame();
     }
 }

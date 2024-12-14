@@ -256,22 +256,22 @@ public abstract class InfantryWeapon extends Weapon {
      * megamek.common.actions.WeaponAttackAction, megamek.common.Game)
      */
     @Override
-    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, Game game,
+    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, TWGame twGame,
             TWGameManager manager) {
-        Mounted<?> m = game.getEntity(waa.getEntityId()).getEquipment(waa.getWeaponId());
+        Mounted<?> m = twGame.getEntity(waa.getEntityId()).getEquipment(waa.getWeaponId());
         if (((null != m) && ((m.hasModes() && m.curMode().isHeat())
-                || (waa.getEntity(game).isSupportVehicle()
+                || (waa.getEntity(twGame).isSupportVehicle()
                         && m.getLinked() != null
                         && m.getLinked().getType() != null
                         && (((AmmoType) m.getLinked().getType()).getMunitionType()
                                 .contains(AmmoType.Munitions.M_INFERNO)))))) {
-            return new InfantryHeatWeaponHandler(toHit, waa, game, manager);
-        } else if (game.getOptions().booleanOption(OptionsConstants.BASE_INFANTRY_DAMAGE_HEAT)
+            return new InfantryHeatWeaponHandler(toHit, waa, twGame, manager);
+        } else if (twGame.getOptions().booleanOption(OptionsConstants.BASE_INFANTRY_DAMAGE_HEAT)
                 && (isFlameBased() || (m instanceof InfantryWeaponMounted)
                         && ((InfantryWeaponMounted) m).getOtherWeapon().isFlameBased())) {
-            return new InfantryHeatWeaponHandler(toHit, waa, game, manager);
+            return new InfantryHeatWeaponHandler(toHit, waa, twGame, manager);
         }
-        return new InfantryWeaponHandler(toHit, waa, game, manager);
+        return new InfantryWeaponHandler(toHit, waa, twGame, manager);
     }
 
     @Override

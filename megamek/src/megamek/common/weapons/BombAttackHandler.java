@@ -35,7 +35,7 @@ public class BombAttackHandler extends WeaponHandler {
      * @param waa
      * @param g
      */
-    public BombAttackHandler(ToHitData toHit, WeaponAttackAction waa, Game g,
+    public BombAttackHandler(ToHitData toHit, WeaponAttackAction waa, TWGame g,
             TWGameManager m) {
         super(toHit, waa, g, m);
         generalDamageType = HitData.DAMAGE_NONE;
@@ -85,7 +85,7 @@ public class BombAttackHandler extends WeaponHandler {
         int[] payload = waa.getBombPayload();
         Coords coords = target.getPosition();
         Coords drop;
-        Player player = game.getEntity(waa.getEntityId()).getOwner();
+        Player player = twGame.getEntity(waa.getEntityId()).getOwner();
         String bombMsg;
         Vector<Integer> hitIds = null;
 
@@ -102,8 +102,8 @@ public class BombAttackHandler extends WeaponHandler {
             // hex or B) a tagged target
             boolean laserGuided = false;
             if (type == BombType.B_LG) {
-                for (TagInfo ti : game.getTagInfo()) {
-                    if (ti.missed || game.getEntity(waa.getEntityId()).isEnemyOf(game.getEntity(ti.attackerId))) {
+                for (TagInfo ti : twGame.getTagInfo()) {
+                    if (ti.missed || twGame.getEntity(waa.getEntityId()).isEnemyOf(twGame.getEntity(ti.attackerId))) {
                         // Not a usable friendly TAG
                         continue;
                     }
@@ -203,10 +203,10 @@ public class BombAttackHandler extends WeaponHandler {
                     r.newlines = 1;
                     vPhaseReport.add(r);
 
-                    bombMsg = "Bomb hit here on round " + game.getRoundCount()
+                    bombMsg = "Bomb hit here on round " + twGame.getRoundCount()
                             + ", dropped by " + ((player != null) ? player.getName() : "somebody");
-                    game.getBoard().addSpecialHexDisplay(coords,
-                            new SpecialHexDisplay(Type.BOMB_HIT, game.getRoundCount(),
+                    twGame.getBoard().addSpecialHexDisplay(coords,
+                            new SpecialHexDisplay(Type.BOMB_HIT, twGame.getRoundCount(),
                                     player, bombMsg));
                 } else {
                     int moF = -typeModifiedToHit.getMoS();
@@ -233,7 +233,7 @@ public class BombAttackHandler extends WeaponHandler {
                         drop = Compute.scatterDiveBombs(coords, moF);
                     }
 
-                    if (game.getBoard().contains(drop)) {
+                    if (twGame.getBoard().contains(drop)) {
                         // misses and scatters to another hex
                         r = new Report(6698);
                         r.indent(1);
@@ -242,11 +242,11 @@ public class BombAttackHandler extends WeaponHandler {
                         r.add(BombType.getBombName(type));
                         r.add(drop.getBoardNum());
                         vPhaseReport.addElement(r);
-                        bombMsg = "Bomb missed!  Round " + game.getRoundCount()
+                        bombMsg = "Bomb missed!  Round " + twGame.getRoundCount()
                                 + ", by " + ((player != null) ? player.getName() : "somebody") + ", drifted to "
                                 + drop.getBoardNum();
-                        game.getBoard().addSpecialHexDisplay(coords,
-                                new SpecialHexDisplay(Type.BOMB_MISS, game.getRoundCount(),
+                        twGame.getBoard().addSpecialHexDisplay(coords,
+                                new SpecialHexDisplay(Type.BOMB_MISS, twGame.getRoundCount(),
                                         player, bombMsg));
                     } else {
                         // misses and scatters off-board
@@ -256,11 +256,11 @@ public class BombAttackHandler extends WeaponHandler {
                         r.newlines = 1;
                         r.add(BombType.getBombName(type));
                         vPhaseReport.addElement(r);
-                        bombMsg = "Bomb missed!  Round " + game.getRoundCount()
+                        bombMsg = "Bomb missed!  Round " + twGame.getRoundCount()
                                 + ", by " + ((player != null) ? player.getName() : "somebody")
                                 + ", drifted off the board";
-                        game.getBoard().addSpecialHexDisplay(coords,
-                                new SpecialHexDisplay(Type.BOMB_MISS, game.getRoundCount(),
+                        twGame.getBoard().addSpecialHexDisplay(coords,
+                                new SpecialHexDisplay(Type.BOMB_MISS, twGame.getRoundCount(),
                                         player, bombMsg));
                         continue;
                     }
@@ -283,13 +283,13 @@ public class BombAttackHandler extends WeaponHandler {
                 // Display drifts that hit nothing separately from drifts that dealt damage
                 if (bMissed) {
                     if (hitIds == null || hitIds.isEmpty()) {
-                        game.getBoard().addSpecialHexDisplay(drop,
-                                new SpecialHexDisplay(Type.BOMB_DRIFT, game.getRoundCount(),
+                        twGame.getBoard().addSpecialHexDisplay(drop,
+                                new SpecialHexDisplay(Type.BOMB_DRIFT, twGame.getRoundCount(),
                                         player, Messages.getString("BombMessage.drifted")
                                                 + " " + coords.getBoardNum()));
                     } else {
-                        game.getBoard().addSpecialHexDisplay(drop,
-                                new SpecialHexDisplay(Type.BOMB_HIT, game.getRoundCount(),
+                        twGame.getBoard().addSpecialHexDisplay(drop,
+                                new SpecialHexDisplay(Type.BOMB_HIT, twGame.getRoundCount(),
                                         player, Messages.getString("BombMessage.drifted")
                                                 + " " + coords.getBoardNum()));
                     }

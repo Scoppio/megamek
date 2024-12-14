@@ -1,7 +1,7 @@
 MegaMek/data/boards is where all MegaMek board files should be saved.
 You can make boards for MegaMek in the map editor by clicking on
 "Map Editor" on the main menu.  These boards are only available server-
-side when hosting a game, and other players' custom maps cannot be used.
+side when hosting a TWGame, and other players' custom maps cannot be used.
 
 
 -MegaMek includes the following original BattleTech maps:

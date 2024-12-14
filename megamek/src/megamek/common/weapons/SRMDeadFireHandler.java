@@ -20,7 +20,7 @@
 package megamek.common.weapons;
 
 import megamek.common.Compute;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Infantry;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
@@ -35,7 +35,7 @@ public class SRMDeadFireHandler extends SRMHandler {
     @Serial
     private static final long serialVersionUID = -1511452503641090393L;
 
-    public SRMDeadFireHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public SRMDeadFireHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
         sSalvoType = " dead fire missile(s) ";
     }

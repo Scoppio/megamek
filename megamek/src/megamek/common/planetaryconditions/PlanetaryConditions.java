@@ -585,7 +585,7 @@ public class PlanetaryConditions implements Serializable {
      * is the given entity type doomed in these conditions?
      * @return a string given the reason for being doomed, null if not doomed
      */
-    public String whyDoomed(Entity en, Game game) {
+    public String whyDoomed(Entity en, IGame IGame) {
         if (getAtmosphere().isLighterThan(Atmosphere.THIN)
                 && en.doomedInVacuum()) {
             return "vacuum";
@@ -606,7 +606,7 @@ public class PlanetaryConditions implements Serializable {
         }
         if (isExtremeTemperature()
                 && en.doomedInExtremeTemp()
-                && !Compute.isInBuilding(game, en)) {
+                && !Compute.isInBuilding(IGame, en)) {
             return "extreme temperature";
         }
         return null;

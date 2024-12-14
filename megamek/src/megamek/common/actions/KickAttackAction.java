@@ -102,17 +102,17 @@ public class KickAttackAction extends PhysicalAttackAction {
         return toReturn;
     }
 
-    public ToHitData toHit(Game game) {
-        return KickAttackAction.toHit(game, getEntityId(), game.getTarget(getTargetType(),
+    public ToHitData toHit(TWGame twGame) {
+        return KickAttackAction.toHit(twGame, getEntityId(), twGame.getTarget(getTargetType(),
                 getTargetId()), getLeg());
     }
 
     /**
      * To-hit number for the specified leg to kick
      */
-    public static ToHitData toHit(Game game, int attackerId,
-            Targetable target, int leg) {
-        final Entity ae = game.getEntity(attackerId);
+    public static ToHitData toHit(TWGame twGame, int attackerId,
+                                  Targetable target, int leg) {
+        final Entity ae = twGame.getEntity(attackerId);
         if (ae == null) {
             return new ToHitData(TargetRoll.IMPOSSIBLE,
                     "You can't attack from a null entity!");
@@ -126,13 +126,13 @@ public class KickAttackAction extends PhysicalAttackAction {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "Bogged-down units can't kick.");
         }
 
-        String impossible = PhysicalAttackAction.toHitIsImpossible(game, ae, target);
+        String impossible = PhysicalAttackAction.toHitIsImpossible(twGame, ae, target);
         if (impossible != null) {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "impossible");
         }
 
-        Hex attHex = game.getBoard().getHex(ae.getPosition());
-        Hex targHex = game.getBoard().getHex(target.getPosition());
+        Hex attHex = twGame.getBoard().getHex(ae.getPosition());
+        Hex targHex = twGame.getBoard().getHex(target.getPosition());
         final int attackerElevation = ae.getElevation() + attHex.getLevel();
         final int targetElevation = target.getElevation()
                 + targHex.getLevel();
@@ -251,7 +251,7 @@ public class KickAttackAction extends PhysicalAttackAction {
 
         toHit.addModifier(-2, "Kick");
 
-        PhysicalAttackAction.setCommonModifiers(toHit, game, ae, target);
+        PhysicalAttackAction.setCommonModifiers(toHit, twGame, ae, target);
 
         // +3 modifier for kicking infantry in same hex
         // see bug 1749177
@@ -314,30 +314,30 @@ public class KickAttackAction extends PhysicalAttackAction {
     }
 
     @Override
-    public String toSummaryString(final Game game) {
+    public String toSummaryString(final TWGame twGame) {
         String rollLeft;
         String rollRight;
         String buffer;
         final int leg = this.getLeg();
         switch (leg) {
             case KickAttackAction.BOTH:
-                rollLeft = KickAttackAction.toHit(game, this.getEntityId(),
-                        game.getTarget(this.getTargetType(), this.getTargetId()), KickAttackAction.LEFT)
+                rollLeft = KickAttackAction.toHit(twGame, this.getEntityId(),
+                        twGame.getTarget(this.getTargetType(), this.getTargetId()), KickAttackAction.LEFT)
                         .getValueAsString();
-                rollRight = KickAttackAction.toHit(game, this.getEntityId(),
-                        game.getTarget(this.getTargetType(), this.getTargetId()), KickAttackAction.RIGHT)
+                rollRight = KickAttackAction.toHit(twGame, this.getEntityId(),
+                        twGame.getTarget(this.getTargetType(), this.getTargetId()), KickAttackAction.RIGHT)
                         .getValueAsString();
                 buffer = Messages.getString("BoardView1.kickBoth", rollLeft, rollRight);
                 break;
             case KickAttackAction.LEFT:
-                rollLeft = KickAttackAction.toHit(game, this.getEntityId(),
-                        game.getTarget(this.getTargetType(), this.getTargetId()), KickAttackAction.LEFT)
+                rollLeft = KickAttackAction.toHit(twGame, this.getEntityId(),
+                        twGame.getTarget(this.getTargetType(), this.getTargetId()), KickAttackAction.LEFT)
                         .getValueAsString();
                 buffer = Messages.getString("BoardView1.kickLeft", rollLeft);
                 break;
             case KickAttackAction.RIGHT:
-                rollRight = KickAttackAction.toHit(game, this.getEntityId(),
-                        game.getTarget(this.getTargetType(), this.getTargetId()), KickAttackAction.RIGHT)
+                rollRight = KickAttackAction.toHit(twGame, this.getEntityId(),
+                        twGame.getTarget(this.getTargetType(), this.getTargetId()), KickAttackAction.RIGHT)
                         .getValueAsString();
                 buffer = Messages.getString("BoardView1.kickRight", rollRight);
                 break;

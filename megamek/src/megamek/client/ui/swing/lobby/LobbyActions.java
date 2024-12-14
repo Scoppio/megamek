@@ -1401,7 +1401,7 @@ public class LobbyActions {
         return forces.stream().noneMatch(f -> game().getForces().getOwner(f).isEnemyOf(owner));
     }
 
-    private Game game() {
+    private TWGame game() {
         return lobby.game();
     }
 

@@ -26,10 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import megamek.client.bot.princess.AeroPathUtil;
-import megamek.common.Coords;
-import megamek.common.Game;
-import megamek.common.IAero;
-import megamek.common.MovePath;
+import megamek.common.*;
 import megamek.common.MovePath.MoveStepType;
 import megamek.logging.MMLogger;
 
@@ -43,19 +40,19 @@ import megamek.logging.MMLogger;
 public class SpheroidPathFinder {
     private static final MMLogger logger = MMLogger.create(SpheroidPathFinder.class);
 
-    private Game game;
+    private IGame IGame;
     private int direction;
     private List<MovePath> spheroidPaths;
 
     private Set<Coords> visitedCoords = new HashSet<>();
 
-    private SpheroidPathFinder(Game game) {
+    private SpheroidPathFinder(IGame IGame) {
         // Default to heading north
-        this(game, 0);
+        this(IGame, 0);
     }
 
-    private SpheroidPathFinder(Game game, int direction) {
-        this.game = game;
+    private SpheroidPathFinder(IGame IGame, int direction) {
+        this.IGame = IGame;
         this.direction = direction;
     }
 
@@ -134,7 +131,7 @@ public class SpheroidPathFinder {
             visitedCoords.clear();
 
             // add "flee" option if we haven't done anything else
-            if (game.getBoard().isOnBoardEdge(startingEdge.getFinalCoords())
+            if (IGame.getBoard().isOnBoardEdge(startingEdge.getFinalCoords())
                     && startingEdge.getStepVector().isEmpty()) {
                 MovePath fleePath = startingEdge.clone();
                 fleePath.addStep(MoveStepType.FLEE);
@@ -154,8 +151,8 @@ public class SpheroidPathFinder {
         }
     }
 
-    public static SpheroidPathFinder getInstance(Game game, int direction) {
-        return new SpheroidPathFinder(game, direction);
+    public static SpheroidPathFinder getInstance(IGame IGame, int direction) {
+        return new SpheroidPathFinder(IGame, direction);
     }
 
     private MovePath generateHoverPath(MovePath startingPath) {

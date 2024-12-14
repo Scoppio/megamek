@@ -20,7 +20,7 @@
 package megamek.common.weapons;
 
 import megamek.common.ComputeECM;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.server.totalwarfare.TWGameManager;
@@ -34,7 +34,7 @@ public class LRMFollowTheLeaderHandler extends LRMHandler {
     @Serial
     private static final long serialVersionUID = 1740643533757582922L;
 
-    public LRMFollowTheLeaderHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public LRMFollowTheLeaderHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
         sSalvoType = " FTL missile(s) ";
         nSalvoBonus = 1;

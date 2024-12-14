@@ -156,7 +156,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
 
     private final JPanel boardPanel = new BoardViewPanel(this);
 
-    public final Game game;
+    public final TWGame twGame;
     ClientGUI clientgui;
 
     private Dimension boardSize;
@@ -409,9 +409,9 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
     /**
      * Construct a new board view for the specified game
      */
-    public BoardView(final Game game, final MegaMekController controller, @Nullable ClientGUI clientgui)
+    public BoardView(final TWGame twGame, final MegaMekController controller, @Nullable ClientGUI clientgui)
             throws java.io.IOException {
-        this.game = game;
+        this.twGame = twGame;
         this.clientgui = clientgui;
 
         if (GUIP == null) {
@@ -420,11 +420,11 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
 
         hexImageCache = new ImageCache<>();
 
-        tileManager = new TilesetManager(game);
+        tileManager = new TilesetManager(twGame);
         ToolTipManager.sharedInstance().registerComponent(boardPanel);
 
-        game.addGameListener(gameListener);
-        game.getBoard().addBoardListener(this);
+        twGame.addGameListener(gameListener);
+        twGame.getBoard().addBoardListener(this);
 
         redrawTimerTask = scheduleRedrawTimer(); // call only once
         clearSprites();
@@ -516,10 +516,10 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
                 wantsPopup = false;
 
                 final Coords mcoords = getCoordsAt(point);
-                if (!mcoords.equals(lastCoords) && game.getBoard().contains(mcoords)) {
+                if (!mcoords.equals(lastCoords) && twGame.getBoard().contains(mcoords)) {
                     lastCoords = mcoords;
                     boardPanel.setToolTipText(boardViewToolTip.getTooltip(e, movementTarget));
-                } else if (!game.getBoard().contains(mcoords)) {
+                } else if (!twGame.getBoard().contains(mcoords)) {
                     boardPanel.setToolTipText(null);
                 } else {
                     if (prevTipX > 0 && prevTipY > 0) {
@@ -713,7 +713,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
     public boolean shouldReceiveKeyCommands() {
         return !getChatterBoxActive()
                 && boardPanel.isVisible()
-                && !game.getPhase().isLounge()
+                && !twGame.getPhase().isLounge()
                 && !shouldIgnoreKeys;
     }
 
@@ -792,7 +792,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
                 break;
 
             case GUIPreferences.INCLINES:
-                game.getBoard().initializeAllAutomaticTerrain();
+                twGame.getBoard().initializeAllAutomaticTerrain();
                 clearHexImageCache();
                 boardPanel.repaint();
                 break;
@@ -835,7 +835,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
             g.drawString(Messages.getString("BoardView1.loadingImages"), 20, 50);
             if (!tileManager.isStarted()) {
                 logger.info("Loading images for board");
-                tileManager.loadNeededImages(game);
+                tileManager.loadNeededImages(twGame);
             }
             // wait 1 second, then repaint
             boardPanel.repaint(1000);
@@ -929,8 +929,8 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
             drawDeployment(g);
         }
 
-        if ((game.getPhase().isSetArtilleryAutohitHexes() && showAllDeployment)
-                || ((game.getPhase().isLounge()) && showLobbyPlayerDeployment)) {
+        if ((twGame.getPhase().isSetArtilleryAutohitHexes() && showAllDeployment)
+                || ((twGame.getPhase().isLounge()) && showLobbyPlayerDeployment)) {
             drawAllDeployment(g);
         }
 
@@ -938,7 +938,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
         drawSprites(g, c3Sprites);
 
         // draw flyover routes
-        if (game.getBoard().onGround()) {
+        if (twGame.getBoard().onGround()) {
             drawSprites(g, vtolAttackSprites);
             drawSprites(g, flyOverSprites);
         }
@@ -953,7 +953,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
         drawSprites(g, attackSprites);
 
         // draw movement vectors.
-        if (game.useVectorMove() && game.getPhase().isMovement()) {
+        if (twGame.useVectorMove() && twGame.getPhase().isMovement()) {
             drawSprites(g, movementSprites);
         }
 
@@ -963,7 +963,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
         // draw flight path indicators
         drawSprites(g, fpiSprites);
 
-        if (game.getPhase().isFiring()) {
+        if (twGame.getPhase().isFiring()) {
             for (Coords c : strafingCoords) {
                 drawHexBorder(g, getHexLocation(c), Color.yellow, 0, 3);
             }
@@ -1063,13 +1063,13 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
     private void renderMovementBoundingBox(Graphics2D g) {
         if (getSelectedEntity() != null) {
             Princess princess = new Princess("test", MMConstants.LOCALHOST, 2020);
-            princess.getGame().setBoard(this.game.getBoard());
-            PathEnumerator pathEnum = new PathEnumerator(princess, this.game);
+            princess.getGame().setBoard(this.twGame.getBoard());
+            PathEnumerator pathEnum = new PathEnumerator(princess, this.twGame);
             pathEnum.recalculateMovesFor(this.getSelectedEntity());
 
             ConvexBoardArea cba = pathEnum.getUnitMovableAreas().get(this.getSelectedEntity().getId());
-            for (int x = 0; x < game.getBoard().getWidth(); x++) {
-                for (int y = 0; y < game.getBoard().getHeight(); y++) {
+            for (int x = 0; x < twGame.getBoard().getWidth(); x++) {
+                for (int y = 0; y < twGame.getBoard().getHeight(); y++) {
                     Point p = getCentreHexLocation(x, y, true);
                     p.translate(HEX_W / 2, HEX_H / 2);
                     Coords c = new Coords(x, y);
@@ -1141,9 +1141,9 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
      * Updates the boardSize variable with the proper values for this board.
      */
     void updateBoardSize() {
-        int width = (game.getBoard().getWidth() * (int) (HEX_WC * scale))
+        int width = (twGame.getBoard().getWidth() * (int) (HEX_WC * scale))
                 + (int) ((HEX_W / 4) * scale);
-        int height = (game.getBoard().getHeight() * (int) (HEX_H * scale))
+        int height = (twGame.getBoard().getHeight() * (int) (HEX_H * scale))
                 + (int) ((HEX_H / 2) * scale);
         boardSize = new Dimension(width, height);
     }
@@ -1284,7 +1284,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
         int drawWidth = (view.width / (int) (HEX_WC * scale)) + 3;
         int drawHeight = (view.height / (int) (HEX_H * scale)) + 3;
 
-        Board board = game.getBoard();
+        Board board = twGame.getBoard();
         // loop through the hexes
         for (int i = 0; i < drawHeight; i++) {
             for (int j = 0; j < drawWidth; j++) {
@@ -1320,28 +1320,28 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
         int drawWidth = (view.width / (int) (HEX_WC * scale)) + 3;
         int drawHeight = (view.height / (int) (HEX_H * scale)) + 3;
 
-        java.util.List<Player> players = game.getPlayersList();
-        final GameOptions gOpts = game.getOptions();
+        java.util.List<Player> players = twGame.getPlayersList();
+        final GameOptions gOpts = twGame.getOptions();
 
         if (gOpts.booleanOption(OptionsConstants.BASE_SET_PLAYER_DEPLOYMENT_TO_PLAYER0)) {
             players = new ArrayList<>(
                     players.stream().filter(p -> p.isBot() || p.getId() == 0).collect(Collectors.toList()));
         }
 
-        if (game.getPhase().isLounge() && !localPlayer.isGameMaster()
+        if (twGame.getPhase().isLounge() && !localPlayer.isGameMaster()
                 && (gOpts.booleanOption(OptionsConstants.BASE_BLIND_DROP)
                         || gOpts.booleanOption(OptionsConstants.BASE_REAL_BLIND_DROP))) {
             players = new ArrayList<>(
                     players.stream().filter(p -> !p.isEnemyOf(localPlayer)).collect(Collectors.toList()));
         }
 
-        Board board = game.getBoard();
+        Board board = twGame.getBoard();
         // loop through the hexes
         for (int i = 0; i < drawHeight; i++) {
             for (int j = 0; j < drawWidth; j++) {
                 Coords c = new Coords(j + drawX, i + drawY);
                 int pCount = 0;
-                int bThickness = 1 + 10 / game.getNoOfPlayers();
+                int bThickness = 1 + 10 / twGame.getNoOfPlayers();
                 // loop through all players
                 for (Player player : players) {
                     if (board.isLegalDeployment(c, player)) {
@@ -1427,7 +1427,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
         // during
         // the artyautohithexes phase. These could be displayed if the player
         // uses the /reset command in some situations
-        if (game.getPhase().isSetArtilleryAutohitHexes()) {
+        if (twGame.getPhase().isSetArtilleryAutohitHexes()) {
             return null;
         }
 
@@ -1479,7 +1479,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
 
         // Draw incoming artillery sprites - requires server to update client's
         // view of game
-        for (Enumeration<OrbitalBombardment> attacks = game.getOrbitalBombardmentAttacks(); attacks.hasMoreElements();) {
+        for (Enumeration<OrbitalBombardment> attacks = twGame.getOrbitalBombardmentAttacks(); attacks.hasMoreElements();) {
             final OrbitalBombardment orbitalBombardment = attacks.nextElement();
             final Coords c = new Coords(orbitalBombardment.getX(), orbitalBombardment.getY());
             // Is the Coord within the viewing area?
@@ -1516,9 +1516,9 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
 
         // Draw incoming artillery sprites - requires server to update client's
         // view of game
-        for (Enumeration<ArtilleryAttackAction> attacks = game.getArtilleryAttacks(); attacks.hasMoreElements();) {
+        for (Enumeration<ArtilleryAttackAction> attacks = twGame.getArtilleryAttacks(); attacks.hasMoreElements();) {
             final ArtilleryAttackAction attack = attacks.nextElement();
-            final Targetable target = attack.getTarget(game);
+            final Targetable target = attack.getTarget(twGame);
             if (target == null) {
                 continue;
             }
@@ -1587,8 +1587,8 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
         int maxX = drawX + drawWidth;
         int maxY = drawY + drawHeight;
 
-        Board board = game.getBoard();
-        for (Enumeration<Coords> minedCoords = game.getMinedCoords(); minedCoords.hasMoreElements();) {
+        Board board = twGame.getBoard();
+        for (Enumeration<Coords> minedCoords = twGame.getMinedCoords(); minedCoords.hasMoreElements();) {
             Coords c = minedCoords.nextElement();
             // If the coords aren't visible, skip
             if ((c.getX() < drawX) || (c.getX() > maxX) || (c.getY() < drawY) || (c.getY() > maxY)
@@ -1601,12 +1601,12 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
             g.drawImage(mineImg, p.x + (int) (13 * scale), p.y + (int) (13 * scale), boardPanel);
 
             g.setColor(Color.black);
-            int nbrMfs = game.getNbrMinefields(c);
+            int nbrMfs = twGame.getNbrMinefields(c);
             if (nbrMfs > 1) {
                 drawCenteredString(Messages.getString("BoardView1.Multiple"),
                         p.x, p.y + (int) (51 * scale), font_minefield, g);
             } else if (nbrMfs == 1) {
-                Minefield mf = game.getMinefields(c).get(0);
+                Minefield mf = twGame.getMinefields(c).get(0);
 
                 switch (mf.getType()) {
                     case Minefield.TYPE_CONVENTIONAL:
@@ -1700,7 +1700,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
                 drawDeployment(boardGraph);
             }
 
-            if (game.getPhase().isSetArtilleryAutohitHexes() && showAllDeployment) {
+            if (twGame.getPhase().isSetArtilleryAutohitHexes() && showAllDeployment) {
                 drawAllDeployment(boardGraph);
             }
 
@@ -1708,7 +1708,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
             drawSprites(boardGraph, c3Sprites);
 
             // draw flyover routes
-            if (game.getBoard().onGround()) {
+            if (twGame.getBoard().onGround()) {
                 drawSprites(boardGraph, vtolAttackSprites);
                 drawSprites(boardGraph, flyOverSprites);
             }
@@ -1723,7 +1723,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
             drawSprites(boardGraph, attackSprites);
 
             // draw movement vectors.
-            if (game.getPhase().isMovement() && game.useVectorMove()) {
+            if (twGame.getPhase().isMovement() && twGame.useVectorMove()) {
                 drawSprites(boardGraph, movementSprites);
             }
 
@@ -1733,7 +1733,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
             // draw flight path indicators
             drawSprites(boardGraph, fpiSprites);
 
-            if (game.getPhase().isFiring()) {
+            if (twGame.getPhase().isFiring()) {
                 for (Coords c : strafingCoords) {
                     drawHexBorder(boardGraph, getHexLocation(c), Color.yellow, 0, 3);
                 }
@@ -1778,7 +1778,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
 
         // draw some hexes.
         if (useIsometric()) {
-            Board board = game.getBoard();
+            Board board = twGame.getBoard();
             for (int y = 0; y < drawHeight; y++) {
                 // Half of each row is one-half hex
                 // farther back (above) the other; draw those first
@@ -1838,16 +1838,16 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
      * if the hex is visible.
      */
     private void drawHex(Coords c, Graphics boardGraph, boolean saveBoardImage) {
-        if (!game.getBoard().contains(c)) {
+        if (!twGame.getBoard().contains(c)) {
             return;
         }
 
-        final Hex hex = game.getBoard().getHex(c);
+        final Hex hex = twGame.getBoard().getHex(c);
         if (hex == null) {
             return;
         }
         final Point hexLoc = getHexLocation(c);
-        PlanetaryConditions conditions = game.getPlanetaryConditions();
+        PlanetaryConditions conditions = twGame.getPlanetaryConditions();
 
         // Check the cache to see if we already have the image
         HexImageCacheEntry cacheEntry = hexImageCache.get(c);
@@ -1891,7 +1891,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
         if (useIsometric()) {
             int largestLevelDiff = 0;
             for (int dir : allDirections) {
-                Hex adjHex = game.getBoard().getHexInDir(c, dir);
+                Hex adjHex = twGame.getBoard().getHexInDir(c, dir);
                 if (adjHex == null) {
                     continue;
                 }
@@ -2100,7 +2100,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
 
         // Darken the hex for nighttime, if applicable
         if (GUIP.getDarkenMapAtNight()
-                && IlluminationLevel.determineIlluminationLevel(game, c).isNone()
+                && IlluminationLevel.determineIlluminationLevel(twGame, c).isNone()
                 && conditions.getLight().isDuskOrFullMoonOrMoonlessOrPitchBack()) {
             for (int x = 0; x < hexImage.getWidth(); ++x) {
                 for (int y = 0; y < hexImage.getHeight(); ++y) {
@@ -2109,7 +2109,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
             }
         }
 
-        if (hex.containsTerrain(Terrains.DEPLOYMENT_ZONE) && (game.getPhase().isUnknown())) {
+        if (hex.containsTerrain(Terrains.DEPLOYMENT_ZONE) && (twGame.getPhase().isUnknown())) {
             drawHexBorder(g, Color.yellow, 5, 5);
             drawCenteredString("DZ " + Board.exitsAsIntList(hex.getTerrain(Terrains.DEPLOYMENT_ZONE).getExits()),
                     0, (int) (50 * scale), font_note, g);
@@ -2117,16 +2117,16 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
 
         // Set the text color according to Preferences or Light Gray in space
         g.setColor(GUIP.getBoardTextColor());
-        if (game.getBoard().inSpace()) {
+        if (twGame.getBoard().inSpace()) {
             g.setColor(GUIP.getBoardSpaceTextColor());
         }
 
         // draw special stuff for the hex
-        final Collection<SpecialHexDisplay> shdList = game.getBoard().getSpecialHexDisplay(c);
+        final Collection<SpecialHexDisplay> shdList = twGame.getBoard().getSpecialHexDisplay(c);
         try {
             if (shdList != null) {
                 for (SpecialHexDisplay shd : shdList) {
-                    if (shd.drawNow(game.getPhase(), game.getRoundCount(), localPlayer, GUIP)) {
+                    if (shd.drawNow(twGame.getPhase(), twGame.getRoundCount(), localPlayer, GUIP)) {
                         scaledImage = getScaledImage(shd.getDefaultImage(), true);
                         g.drawImage(scaledImage, 0, 0, boardPanel);
                     }
@@ -2301,11 +2301,11 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
      * does not check if the hex is visible.
      */
     private void drawOrthograph(Coords c, Graphics boardGraph) {
-        if (!game.getBoard().contains(c)) {
+        if (!twGame.getBoard().contains(c)) {
             return;
         }
 
-        final Hex oHex = game.getBoard().getHex(c);
+        final Hex oHex = twGame.getBoard().getHex(c);
         final Point oHexLoc = getHexLocation(c);
         // Adjust the draw height for bridges according to their elevation
         int elevOffset = oHex.terrainLevel(Terrains.BRIDGE_ELEV);
@@ -2320,9 +2320,9 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
                 BufferedImage scaledImage = ImageUtil.createAcceleratedImage(getScaledImage(image, true));
 
                 // Darken the hex for nighttime, if applicable
-                PlanetaryConditions conditions = game.getPlanetaryConditions();
+                PlanetaryConditions conditions = twGame.getPlanetaryConditions();
                 if (GUIP.getDarkenMapAtNight()
-                        && IlluminationLevel.determineIlluminationLevel(game, c).isNone()
+                        && IlluminationLevel.determineIlluminationLevel(twGame, c).isNone()
                         && conditions.getLight().isDuskOrFullMoonOrMoonlessOrPitchBack()) {
                     for (int x = 0; x < scaledImage.getWidth(null); ++x) {
                         for (int y = 0; y < scaledImage.getHeight(); ++y) {
@@ -2366,8 +2366,8 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
      * @param g
      */
     private final void drawIsometricElevation(Coords c, Color color, Point p1, Point p2, int dir, Graphics g) {
-        final Hex dest = game.getBoard().getHexInDir(c, dir);
-        final Hex src = game.getBoard().getHex(c);
+        final Hex dest = twGame.getBoard().getHexInDir(c, dir);
+        final Hex src = twGame.getBoard().getHex(c);
 
         if (!useIsometric() || GUIP.getFloatingIso()) {
             return;
@@ -2386,7 +2386,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
 
             // Determine the depth of the edge that needs to be drawn.
             int height = elev;
-            Hex southHex = game.getBoard().getHexInDir(c, 3);
+            Hex southHex = twGame.getBoard().getHexInDir(c, 3);
             if ((dir != 3) && (southHex != null) && (elev > southHex.getLevel())) {
                 height = elev - southHex.getLevel();
             }
@@ -2461,8 +2461,8 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
      * opposite direction as well.
      */
     private boolean drawElevationLine(Coords src, int direction) {
-        final Hex srcHex = game.getBoard().getHex(src);
-        final Hex destHex = game.getBoard().getHexInDir(src, direction);
+        final Hex srcHex = twGame.getBoard().getHex(src);
+        final Hex destHex = twGame.getBoard().getHexInDir(src, direction);
         if ((destHex == null) && (srcHex.getLevel() != 0)) {
             return true;
         } else if (destHex == null) {
@@ -2488,7 +2488,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
         int bl = rgb & 0xFF;
         int al = (rgb >> 24);
 
-        switch (game.getPlanetaryConditions().getLight()) {
+        switch (twGame.getPlanetaryConditions().getLight()) {
             case FULL_MOON:
             case MOONLESS:
                 rd = rd / 4; // 1/4 red
@@ -2522,8 +2522,8 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
      * when a higher hex is found in direction.
      */
     private @Nullable Shape getElevationShadowArea(Coords src, int direction) {
-        final Hex srcHex = game.getBoard().getHex(src);
-        final Hex destHex = game.getBoard().getHexInDir(src, direction);
+        final Hex srcHex = twGame.getBoard().getHex(src);
+        final Hex destHex = twGame.getBoard().getHexInDir(src, direction);
 
         // When at the board edge, create a shadow in hexes of level < 0
         if (destHex == null) {
@@ -2552,8 +2552,8 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
      * hex shadow effect in a lower hex.
      */
     private GradientPaint getElevationShadowGP(Coords src, int direction) {
-        final Hex srcHex = game.getBoard().getHex(src);
-        final Hex destHex = game.getBoard().getHexInDir(src, direction);
+        final Hex srcHex = twGame.getBoard().getHex(src);
+        final Hex destHex = twGame.getBoard().getHexInDir(src, direction);
 
         if (destHex == null) {
             return null;
@@ -2586,7 +2586,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
     private Point getHexLocation(int x, int y, boolean ignoreElevation) {
         float elevationAdjust = 0.0f;
 
-        Hex hex = game.getBoard().getHex(x, y);
+        Hex hex = twGame.getBoard().getHex(x, y);
         if ((hex != null) && useIsometric() && !ignoreElevation) {
             elevationAdjust = hex.getLevel() * HEX_ELEV * scale * -1.0f;
         }
@@ -2684,16 +2684,16 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
             // When using isometric rendering, a lower hex can obscure the
             // normal hex. Iterate over all hexes from highest to lowest,
             // looking for a hex that contains the selected mouse click point.
-            final int minElev = Math.min(0, game.getBoard().getMinElevation());
-            final int maxElev = Math.max(0, game.getBoard().getMaxElevation());
+            final int minElev = Math.min(0, twGame.getBoard().getMinElevation());
+            final int maxElev = Math.max(0, twGame.getBoard().getMaxElevation());
             final int delta = (int) Math.ceil(((double) maxElev - minElev) / 3.0f);
             final int minHexSpan = Math.max(y - delta, 0);
-            final int maxHexSpan = Math.min(y + delta, game.getBoard().getHeight());
+            final int maxHexSpan = Math.min(y + delta, twGame.getBoard().getHeight());
             for (int elev = maxElev; elev >= minElev; elev--) {
                 for (int i = minHexSpan; i <= maxHexSpan; i++) {
                     for (int dx = -1; dx < 2; dx++) {
                         Coords c1 = new Coords(x + dx, i);
-                        Hex hexAlt = game.getBoard().getHex(c1);
+                        Hex hexAlt = twGame.getBoard().getHex(c1);
                         if (HexDrawUtilities.getHexFull(getHexLocation(c1), scale).contains(p)
                                 && (hexAlt != null) && (hexAlt.getLevel() == elev)) {
                             // Return immediately with highest hex found.
@@ -2886,7 +2886,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
 
         // Create the new sprites
         Coords position = entity.getPosition();
-        boolean canSee = EntityVisibilityUtils.detectedOrHasVisual(localPlayer, game, entity);
+        boolean canSee = EntityVisibilityUtils.detectedOrHasVisual(localPlayer, twGame, entity);
 
         if ((position != null) && canSee) {
             // Add new EntitySprite
@@ -2975,7 +2975,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
      * Clears all old entity sprites out of memory and sets up new ones.
      */
     public void redrawAllEntities() {
-        int numEntities = game.getNoOfEntities();
+        int numEntities = twGame.getNoOfEntities();
         // Prevent IllegalArgumentException
         numEntities = Math.max(1, numEntities);
         Queue<EntitySprite> newSprites = new PriorityQueue<>(numEntities);
@@ -2986,7 +2986,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
         ArrayList<WreckSprite> newWrecks = new ArrayList<>();
         ArrayList<IsometricWreckSprite> newIsometricWrecks = new ArrayList<>();
 
-        Enumeration<Entity> e = game.getWreckedEntities();
+        Enumeration<Entity> e = twGame.getWreckedEntities();
         while (e.hasMoreElements()) {
             Entity entity = e.nextElement();
             if (!(entity instanceof Infantry) && (entity.getPosition() != null)) {
@@ -3010,19 +3010,19 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
 
         clearC3Networks();
         clearFlyOverPaths();
-        for (Entity entity : game.getEntitiesVector()) {
+        for (Entity entity : twGame.getEntitiesVector()) {
             if (entity.getPosition() == null) {
                 continue;
             }
             if ((localPlayer != null)
-                    && game.getOptions().booleanOption(OptionsConstants.ADVANCED_DOUBLE_BLIND)
+                    && twGame.getOptions().booleanOption(OptionsConstants.ADVANCED_DOUBLE_BLIND)
                     && entity.getOwner().isEnemyOf(localPlayer)
                     && !entity.hasSeenEntity(localPlayer)
                     && !entity.hasDetectedEntity(localPlayer)) {
                 continue;
             }
             if ((localPlayer != null)
-                    && game.getOptions().booleanOption(OptionsConstants.ADVANCED_HIDDEN_UNITS)
+                    && twGame.getOptions().booleanOption(OptionsConstants.ADVANCED_HIDDEN_UNITS)
                     && entity.getOwner().isEnemyOf(localPlayer)
                     && entity.isHidden()) {
                 continue;
@@ -3344,7 +3344,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
                     // for advanced movement, we always need to hide prior
                     // because costs will overlap and we only want the current
                     // facing
-                    && (game.useVectorMove()
+                    && (twGame.useVectorMove()
                             // A LAM converting from AirMek to Biped uses two convert steps and we
                             // only want to show the last.
                             || (step.getType() == MoveStepType.CONVERT_MODE
@@ -3374,7 +3374,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
     private void displayFlightPathIndicator(MovePath md) {
         // Don't attempt displaying Flight Path Indicators if using advanced aero
         // movement.
-        if (this.game.useVectorMove()) {
+        if (this.twGame.useVectorMove()) {
             return;
         }
 
@@ -3496,7 +3496,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
         }
 
         if (e.hasC3i()) {
-            for (Entity fe : game.getEntitiesVector()) {
+            for (Entity fe : twGame.getEntitiesVector()) {
                 if (fe.getPosition() == null) {
                     return;
                 }
@@ -3507,7 +3507,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
                 }
             }
         } else if (e.hasNavalC3()) {
-            for (Entity fe : game.getEntitiesVector()) {
+            for (Entity fe : twGame.getEntitiesVector()) {
                 if (fe.getPosition() == null) {
                     return;
                 }
@@ -3518,7 +3518,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
             }
         } else if (e.hasActiveNovaCEWS()) {
             // WOR Nova CEWS
-            for (Entity fe : game.getEntitiesVector()) {
+            for (Entity fe : twGame.getEntitiesVector()) {
                 if (fe.getPosition() == null) {
                     return;
                 }
@@ -3556,8 +3556,8 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
      */
     public synchronized void addAttack(AttackAction aa) {
         // Don't make sprites for unknown entities and sensor returns
-        Entity ae = game.getEntity(aa.getEntityId());
-        Targetable t = game.getTarget(aa.getTargetType(), aa.getTargetId());
+        Entity ae = twGame.getEntity(aa.getEntityId());
+        Targetable t = twGame.getTarget(aa.getTargetType(), aa.getTargetId());
         if ((ae == null) || (t == null)
                 || (t.getTargetType() == Targetable.TYPE_INARC_POD)
                 || (t.getPosition() == null) || (ae.getPosition() == null)) {
@@ -3587,7 +3587,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
             WeaponAttackAction waa = (WeaponAttackAction) aa;
             if (aa.getTargetType() != Targetable.TYPE_HEX_ARTILLERY) {
                 attackSprites.add(new AttackSprite(this, aa));
-            } else if (waa.getEntity(game).getOwner().getId() == localPlayer.getId()) {
+            } else if (waa.getEntity(twGame).getOwner().getId() == localPlayer.getId()) {
                 attackSprites.add(new AttackSprite(this, aa));
             }
         } else {
@@ -3632,14 +3632,14 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
      */
     public void refreshAttacks() {
         clearAllAttacks();
-        for (Enumeration<EntityAction> i = game.getActions(); i.hasMoreElements();) {
+        for (Enumeration<EntityAction> i = twGame.getActions(); i.hasMoreElements();) {
             EntityAction ea = i.nextElement();
             if (ea instanceof AttackAction) {
                 addAttack((AttackAction) ea);
             }
         }
 
-        for (Enumeration<AttackAction> i = game.getCharges(); i.hasMoreElements();) {
+        for (Enumeration<AttackAction> i = twGame.getCharges(); i.hasMoreElements();) {
             EntityAction ea = i.nextElement();
             if (ea instanceof PhysicalAttackAction) {
                 addAttack((AttackAction) ea);
@@ -3650,7 +3650,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
 
     public void refreshMoveVectors() {
         clearAllMoveVectors();
-        for (Entity e : game.getEntitiesVector()) {
+        for (Entity e : twGame.getEntitiesVector()) {
             if (e.getPosition() != null) {
                 movementSprites.add(new MovementSprite(this, e, e.getVectors(),
                         Color.GRAY, false));
@@ -3662,7 +3662,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
         clearAllMoveVectors();
         // same as normal but when I find the active entity I used the MovePath
         // to get vector
-        for (Entity e : game.getEntitiesVector()) {
+        for (Entity e : twGame.getEntitiesVector()) {
             if (e.getPosition() != null) {
                 if ((en != null) && (e.getId() == en.getId())) {
                     movementSprites.add(new MovementSprite(this, e, md.getFinalVectors(),
@@ -3718,9 +3718,9 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
                 boolean mekInSecond = GUIP.getMekInSecond();
 
                 LosEffects.AttackInfo ai = LosEffects.prepLosAttackInfo(
-                        game, ae, te, c1, c2, mekInFirst, mekInSecond);
+                    twGame, ae, te, c1, c2, mekInFirst, mekInSecond);
 
-                le = LosEffects.calculateLos(game, ai);
+                le = LosEffects.calculateLos(twGame, ai);
                 message.append(Messages.getString("BoardView1.Attacker",
                         mekInFirst ? Messages.getString("BoardView1.Mek")
                                 : Messages.getString("BoardView1.NonMek"),
@@ -3730,14 +3730,14 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
                                 : Messages.getString("BoardView1.NonMek"),
                         c2.getBoardNum()));
             } else {
-                le = LosEffects.calculateLOS(game, ae, te);
+                le = LosEffects.calculateLOS(twGame, ae, te);
                 message.append(Messages.getString("BoardView1.Attacker", ae.getDisplayName(), c1.getBoardNum()));
                 message.append(Messages.getString("BoardView1.Target", te.getDisplayName(), c2.getBoardNum()));
             }
             // Check to see if LoS is blocked
             if (!le.canSee()) {
                 message.append(Messages.getString("BoardView1.LOSBlocked", c1.distance(c2)));
-                ToHitData thd = le.losModifiers(game);
+                ToHitData thd = le.losModifiers(twGame);
                 message.append("\t" + thd.getDesc() + "\n");
             } else {
                 message.append(Messages.getString("BoardView1.LOSNotBlocked", c1.distance(c2)));
@@ -3859,7 +3859,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
 
                 for (MovingUnit move : movingUnits) {
                     movingSomething = true;
-                    Entity ge = game.getEntity(move.entity.getId());
+                    Entity ge = twGame.getEntity(move.entity.getId());
                     if (!move.path.isEmpty()) {
                         UnitLocation loc = move.path.get(0);
 
@@ -4087,7 +4087,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
      * @param coords the Coords.
      */
     public void select(Coords coords) {
-        if ((coords == null) || game.getBoard().contains(coords)) {
+        if ((coords == null) || twGame.getBoard().contains(coords)) {
             setSelected(coords);
             moveCursor(selectedSprite, coords);
             moveCursor(firstLOSSprite, null);
@@ -4114,7 +4114,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
      * @param coords the Coords.
      */
     public void highlight(Coords coords) {
-        if ((coords == null) || game.getBoard().contains(coords)) {
+        if ((coords == null) || twGame.getBoard().contains(coords)) {
             setHighlighted(coords);
             moveCursor(highlightSprite, coords);
             moveCursor(firstLOSSprite, null);
@@ -4156,7 +4156,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
      * @param coords the Coords.
      */
     public void cursor(Coords coords) {
-        if ((coords == null) || game.getBoard().contains(coords)) {
+        if ((coords == null) || twGame.getBoard().contains(coords)) {
             if ((getLastCursor() == null) || (coords == null) || !coords.equals(getLastCursor())) {
                 setLastCursor(coords);
                 moveCursor(cursorSprite, coords);
@@ -4181,7 +4181,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
     }
 
     public void checkLOS(Coords c) {
-        if ((c == null) || game.getBoard().contains(c)) {
+        if ((c == null) || twGame.getBoard().contains(c)) {
             if (getFirstLOS() == null) {
                 setFirstLOS(c);
                 firstLOSHex(c);
@@ -4201,7 +4201,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
      * listeners about the specified mouse action.
      */
     public void mouseAction(int x, int y, int mtype, int modifiers, int mouseButton) {
-        if (game.getBoard().contains(x, y)) {
+        if (twGame.getBoard().contains(x, y)) {
             Coords c = new Coords(x, y);
             switch (mtype) {
                 case BOARD_HEX_CLICK:
@@ -4246,7 +4246,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
     @Override
     public void boardNewBoard(BoardEvent b) {
         updateBoard();
-        game.getBoard().initializeAllAutomaticTerrain();
+        twGame.getBoard().initializeAllAutomaticTerrain();
         clearHexImageCache();
         clearShadowMap();
         boardPanel.repaint();
@@ -4276,7 +4276,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
         public void gameEntityNew(GameEntityNewEvent e) {
             updateEcmList();
             redrawAllEntities();
-            if (game.getPhase().isMovement()) {
+            if (twGame.getPhase().isMovement()) {
                 refreshMoveVectors();
             }
         }
@@ -4285,7 +4285,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
         public void gameEntityRemove(GameEntityRemoveEvent e) {
             updateEcmList();
             redrawAllEntities();
-            if (game.getPhase().isMovement()) {
+            if (twGame.getPhase().isMovement()) {
                 refreshMoveVectors();
             }
         }
@@ -4294,13 +4294,13 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
         public void gameEntityChange(GameEntityChangeEvent e) {
             final Vector<UnitLocation> mp = e.getMovePath();
             final Entity en = e.getEntity();
-            final GameOptions gopts = game.getOptions();
+            final GameOptions gopts = twGame.getOptions();
 
             updateEcmList();
 
             // For Entities that have converted to another mode, check for a different
             // sprite
-            if (game.getPhase().isMovement() && en.isConvertingNow()) {
+            if (twGame.getPhase().isMovement() && en.isConvertingNow()) {
                 tileManager.reloadImage(en);
             }
 
@@ -4313,13 +4313,13 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
             }
 
             redrawAllEntities();
-            if (game.getPhase().isMovement()) {
+            if (twGame.getPhase().isMovement()) {
                 refreshMoveVectors();
             }
             if ((mp != null) && !mp.isEmpty() && GUIP.getShowMoveStep()
                     && !gopts.booleanOption(OptionsConstants.INIT_SIMULTANEOUS_MOVEMENT)) {
                 if ((localPlayer == null)
-                        || !game.getOptions().booleanOption(OptionsConstants.ADVANCED_DOUBLE_BLIND)
+                        || !twGame.getOptions().booleanOption(OptionsConstants.ADVANCED_DOUBLE_BLIND)
                         || !en.getOwner().isEnemyOf(localPlayer)
                         || en.hasSeenEntity(localPlayer)) {
                     addMovingUnit(en, mp);
@@ -4345,7 +4345,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
             if (b != null) {
                 b.addBoardListener(BoardView.this);
             }
-            game.getBoard().initializeAllAutomaticTerrain();
+            twGame.getBoard().initializeAllAutomaticTerrain();
             clearHexImageCache();
             updateBoard();
             clearShadowMap();
@@ -4363,11 +4363,11 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
                     && (e.getOldPhase().isDeployment() || e.getOldPhase().isMovement()
                             || e.getOldPhase().isTargeting() || e.getOldPhase().isFiring()
                             || e.getOldPhase().isPhysical())) {
-                File dir = new File(Configuration.gameSummaryImagesBVDir(), game.getUUIDString());
+                File dir = new File(Configuration.gameSummaryImagesBVDir(), twGame.getUUIDString());
                 if (!dir.exists()) {
                     dir.mkdirs();
                 }
-                File imgFile = new File(dir, "round_" + String.format("%03d", game.getRoundCount())
+                File imgFile = new File(dir, "round_" + String.format("%03d", twGame.getRoundCount())
                         + '_' + String.format("%03d", e.getOldPhase().ordinal()) + '_' + e.getOldPhase() + ".png");
                 try {
                     ImageIO.write(getEntireBoardImage(false, true), "png", imgFile);
@@ -4405,7 +4405,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
                     highlight(null);
                 default:
             }
-            for (Entity en : game.getEntitiesVector()) {
+            for (Entity en : twGame.getEntitiesVector()) {
                 if ((en.getDamageLevel() != Entity.DMG_NONE) &&
                         ((en.damageThisRound != 0) || (en instanceof GunEmplacement))) {
                     tileManager.reloadImage(en);
@@ -4492,11 +4492,11 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
         Map<Coords, Color> newECCMCenters = new HashMap<>();
 
         // Compute info about all E(C)CM on the board
-        final ArrayList<ECMInfo> allEcmInfo = ComputeECM.computeAllEntitiesECMInfo(game.getEntitiesVector());
+        final ArrayList<ECMInfo> allEcmInfo = ComputeECM.computeAllEntitiesECMInfo(twGame.getEntitiesVector());
 
         // First, mark the sources of E(C)CM
         // Used for highlighting hexes and tooltips
-        for (Entity e : game.getEntitiesVector()) {
+        for (Entity e : twGame.getEntitiesVector()) {
             if (e.getPosition() == null) {
                 continue;
             }
@@ -4505,7 +4505,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
 
             // If this unit isn't spotted somehow, it's ECM doesn't show up
             if ((localPlayer != null)
-                    && game.getOptions().booleanOption(OptionsConstants.ADVANCED_DOUBLE_BLIND)
+                    && twGame.getOptions().booleanOption(OptionsConstants.ADVANCED_DOUBLE_BLIND)
                     && entityIsEnemy
                     && !e.hasSeenEntity(localPlayer)
                     && !e.hasDetectedEntity(localPlayer)) {
@@ -4545,7 +4545,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
         for (ECMInfo ecmInfo : allEcmInfo) {
             // Can't see ECM field of unspotted unit
             if ((ecmInfo.getEntity() != null) && (localPlayer != null)
-                    && game.getOptions().booleanOption(OptionsConstants.ADVANCED_DOUBLE_BLIND)
+                    && twGame.getOptions().booleanOption(OptionsConstants.ADVANCED_DOUBLE_BLIND)
                     && ecmInfo.getEntity().getOwner().isEnemyOf(localPlayer)
                     && !ecmInfo.getEntity().hasSeenEntity(localPlayer)
                     && !ecmInfo.getEntity().hasDetectedEntity(localPlayer)) {
@@ -4675,7 +4675,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
         Entity choice = null;
 
         // Get the available choices.
-        java.util.List<Entity> entities = game.getEntitiesVector(pos);
+        java.util.List<Entity> entities = twGame.getEntitiesVector(pos);
 
         // Do we have a single choice?
         if (entities.size() == 1) {
@@ -4705,7 +4705,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
 
     @Override
     public void setLocalPlayer(int playerId) {
-        setLocalPlayer(game.getPlayer(playerId));
+        setLocalPlayer(twGame.getPlayer(playerId));
     }
 
     public Component getComponent(boolean scrollBars) {
@@ -5007,7 +5007,7 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
     }
 
     public void updateEntityLabels() {
-        for (Entity e : game.getEntitiesVector()) {
+        for (Entity e : twGame.getEntitiesVector()) {
             e.generateShortName();
         }
 
@@ -5099,10 +5099,10 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
      * board hexes to the user-chosen theme.
      */
     public @Nullable String changeTheme() {
-        if (game == null) {
+        if (TWGame == null) {
             return null;
         }
-        Board board = game.getBoard();
+        Board board = twGame.getBoard();
         if (board.inSpace()) {
             return null;
         }
@@ -5141,11 +5141,11 @@ public final class BoardView extends AbstractBoardView implements BoardListener,
     }
 
     public boolean shouldFovHighlight() {
-        return GUIP.getFovHighlight() && !(game.getPhase().isReport());
+        return GUIP.getFovHighlight() && !(twGame.getPhase().isReport());
     }
 
     public boolean shouldFovDarken() {
-        return GUIP.getFovDarken() && !(game.getPhase().isReport());
+        return GUIP.getFovDarken() && !(twGame.getPhase().isReport());
     }
 
     public void setShowLobbyPlayerDeployment(boolean b) {

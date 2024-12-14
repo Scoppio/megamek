@@ -19,7 +19,7 @@ import megamek.common.Building;
 import megamek.common.Compute;
 import megamek.common.Entity;
 import megamek.common.HitData;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Hex;
 import megamek.common.Infantry;
 import megamek.common.RangeType;
@@ -43,14 +43,14 @@ public class RifleWeaponHandler extends AmmoWeaponHandler {
      * @param g
      * @param m
      */
-    public RifleWeaponHandler(ToHitData t, WeaponAttackAction w, Game g,
+    public RifleWeaponHandler(ToHitData t, WeaponAttackAction w, TWGame g,
             TWGameManager m) {
         super(t, w, g, m);
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#calcDamagePerHit()
      */
     @Override
@@ -82,11 +82,11 @@ public class RifleWeaponHandler extends AmmoWeaponHandler {
 
         toReturn = applyGlancingBlowModifier(toReturn, target.isConventionalInfantry());
 
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE)
             && (nRange > wtype.getRanges(weapon)[RangeType.RANGE_LONG])) {
             toReturn = (int) Math.floor(toReturn * .75);
         }
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS_RANGE)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS_RANGE)
                 && (nRange > wtype.getRanges(weapon)[RangeType.RANGE_EXTREME])) {
             toReturn = (int) Math.floor(toReturn * .5);
         }
@@ -141,10 +141,10 @@ public class RifleWeaponHandler extends AmmoWeaponHandler {
 
         // if the target was in partial cover, then we already handled
         // damage absorption by the partial cover, if it would have happened
-        Hex targetHex = game.getBoard().getHex(target.getPosition());
+        Hex targetHex = twGame.getBoard().getHex(target.getPosition());
         boolean targetStickingOutOfBuilding = unitStickingOutOfBuilding(targetHex, entityTarget);
-                
-        nDamage = absorbBuildingDamage(nDamage, entityTarget, bldgAbsorbs, 
+
+        nDamage = absorbBuildingDamage(nDamage, entityTarget, bldgAbsorbs,
                 vPhaseReport, bldg, targetStickingOutOfBuilding);
 
 
@@ -169,7 +169,7 @@ public class RifleWeaponHandler extends AmmoWeaponHandler {
             if (bGlancing) {
                 hit.makeGlancingBlow();
             }
-            
+
             if (bLowProfileGlancing) {
                 hit.makeGlancingBlow();
             }

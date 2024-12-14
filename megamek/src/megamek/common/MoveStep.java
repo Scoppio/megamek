@@ -497,16 +497,16 @@ public class MoveStep implements Serializable {
     /**
      * Get the target of the current step.
      *
-     * @param game The current {@link Game}
+     * @param twGame The current {@link TWGame}
      * @return The <code>Targetable</code> that is the target of this step. For
      *         example, the enemy being charged. This value may be
      *         <code>null</code>
      */
-    public Targetable getTarget(Game game) {
+    public Targetable getTarget(TWGame twGame) {
         if (targetId == Entity.NONE) {
             return null;
         }
-        return game.getTarget(targetType, targetId);
+        return twGame.getTarget(targetType, targetId);
     }
 
     public Coords getTargetPosition() {
@@ -528,17 +528,17 @@ public class MoveStep implements Serializable {
     /**
      * Helper for compile(), to deal with steps that move to a new hex.
      *
-     * @param game   The current {@link Game}
+     * @param twGame   The current {@link TWGame}
      * @param entity
      * @param prev
      */
-    private void compileMove(final Game game, final Entity entity,
-            MoveStep prev, CachedEntityState cachedEntityState) {
+    private void compileMove(final TWGame twGame, final Entity entity,
+                             MoveStep prev, CachedEntityState cachedEntityState) {
 
-        Hex destHex = game.getBoard().getHex(getPosition());
+        Hex destHex = twGame.getBoard().getHex(getPosition());
 
         // Check for pavement movement.
-        if (!entity.isAirborne() && Compute.canMoveOnPavement(game, prev.getPosition(), getPosition(), this)) {
+        if (!entity.isAirborne() && Compute.canMoveOnPavement(twGame, prev.getPosition(), getPosition(), this)) {
             setPavementStep(true);
         } else {
             setPavementStep(false);
@@ -555,15 +555,15 @@ public class MoveStep implements Serializable {
         // nTurns)
         // this is handled differently by aerospace units operating on the
         // ground map and by spheroids in atmosphere
-        if (entity.isAirborne() && game.getBoard().onGround()) {
+        if (entity.isAirborne() && twGame.getBoard().onGround()) {
             setNMoved(getNMoved() + 1);
             if ((entity.getMovementMode() != EntityMovementMode.SPHEROID)
                     && (getNMoved() >= 16)) {
                 setVelocityLeft(getVelocityLeft() - 1);
                 setNMoved(0);
             }
-        } else if (entity.isAirborne() && !game.useVectorMove()
-                && !useSpheroidAtmosphere(game, entity)) {
+        } else if (entity.isAirborne() && !twGame.useVectorMove()
+                && !useSpheroidAtmosphere(twGame, entity)) {
             setVelocityLeft(getVelocityLeft() - 1);
             setNTurns(0);
         }
@@ -573,8 +573,8 @@ public class MoveStep implements Serializable {
         setNStraight(getNStraight() + 1);
         // if in atmosphere, then I need to know if this move qualifies the unit
         // for a free turn
-        if (useAeroAtmosphere(game, entity)) {
-            if (game.getBoard().onGround() && (getNStraight() > 7)) {
+        if (useAeroAtmosphere(twGame, entity)) {
+            if (twGame.getBoard().onGround() && (getNStraight() > 7)) {
                 // if flying on ground map, then you have to fly at least 8
                 // straight hexes between turns (free or not)
                 // http://www.classicbattletech.com/forums/index.php/topic,37171.new.html#new
@@ -590,22 +590,22 @@ public class MoveStep implements Serializable {
         }
 
         if (getType() == MoveStepType.DFA) {
-            Hex hex = game.getBoard().getHex(getPosition());
+            Hex hex = twGame.getBoard().getHex(getPosition());
             setElevation(Math.max(0, hex.terrainLevel(Terrains.BLDG_ELEV)));
             // If we're DFA-ing, we want to be 1 above the level of the target.
             // However, if that puts us in the ground, we're instead 1 above the
             // level of the hex right before the target.
             int otherEl = 0;
-            Hex hex2 = game.getBoard().getHex(prev.getPosition());
+            Hex hex2 = twGame.getBoard().getHex(prev.getPosition());
             otherEl = Math.max(0, hex2.terrainLevel(Terrains.BLDG_ELEV));
             if (otherEl > getElevation()) {
                 setElevation(otherEl);
             }
             setElevation(getElevation() + 1);
         } else if (isJumping()) {
-            Hex hex = game.getBoard().getHex(getPosition());
-            int maxElevation = (entity.getJumpMP() + entity.getElevation() + game
-                    .getBoard().getHex(entity.getPosition()).getLevel()) - hex.getLevel();
+            Hex hex = twGame.getBoard().getHex(getPosition());
+            int maxElevation = (entity.getJumpMP() + entity.getElevation() + twGame
+                .getBoard().getHex(entity.getPosition()).getLevel()) - hex.getLevel();
             int building = hex.terrainLevel(Terrains.BLDG_ELEV);
             int depth = -hex.depth(true);
 
@@ -625,7 +625,7 @@ public class MoveStep implements Serializable {
             // of jumping over
             boolean grdDropship = false;
             if (building < 10) {
-                for (Entity inHex : game.getEntitiesVector(getPosition())) {
+                for (Entity inHex : twGame.getEntitiesVector(getPosition())) {
                     if (inHex.equals(entity)) {
                         continue;
                     }
@@ -655,11 +655,11 @@ public class MoveStep implements Serializable {
                         hex.terrainLevel(Terrains.BRIDGE_ELEV)));
             }
         } else {
-            Building bld = game.getBoard().getBuildingAt(getPosition());
+            Building bld = twGame.getBoard().getBuildingAt(getPosition());
 
             if (bld != null) {
-                Hex hex = game.getBoard().getHex(getPosition());
-                int maxElevation = (entity.getElevation() + game.getBoard()
+                Hex hex = twGame.getBoard().getHex(getPosition());
+                int maxElevation = (entity.getElevation() + twGame.getBoard()
                         .getHex(entity.getPosition()).getLevel())
                         - hex.getLevel();
 
@@ -682,8 +682,8 @@ public class MoveStep implements Serializable {
                 } else {
                     setElevation(entity
                             .calcElevation(
-                                    game.getBoard().getHex(prev.getPosition()),
-                                    game.getBoard().getHex(getPosition()),
+                                    twGame.getBoard().getHex(prev.getPosition()),
+                                    twGame.getBoard().getHex(getPosition()),
                                     elevation,
                                     climbMode(),
                                     (entity.getMovementMode() == EntityMovementMode.WIGE)
@@ -692,8 +692,8 @@ public class MoveStep implements Serializable {
             } else {
                 setElevation(entity
                         .calcElevation(
-                                game.getBoard().getHex(prev.getPosition()),
-                                game.getBoard().getHex(getPosition()),
+                                twGame.getBoard().getHex(prev.getPosition()),
+                                twGame.getBoard().getHex(getPosition()),
                                 elevation,
                                 climbMode(),
                                 (entity.getMovementMode() == EntityMovementMode.WIGE)
@@ -702,12 +702,12 @@ public class MoveStep implements Serializable {
         }
 
         // if this is a flying aero, then there is no MP cost for moving
-        if ((prev.getAltitude() > 0) || game.getBoard().inSpace()) {
+        if ((prev.getAltitude() > 0) || twGame.getBoard().inSpace()) {
             setMp(0);
             // if this is a spheroid in atmosphere then the cost is always one
             // if it is the very first step, we prepend the cost of hovering for convenience
-            if (useSpheroidAtmosphere(game, entity)) {
-                if (game.getBoard().onGround()) {
+            if (useSpheroidAtmosphere(twGame, entity)) {
+                if (twGame.getBoard().onGround()) {
                     if ((distance % 8) == 1) {
                         setMp(1);
                     }
@@ -716,7 +716,7 @@ public class MoveStep implements Serializable {
                 }
             }
         } else {
-            calcMovementCostFor(game, prev, cachedEntityState);
+            calcMovementCostFor(twGame, prev, cachedEntityState);
         }
         // check for water
         if (!isPavementStep()
@@ -761,7 +761,7 @@ public class MoveStep implements Serializable {
                 secondaryPositions.add(getPosition().translated(dir));
             }
             for (Coords pos : secondaryPositions) {
-                Building bld = game.getBoard().getBuildingAt(pos);
+                Building bld = twGame.getBoard().getBuildingAt(pos);
                 if (bld != null) {
                     getCrushedBuildingLocs().add(pos);
                     // This is dangerous!
@@ -773,9 +773,9 @@ public class MoveStep implements Serializable {
         // WiGEs get bonus MP for each string of three consecutive hexes they descend.
         if (entity.getMovementMode() == EntityMovementMode.WIGE
                 && getClearance() > 0
-                && game.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_VEHICLE_ADVANCED_MANEUVERS)) {
+                && twGame.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_VEHICLE_ADVANCED_MANEUVERS)) {
 
-            if (game.getBoard().getHex(getPosition()).ceiling() < game.getBoard().getHex(prev.getPosition())
+            if (twGame.getBoard().getHex(getPosition()).ceiling() < twGame.getBoard().getHex(prev.getPosition())
                     .ceiling()) {
                 nWigeDescent = prev.getNWigeDescent() + 1;
                 if (nWigeDescent >= 3) {
@@ -792,20 +792,20 @@ public class MoveStep implements Serializable {
     /**
      * Compile the static move data for this step.
      *
-     * @param game   The current {@link Game}
+     * @param twGame   The current {@link TWGame}
      * @param entity the <code>Entity</code> taking this step.
      * @param prev   the previous step in the path.
      */
-    protected void compile(final Game game, final Entity entity, MoveStep prev, CachedEntityState cachedEntityState) {
+    protected void compile(final TWGame twGame, final Entity entity, MoveStep prev, CachedEntityState cachedEntityState) {
         final boolean isInfantry = entity instanceof Infantry;
         boolean isFieldArtillery = (entity instanceof Infantry)
                 && ((Infantry) entity).hasActiveFieldArtillery();
-        copy(game, prev);
+        copy(twGame, prev);
 
         // Is this the first step?
         if (prev == null) {
             prev = new MoveStep(null, MoveStepType.FORWARDS);
-            prev.setFromEntity(entity, game);
+            prev.setFromEntity(entity, twGame);
             prev.isCarefulPath = isCareful();
             prev.isJumpingPath = isJumping();
             setFirstStep(prev.mpUsed == 0); // Bug 1519330 - its not a first step when continuing after a fall
@@ -833,7 +833,7 @@ public class MoveStep implements Serializable {
             case TURN_LEFT:
             case TURN_RIGHT:
                 // Check for pavement movement.
-                if (!entity.isAirborne() && Compute.canMoveOnPavement(game, prev.getPosition(), getPosition(), this)) {
+                if (!entity.isAirborne() && Compute.canMoveOnPavement(twGame, prev.getPosition(), getPosition(), this)) {
                     setPavementStep(true);
                 } else {
                     setPavementStep(false);
@@ -845,10 +845,10 @@ public class MoveStep implements Serializable {
                         : 1);
                 setNStraight(0);
                 if (entity.isAirborne() && (entity.isAero())) {
-                    setMp(asfTurnCost(game, getType(), entity));
+                    setMp(asfTurnCost(twGame, getType(), entity));
                     setNTurns(getNTurns() + 1);
 
-                    if (useAeroAtmosphere(game, entity)) {
+                    if (useAeroAtmosphere(twGame, entity)) {
                         setFreeTurn(false);
                     }
                 }
@@ -869,7 +869,7 @@ public class MoveStep implements Serializable {
                 if (!entity.hasQuirk(OptionsConstants.QUIRK_POS_POWER_REVERSE)) {
                     setRunProhibited(true);
                 }
-                compileMove(game, entity, prev, cachedEntityState);
+                compileMove(twGame, entity, prev, cachedEntityState);
                 break;
             case FORWARDS:
             case DFA:
@@ -877,13 +877,13 @@ public class MoveStep implements Serializable {
                 // step forwards or backwards
                 moveInDir(getFacing());
                 setThisStepBackwards(false);
-                compileMove(game, entity, prev, cachedEntityState);
+                compileMove(twGame, entity, prev, cachedEntityState);
                 break;
             case CHARGE:
-                if (!(entity.isAirborne()) || !game.useVectorMove()) {
+                if (!(entity.isAirborne()) || !twGame.useVectorMove()) {
                     moveInDir(getFacing());
                     setThisStepBackwards(false);
-                    compileMove(game, entity, prev, cachedEntityState);
+                    compileMove(twGame, entity, prev, cachedEntityState);
                 }
                 break;
             case LATERAL_LEFT_BACKWARDS:
@@ -894,7 +894,7 @@ public class MoveStep implements Serializable {
                 if (!entity.hasQuirk(OptionsConstants.QUIRK_POS_POWER_REVERSE)) {
                     setRunProhibited(true);
                 }
-                compileMove(game, entity, prev, cachedEntityState);
+                compileMove(twGame, entity, prev, cachedEntityState);
                 if (entity.isAirborne()) {
                     setMp(0);
                 } else if (entity.isUsingManAce()
@@ -912,7 +912,7 @@ public class MoveStep implements Serializable {
                 moveInDir(MovePath.getAdjustedFacing(getFacing(),
                         MovePath.turnForLateralShift(getType())));
                 setThisStepBackwards(false);
-                compileMove(game, entity, prev, cachedEntityState);
+                compileMove(twGame, entity, prev, cachedEntityState);
                 if (entity.isAirborne()) {
                     setMp(0);
                 } else if (entity.isUsingManAce()
@@ -1183,7 +1183,7 @@ public class MoveStep implements Serializable {
         addMpUsed(getMp());
 
         // Check for a stacking violation.
-        final Entity violation = Compute.stackingViolation(game,
+        final Entity violation = Compute.stackingViolation(twGame,
                 entity, getElevation(), getPosition(), null, climbMode);
         if ((violation != null) && (getType() != MoveStepType.CHARGE)
                 && (getType() != MoveStepType.DFA)) {
@@ -1191,7 +1191,7 @@ public class MoveStep implements Serializable {
         }
 
         // set moveType, illegal, trouble flags
-        compileIllegal(game, entity, prev, cachedEntityState);
+        compileIllegal(twGame, entity, prev, cachedEntityState);
     }
 
     /**
@@ -1219,12 +1219,12 @@ public class MoveStep implements Serializable {
     /**
      * Takes the given state as the previous state and sets flags from it.
      *
-     * @param game The current {@link Game}
+     * @param IGame The current {@link TWGame}
      * @param prev
      */
-    public void copy(final Game game, MoveStep prev) {
+    public void copy(final IGame IGame, MoveStep prev) {
         if (prev == null) {
-            setFromEntity(getEntity(), game);
+            setFromEntity(getEntity(), IGame);
             return;
         }
         hasJustStood = prev.hasJustStood;
@@ -1270,7 +1270,7 @@ public class MoveStep implements Serializable {
      *
      * @param entity
      */
-    public void setFromEntity(Entity entity, Game game) {
+    public void setFromEntity(Entity entity, IGame IGame) {
         this.entity = entity;
         position = entity.getPosition();
         facing = entity.getFacing();
@@ -1317,7 +1317,7 @@ public class MoveStep implements Serializable {
             velocity = a.getCurrentVelocity();
             velocityN = a.getNextVelocity();
             velocityLeft = a.getCurrentVelocity() - entity.delta_distance;
-            if (game.getBoard().onGround()) {
+            if (IGame.getBoard().onGround()) {
                 velocityLeft = a.getCurrentVelocity() - (entity.delta_distance / 16);
             }
             isRolled = false;// a.isRolled();
@@ -1342,7 +1342,7 @@ public class MoveStep implements Serializable {
 
         // check pavement & water
         if (position != null) {
-            Hex curHex = game.getBoard().getHex(position);
+            Hex curHex = IGame.getBoard().getHex(position);
             if (curHex.hasPavement()) {
                 onlyPavement = true;
                 isPavementStep = true;
@@ -1881,12 +1881,12 @@ public class MoveStep implements Serializable {
      * Things that can make a step illegal as part of a movement path are
      * considered in MovePath.addStep.
      *
-     * @param game   The current {@link Game}
+     * @param twGame   The current {@link TWGame}
      * @param entity
      * @param prev
      */
-    private void compileIllegal(final Game game, final Entity entity,
-            final MoveStep prev, CachedEntityState cachedEntityState) {
+    private void compileIllegal(final TWGame twGame, final Entity entity,
+                                final MoveStep prev, CachedEntityState cachedEntityState) {
         final MoveStepType stepType = getType();
         final boolean isInfantry = entity instanceof Infantry;
         final boolean isTank = entity instanceof Tank;
@@ -1935,7 +1935,7 @@ public class MoveStep implements Serializable {
             return;
         }
 
-        if ((prev.getAltitude() > 0) || game.getBoard().inSpace()) {
+        if ((prev.getAltitude() > 0) || twGame.getBoard().inSpace()) {
             // Ejected crew/pilots just drift or parachute, resulting in a move_none type
             if (entity instanceof EjectedCrew) {
                 movementType = EntityMovementType.MOVE_NONE;
@@ -1974,7 +1974,7 @@ public class MoveStep implements Serializable {
             }
 
             // check the fuel requirements
-            if (game.getOptions().booleanOption(OptionsConstants.ADVAERORULES_FUEL_CONSUMPTION)
+            if (twGame.getOptions().booleanOption(OptionsConstants.ADVAERORULES_FUEL_CONSUMPTION)
                     && entity.hasEngine() && a.requiresFuel()) {
                 int fuelUsed = mpUsed + Math.max(mpUsed - cachedEntityState.getWalkMP(), 0);
                 if (fuelUsed > a.getCurrentFuel()) {
@@ -1983,7 +1983,7 @@ public class MoveStep implements Serializable {
             }
 
             // **Space turning limits**//
-            if (game.getBoard().inSpace()) {
+            if (twGame.getBoard().inSpace()) {
                 // space stations can only turn and launch space craft
                 if ((entity instanceof SpaceStation)
                         && !((type == MoveStepType.TURN_LEFT)
@@ -1995,7 +1995,7 @@ public class MoveStep implements Serializable {
 
                 // unless velocity is zero ASFs must move forward one hex before
                 // making turns in space
-                if (!game.useVectorMove()
+                if (!twGame.useVectorMove()
                         && (distance == 0)
                         && (velocity != 0)
                         && ((type == MoveStepType.TURN_LEFT) || (type == MoveStepType.TURN_RIGHT))) {
@@ -2004,13 +2004,13 @@ public class MoveStep implements Serializable {
 
                 // no more than two turns in one hex unless velocity is zero for
                 // anything except ASF in space
-                if (!game.useVectorMove() && (a instanceof SmallCraft)
+                if (!twGame.useVectorMove() && (a instanceof SmallCraft)
                         && (velocity != 0) && (getNTurns() > 2)) {
                     return;
                 }
 
                 // for warships the limit is one
-                if (!game.useVectorMove() && (a instanceof Jumpship)
+                if (!twGame.useVectorMove() && (a instanceof Jumpship)
                         && (velocity != 0) && (getNTurns() > 1)) {
                     return;
                 }
@@ -2024,25 +2024,25 @@ public class MoveStep implements Serializable {
             }
 
             // atmosphere has its own rules about turning
-            if (useAeroAtmosphere(game, entity)
+            if (useAeroAtmosphere(twGame, entity)
                     && ((type == MoveStepType.TURN_LEFT) || (type == MoveStepType.TURN_RIGHT))
-                    && !prev.canAeroTurn(game)) {
+                    && !prev.canAeroTurn(twGame)) {
                 return;
             }
 
             // spheroids in atmosphere can move a max of 1 hex on the low atmo map
             // and 8 hexes on the ground map, regardless of any other considerations
             // unless they're out of control, in which case, well...
-            if (useSpheroidAtmosphere(game, entity) &&
+            if (useSpheroidAtmosphere(twGame, entity) &&
                     (((IAero) entity).isOutControlTotal() ||
-                            (!game.getBoard().onGround() && (this.getDistance() > 1) ||
-                                    (game.getBoard().onGround() && (getDistance() > 8))))) {
+                            (!twGame.getBoard().onGround() && (this.getDistance() > 1) ||
+                                    (twGame.getBoard().onGround() && (getDistance() > 8))))) {
                 return;
             }
 
             if ((type == MoveStepType.FORWARDS)
-                    && game.getBoard().inAtmosphere() && !a.isOutControl()) {
-                Hex desth = game.getBoard().getHex(getPosition());
+                    && twGame.getBoard().inAtmosphere() && !a.isOutControl()) {
+                Hex desth = twGame.getBoard().getHex(getPosition());
                 if (altitude <= desth.ceiling(true)) {
                     return; // can't fly into a cliff face or woods (unless out
                     // of control)
@@ -2058,12 +2058,12 @@ public class MoveStep implements Serializable {
             // check for thruster damage
             if ((type == MoveStepType.TURN_LEFT)
                     && (a.getRightThrustHits() > 2)
-                    && !useSpheroidAtmosphere(game, entity)) {
+                    && !useSpheroidAtmosphere(twGame, entity)) {
                 return;
             }
             if ((type == MoveStepType.TURN_RIGHT)
                     && (a.getLeftThrustHits() > 2)
-                    && !useSpheroidAtmosphere(game, entity)) {
+                    && !useSpheroidAtmosphere(twGame, entity)) {
                 return;
             }
 
@@ -2111,13 +2111,13 @@ public class MoveStep implements Serializable {
             }
 
             // check to make sure there is velocity left to spend
-            if ((getVelocityLeft() >= 0) || useSpheroidAtmosphere(game, entity)) {
+            if ((getVelocityLeft() >= 0) || useSpheroidAtmosphere(twGame, entity)) {
                 // when aeros are flying on the ground mapsheet we need an
                 // additional check
                 // because velocityLeft is only decremented at intervals of 16
                 // hexes
-                if (useAeroAtmosphere(game, entity)
-                        && game.getBoard().onGround()
+                if (useAeroAtmosphere(twGame, entity)
+                        && twGame.getBoard().onGround()
                         && (getVelocityLeft() == 0) && (getNMoved() > 0)) {
                     return;
                 }
@@ -2155,13 +2155,13 @@ public class MoveStep implements Serializable {
                 }
             }
 
-            if (game.getBoard().getHex(curPos)
+            if (twGame.getBoard().getHex(curPos)
                     .containsTerrain(Terrains.PAVEMENT)
-                    || game.getBoard().getHex(curPos)
+                    || twGame.getBoard().getHex(curPos)
                             .containsTerrain(Terrains.FORTIFIED)
-                    || game.getBoard().getHex(curPos)
+                    || twGame.getBoard().getHex(curPos)
                             .containsTerrain(Terrains.BUILDING)
-                    || game.getBoard().getHex(curPos)
+                    || twGame.getBoard().getHex(curPos)
                             .containsTerrain(Terrains.ROAD)) {
                 // already fortified - pointless, or terrain is illegal for
                 // digging in
@@ -2182,7 +2182,7 @@ public class MoveStep implements Serializable {
                 return;
             }
             // If there's no valid cover, it's illegal
-            if (!Infantry.hasValidCover(game, getPosition(), getElevation())) {
+            if (!Infantry.hasValidCover(twGame, getPosition(), getElevation())) {
                 return;
             }
             isTakingCover = true;
@@ -2356,8 +2356,8 @@ public class MoveStep implements Serializable {
             }
         }
 
-        Hex currHex = game.getBoard().getHex(curPos);
-        Hex lastHex = game.getBoard().getHex(lastPos);
+        Hex currHex = twGame.getBoard().getHex(curPos);
+        Hex lastHex = twGame.getBoard().getHex(lastPos);
 
         // Bootlegger ends movement
         if (prev.type == MoveStepType.BOOTLEGGER) {
@@ -2498,7 +2498,7 @@ public class MoveStep implements Serializable {
                 } else {
                     movementType = EntityMovementType.MOVE_RUN;
                 }
-            } else if ((getMpUsed() <= sprintMPMax) && !isRunProhibited() && !isEvading() && canUseSprint(game)) {
+            } else if ((getMpUsed() <= sprintMPMax) && !isRunProhibited() && !isEvading() && canUseSprint(twGame)) {
                 // SPRINT - If we got this far, entity is moving farther than a run
                 // but within sprint and sprinting must be legal and the option enabled
 
@@ -2525,7 +2525,7 @@ public class MoveStep implements Serializable {
         // stop to overdrive.
         // Stop to flank or cruise to overdrive is permitted with a driving check
         // ("gunning it").
-        if (game.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_VEHICLE_ACCELERATION)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_VEHICLE_ACCELERATION)
                 && movementType == EntityMovementType.MOVE_SPRINT
                 && (entity instanceof Tank
                         || (entity instanceof QuadVee && entity.getConversionMode() == QuadVee.CONV_MODE_VEHICLE))
@@ -2655,7 +2655,7 @@ public class MoveStep implements Serializable {
 
         // check for UMU infantry on land
         if ((entity.getMovementMode() == EntityMovementMode.INF_UMU)
-                && !game.getBoard().getHex(curPos)
+                && !twGame.getBoard().getHex(curPos)
                         .containsTerrain(Terrains.WATER)
                 && (movementType == EntityMovementType.MOVE_RUN)) {
             movementType = EntityMovementType.MOVE_ILLEGAL;
@@ -2709,14 +2709,14 @@ public class MoveStep implements Serializable {
 
                 // Can't unload units into prohibited terrain
                 // or into stacking violation.
-                Targetable target = getTarget(game);
+                Targetable target = getTarget(twGame);
                 if (target instanceof Entity) {
                     // Change the destination hex if an unload dialog box set it elsewhere
                     if (getTargetPosition() != null) {
                         curPos = getTargetPosition();
                     }
                     Entity other = (Entity) target;
-                    if ((null != Compute.stackingViolation(game, other, curPos,
+                    if ((null != Compute.stackingViolation(twGame, other, curPos,
                             entity, climbMode)) || other.isLocationProhibited(curPos, getElevation())) {
                         movementType = EntityMovementType.MOVE_ILLEGAL;
                     }
@@ -2740,10 +2740,10 @@ public class MoveStep implements Serializable {
 
             // Can't unload units into prohibited terrain
             // or into stacking violation.
-            Targetable target = getTarget(game);
+            Targetable target = getTarget(twGame);
             if (target instanceof Entity) {
                 Entity other = (Entity) target;
-                if ((null != Compute.stackingViolation(game, other, curPos,
+                if ((null != Compute.stackingViolation(twGame, other, curPos,
                         entity, climbMode)) || other.isLocationProhibited(curPos, getElevation())) {
                     movementType = EntityMovementType.MOVE_ILLEGAL;
                 }
@@ -2795,7 +2795,7 @@ public class MoveStep implements Serializable {
                             && ((entity.getConversionMode() == QuadVee.CONV_MODE_VEHICLE) != entity
                                     .isConvertingNow()))) {
                 // Tanks and QuadVees ending movement in vehicle mode require a fortified hex.
-                if (!(game.getBoard().getHex(curPos)
+                if (!(twGame.getBoard().getHex(curPos)
                         .containsTerrain(Terrains.FORTIFIED))) {
                     movementType = EntityMovementType.MOVE_ILLEGAL;
                 }
@@ -2820,13 +2820,13 @@ public class MoveStep implements Serializable {
                 && (entity.getMovementMode() != EntityMovementMode.WIGE
                         || getClearance() == 0)
                 && (movementType != EntityMovementType.MOVE_JUMP)
-                && game.getBoard().getHex(curPos)
+                && twGame.getBoard().getHex(curPos)
                         .containsTerrain(Terrains.BRIDGE)
-                && !game.getBoard()
+                && !twGame.getBoard()
                         .getHex(curPos)
                         .containsTerrainExit(Terrains.BRIDGE,
                                 curPos.direction(lastPos))
-                && (getElevation() + entity.getHeight() >= game.getBoard().getHex(curPos)
+                && (getElevation() + entity.getHeight() >= twGame.getBoard().getHex(curPos)
                         .terrainLevel(Terrains.BRIDGE_ELEV))) {
             movementType = EntityMovementType.MOVE_ILLEGAL;
         }
@@ -2835,7 +2835,7 @@ public class MoveStep implements Serializable {
         if ((entity instanceof Mek)
                 && ((Mek) entity).isSuperHeavy()
                 && climbMode
-                && game.getBoard().getHex(curPos)
+                && twGame.getBoard().getHex(curPos)
                         .containsTerrain(Terrains.BUILDING)) {
             movementType = EntityMovementType.MOVE_ILLEGAL;
         }
@@ -2893,7 +2893,7 @@ public class MoveStep implements Serializable {
         }
 
         // check if this movement is illegal for reasons other than points
-        if (!isMovementPossible(game, lastPos, prev.getElevation(), cachedEntityState)
+        if (!isMovementPossible(twGame, lastPos, prev.getElevation(), cachedEntityState)
                 || (isUnloaded && type != MoveStepType.CHAFF)) {
             movementType = EntityMovementType.MOVE_ILLEGAL;
         }
@@ -2956,7 +2956,7 @@ public class MoveStep implements Serializable {
         }
 
         // only walking speed in Tornados
-        PlanetaryConditions conditions = game.getPlanetaryConditions();
+        PlanetaryConditions conditions = twGame.getPlanetaryConditions();
         if (conditions.getWind().isTornadoF4()) {
             if (getMpUsed() > tmpWalkMP) {
                 movementType = EntityMovementType.MOVE_ILLEGAL;
@@ -3024,14 +3024,14 @@ public class MoveStep implements Serializable {
     /**
      * Amount of movement points required to move from start to dest
      */
-    protected void calcMovementCostFor(Game game, MoveStep prevStep, CachedEntityState cachedEntityState) {
+    protected void calcMovementCostFor(TWGame twGame, MoveStep prevStep, CachedEntityState cachedEntityState) {
         final Coords prev = prevStep.getPosition();
         final int prevEl = prevStep.getElevation();
         final EntityMovementMode moveMode = getEntity()
                 .getMovementMode();
         final Entity en = getEntity();
-        final Hex srcHex = game.getBoard().getHex(prev);
-        final Hex destHex = game.getBoard().getHex(getPosition());
+        final Hex srcHex = twGame.getBoard().getHex(prev);
+        final Hex destHex = twGame.getBoard().getHex(getPosition());
         final boolean isInfantry = getEntity() instanceof Infantry;
         final boolean isSuperHeavyMek = (getEntity() instanceof Mek)
                 && ((Mek) getEntity()).isSuperHeavy();
@@ -3047,7 +3047,7 @@ public class MoveStep implements Serializable {
                 .equals(Crew.ENVSPC_LIGHT);
         int nSrcEl = srcHex.getLevel() + prevEl;
         int nDestEl = destHex.getLevel() + elevation;
-        PlanetaryConditions conditions = game.getPlanetaryConditions();
+        PlanetaryConditions conditions = twGame.getPlanetaryConditions();
 
         mp = 1;
 
@@ -3063,11 +3063,11 @@ public class MoveStep implements Serializable {
             return;
         }
 
-        boolean applyNightPen = !game.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_NO_NIGHT_MOVE_PEN);
+        boolean applyNightPen = !twGame.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_NO_NIGHT_MOVE_PEN);
         boolean carefulExempt = (moveMode == EntityMovementMode.VTOL) || isJumping();
 
         // Apply careful movement MP penalties for fog and light (TO pg 63)
-        if (!game.getBoard().inSpace() && isCareful() && applyNightPen
+        if (!twGame.getBoard().inSpace() && isCareful() && applyNightPen
                 && !carefulExempt) {
             // Fog
             switch (conditions.getFog()) {
@@ -3142,7 +3142,7 @@ public class MoveStep implements Serializable {
         }
 
         // Be careful on pavement during cold weather, there may be black ice.
-        boolean useBlackIce = game.getOptions().booleanOption(OptionsConstants.ADVANCED_BLACK_ICE);
+        boolean useBlackIce = twGame.getOptions().booleanOption(OptionsConstants.ADVANCED_BLACK_ICE);
         boolean goodTemp = conditions.getTemperature() <= PlanetaryConditions.BLACK_ICE_TEMP;
         boolean goodWeather = conditions.getWeather().isIceStorm();
 
@@ -3221,7 +3221,7 @@ public class MoveStep implements Serializable {
         // non-WIGEs pay for elevation differences
         if ((nSrcEl != nDestEl) && (moveMode != EntityMovementMode.WIGE)) {
             int delta_e = Math.abs(nSrcEl - nDestEl);
-            if (game.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_LEAPING) && isMek
+            if (twGame.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_LEAPING) && isMek
                     && (delta_e > 2) && (nDestEl < nSrcEl)) {
                 // leaping (moving down more than 2 hexes) always costs 4 mp
                 // regardless of anything else
@@ -3267,7 +3267,7 @@ public class MoveStep implements Serializable {
 
         // If we entering a building, all non-infantry pay additional MP.
         if (nDestEl < destHex.terrainLevel(Terrains.BLDG_ELEV)) {
-            Building bldg = game.getBoard().getBuildingAt(getPosition());
+            Building bldg = twGame.getBoard().getBuildingAt(getPosition());
             // check for inside hangar movement
             if ((null != prev)
                     && (null != bldg)
@@ -3318,10 +3318,10 @@ public class MoveStep implements Serializable {
      * This function does not comment on whether an overall movement path is
      * possible, just whether the <em>current</em> step is possible.
      */
-    public boolean isMovementPossible(Game game, Coords src, int srcEl, CachedEntityState cachedEntityState) {
-        final Hex srcHex = game.getBoard().getHex(src);
+    public boolean isMovementPossible(TWGame twGame, Coords src, int srcEl, CachedEntityState cachedEntityState) {
+        final Hex srcHex = twGame.getBoard().getHex(src);
         final Coords dest = getPosition();
-        final Hex destHex = game.getBoard().getHex(dest);
+        final Hex destHex = twGame.getBoard().getHex(dest);
         final Entity entity = getEntity();
         if (destHex == null) {
             return false;
@@ -3389,7 +3389,7 @@ public class MoveStep implements Serializable {
         }
 
         // another easy check
-        if (!game.getBoard().contains(dest)) {
+        if (!twGame.getBoard().contains(dest)) {
             return false;
         }
 
@@ -3401,7 +3401,7 @@ public class MoveStep implements Serializable {
         final int srcAlt = srcEl + srcHex.getLevel();
         final int destAlt = elevation + destHex.getLevel();
 
-        Building bld = game.getBoard().getBuildingAt(dest);
+        Building bld = twGame.getBoard().getBuildingAt(dest);
 
         if (bld != null) {
             // ProtoMeks that are jumping can't change the level inside a building,
@@ -3411,8 +3411,8 @@ public class MoveStep implements Serializable {
                     && (getMovementType(false) == EntityMovementType.MOVE_JUMP)) {
                 return false;
             }
-            Hex hex = game.getBoard().getHex(getPosition());
-            int maxElevation = (2 + entity.getElevation() + game.getBoard()
+            Hex hex = twGame.getBoard().getHex(getPosition());
+            int maxElevation = (2 + entity.getElevation() + twGame.getBoard()
                     .getHex(entity.getPosition()).getLevel()) - hex.getLevel();
 
             if ((bld.getType() == Building.WALL)
@@ -3439,8 +3439,8 @@ public class MoveStep implements Serializable {
         if (!(entity instanceof VTOL)
                 && isThisStepBackwards()
                 && !(isJumping() && (entity.getJumpType() == Mek.JUMP_BOOSTER))
-                && (((destAlt != srcAlt) && !game.getOptions().booleanOption(
-                        OptionsConstants.ADVGRNDMOV_TACOPS_WALK_BACKWARDS)) || (game.getOptions()
+                && (((destAlt != srcAlt) && !twGame.getOptions().booleanOption(
+                        OptionsConstants.ADVGRNDMOV_TACOPS_WALK_BACKWARDS)) || (twGame.getOptions()
                                 .booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_WALK_BACKWARDS)
                                 && (Math
                                         .abs(destAlt - srcAlt) > 1)))) {
@@ -3465,7 +3465,7 @@ public class MoveStep implements Serializable {
         if (type == MoveStepType.LOAD) {
             // Find the unit being loaded.
             Entity other = null;
-            Iterator<Entity> entities = game.getEntities(src);
+            Iterator<Entity> entities = twGame.getEntities(src);
             while (entities.hasNext()) {
 
                 // Is the other unit friendly and not the current entity?
@@ -3502,7 +3502,7 @@ public class MoveStep implements Serializable {
         if (type == MoveStepType.TOW) {
 
             // Find the unit being towed.
-            Entity other = game.getEntity(entity.getTowing());
+            Entity other = twGame.getEntity(entity.getTowing());
 
             // The moving unit should be able to tow the other unit.
             if (!entity.canTow(other.getId())) {
@@ -3602,7 +3602,7 @@ public class MoveStep implements Serializable {
                 && !(entity instanceof VTOL)
                 && !(isJumping() && (entity.getJumpType() == Mek.JUMP_BOOSTER))) {
             // Generally forbidden without TacOps Expanded Backward Movement p.22
-            if (!game.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_WALK_BACKWARDS)) {
+            if (!twGame.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_WALK_BACKWARDS)) {
                 return false;
             }
             // Even with Expanded Backward Movement, ...
@@ -3659,14 +3659,14 @@ public class MoveStep implements Serializable {
                 && (type != MoveStepType.DFA)) {
             // can't move a mek into a hex with an enemy mek
             if ((entity instanceof Mek)
-                    && Compute.isEnemyIn(game, entity, dest, true, true,
+                    && Compute.isEnemyIn(twGame, entity, dest, true, true,
                             getElevation())) {
                 return false;
             }
 
             // Can't move out of a hex with an enemy unit unless we started
             // there, BUT we're allowed to turn, unload/Disconnect, or go prone.
-            if (Compute.isEnemyIn(game, entity, src, false,
+            if (Compute.isEnemyIn(twGame, entity, src, false,
                     entity instanceof Mek, srcEl)
                     && !src.equals(entity.getPosition())
                     && (type != MoveStepType.TURN_LEFT)
@@ -3682,7 +3682,7 @@ public class MoveStep implements Serializable {
             // infantry or a VTOL at high enough elevation
             if (!(entity instanceof Infantry)) {
                 boolean validRoadTrain = false;
-                for (Entity inHex : game.getEntitiesVector(src)) {
+                for (Entity inHex : twGame.getEntitiesVector(src)) {
                     if (inHex.equals(entity)) {
                         continue;
                     }
@@ -3690,7 +3690,7 @@ public class MoveStep implements Serializable {
                     // Ignore the first trailer behind a non-superheavy tractor which can be in the
                     // same hex
                     if (!entity.getAllTowedUnits().isEmpty() && !entity.isSuperHeavy()) {
-                        Entity firstTrailer = game.getEntity(entity.getAllTowedUnits().get(0));
+                        Entity firstTrailer = twGame.getEntity(entity.getAllTowedUnits().get(0));
                         if (inHex.equals(firstTrailer)) {
                             validRoadTrain = true;
                         }
@@ -3757,7 +3757,7 @@ public class MoveStep implements Serializable {
                 && (type != MoveStepType.UNLOAD)) {
             for (int dir = 0; dir < 6; dir++) {
                 Coords secondaryCoords = dest.translated(dir);
-                Hex secondaryHex = game.getBoard().getHex(secondaryCoords);
+                Hex secondaryHex = twGame.getBoard().getHex(secondaryCoords);
                 if (!secondaryHex.hasPavement()) {
                     return false;
                 }
@@ -3774,7 +3774,7 @@ public class MoveStep implements Serializable {
             boolean prohibitedByTrailer = false;
             // Add up the trailers
             for (int id : entity.getAllTowedUnits()) {
-                Entity tr = game.getEntity(id);
+                Entity tr = twGame.getEntity(id);
                 prohibitedByTrailer = tr.isLocationProhibited(dest, getElevation());
                 if (prohibitedByTrailer) {
                     return false;
@@ -3925,7 +3925,7 @@ public class MoveStep implements Serializable {
         return velocityLeft;
     }
 
-    public int asfTurnCost(Game game, MoveStepType direction, Entity entity) {
+    public int asfTurnCost(TWGame twGame, MoveStepType direction, Entity entity) {
 
         // jumpships (but not space stations and warships) never pay
         if ((entity instanceof Jumpship) && !(entity instanceof Warship)
@@ -3935,12 +3935,12 @@ public class MoveStep implements Serializable {
 
         // if we're behaving like a spheroid in atmosphere, we can spin around to our
         // heart's content
-        if (useSpheroidAtmosphere(game, entity)) {
+        if (useSpheroidAtmosphere(twGame, entity)) {
             return 0;
         }
 
         // if in atmosphere, the rules are different
-        if (useAeroAtmosphere(game, entity)) {
+        if (useAeroAtmosphere(twGame, entity)) {
             // if they have a free turn, then this move is free
             if (hasFreeTurn()) {
                 return 0;
@@ -3960,7 +3960,7 @@ public class MoveStep implements Serializable {
             thrustCost = a.getRightThrustHits();
         }
 
-        if (game.useVectorMove()) {
+        if (twGame.useVectorMove()) {
             // velocity doesn't factor into advanced movement
             return (1 + thrustCost);
         }
@@ -4045,7 +4045,7 @@ public class MoveStep implements Serializable {
     /**
      * can this aero turn for any reason in atmosphere?
      */
-    public boolean canAeroTurn(Game game) {
+    public boolean canAeroTurn(TWGame twGame) {
         Entity en = getEntity();
 
         if (!en.isAero()) {
@@ -4053,7 +4053,7 @@ public class MoveStep implements Serializable {
         }
 
         // spheroids in atmo can spin around like a centrifuge all they want
-        if (useSpheroidAtmosphere(game, en)) {
+        if (useSpheroidAtmosphere(twGame, en)) {
             return true;
         }
 
@@ -4072,7 +4072,7 @@ public class MoveStep implements Serializable {
         }
 
         // Can't use thrust turns in the first hex of movement (or first 8 if ground)
-        if (game.getBoard().onGround()) {
+        if (twGame.getBoard().onGround()) {
             // if flying on the ground map then they need to move 8 hexes first
             if (distance < 8) {
                 return false;
@@ -4210,7 +4210,7 @@ public class MoveStep implements Serializable {
      * Should we treat this movement as if it is occurring for an aerodyne unit
      * flying in atmosphere?
      */
-    boolean useAeroAtmosphere(Game game, Entity en) {
+    boolean useAeroAtmosphere(TWGame twGame, Entity en) {
         if (!en.isAero()) {
             return false;
         }
@@ -4218,11 +4218,11 @@ public class MoveStep implements Serializable {
             return false;
         }
         // are we in space?
-        if (game.getBoard().inSpace()) {
+        if (twGame.getBoard().inSpace()) {
             return false;
         }
         // are we airborne in non-vacuum?
-        PlanetaryConditions conditions = game.getPlanetaryConditions();
+        PlanetaryConditions conditions = twGame.getPlanetaryConditions();
         return en.isAirborne()
                 && !conditions.getAtmosphere().isLighterThan(Atmosphere.THIN);
     }
@@ -4231,8 +4231,8 @@ public class MoveStep implements Serializable {
      * Should we treat this movement as if it is occurring for a spheroid unit
      * flying in atmosphere?
      */
-    public boolean useSpheroidAtmosphere(Game game, Entity en) {
-        return Compute.useSpheroidAtmosphere(game, en);
+    public boolean useSpheroidAtmosphere(TWGame twGame, Entity en) {
+        return Compute.useSpheroidAtmosphere(twGame, en);
     }
 
     /**
@@ -4251,7 +4251,7 @@ public class MoveStep implements Serializable {
         return entity;
     }
 
-    public Game getGame() {
+    public TWGame getGame() {
         if (getEntity() != null) {
             return getEntity().getGame();
         } else {
@@ -4273,13 +4273,13 @@ public class MoveStep implements Serializable {
      * Helper function to determine whether sprint is available as a game option to
      * the entity
      */
-    public boolean canUseSprint(Game game) {
-        if (!game.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_SPRINT)) {
+    public boolean canUseSprint(IGame IGame) {
+        if (!IGame.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_SPRINT)) {
             return false;
         }
         if (entity instanceof Tank
                 || (entity instanceof QuadVee && entity.getConversionMode() == QuadVee.CONV_MODE_VEHICLE)) {
-            return game.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_VEHICLE_ADVANCED_MANEUVERS);
+            return IGame.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_VEHICLE_ADVANCED_MANEUVERS);
         }
         if (entity instanceof LandAirMek) {
             return entity.getConversionMode() == LandAirMek.CONV_MODE_MEK

@@ -45,8 +45,8 @@ public class MekWarrior extends EjectedCrew {
         setChassis(EjectedCrew.PILOT_EJECT_NAME);
     }
 
-    public MekWarrior(Crew crew, Player owner, Game game) {
-        super(crew, owner, game);
+    public MekWarrior(Crew crew, Player owner, IGame IGame) {
+        super(crew, owner, IGame);
         setChassis(EjectedCrew.PILOT_EJECT_NAME);
     }
 

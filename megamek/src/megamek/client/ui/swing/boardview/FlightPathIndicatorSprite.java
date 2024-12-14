@@ -194,7 +194,7 @@ public class FlightPathIndicatorSprite extends HexSprite {
      * and turn restrictions.
      */
     private boolean canTurnWithThrustCost(MoveStep step) {
-        return step.canAeroTurn(bv.game);
+        return step.canAeroTurn(bv.twGame);
     }
 
     private boolean canTurnWithThrustCost() {
@@ -262,7 +262,7 @@ public class FlightPathIndicatorSprite extends HexSprite {
      */
     private void drawRemainingDistance(Graphics2D graph, MoveStep moveStep) {
         int velocity = moveStep.getVelocity();
-        if (bv.game.getBoard().onGround()) {
+        if (bv.twGame.getBoard().onGround()) {
             velocity *= 16;
         }
 

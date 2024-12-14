@@ -43,29 +43,29 @@ public class ChargeAttackAction extends DisplacementAttackAction {
 
     /**
      * To-hit number for a charge, assuming that movement has been handled
-     * 
-     * @param game The current {@link Game}
+     *
+     * @param twGame The current {@link TWGame}
      */
-    public ToHitData toHit(Game game) {
-        return toHit(game, false);
+    public ToHitData toHit(TWGame twGame) {
+        return toHit(twGame, false);
     }
 
-    public ToHitData toHit(Game game, boolean skid) {
-        final Entity entity = game.getEntity(getEntityId());
-        return toHit(game, game.getTarget(getTargetType(), getTargetId()),
+    public ToHitData toHit(TWGame twGame, boolean skid) {
+        final Entity entity = twGame.getEntity(getEntityId());
+        return toHit(twGame, twGame.getTarget(getTargetType(), getTargetId()),
                 entity.getPosition(), entity.getElevation(), entity.moved,
                 skid, false);
     }
 
     /**
      * To-hit number for a charge, assuming that movement has been handled
-     * 
-     * @param game The current {@link Game}
+     *
+     * @param twGame The current {@link TWGame}
      */
-    public ToHitData toHit(Game game, Targetable target, Coords src,
-            int elevation, EntityMovementType movement, boolean skid,
-            boolean gotUp) {
-        final Entity ae = getEntity(game);
+    public ToHitData toHit(TWGame twGame, Targetable target, Coords src,
+                           int elevation, EntityMovementType movement, boolean skid,
+                           boolean gotUp) {
+        final Entity ae = getEntity(twGame);
 
         // arguments legal?
         if (ae == null) {
@@ -86,7 +86,7 @@ public class ChargeAttackAction extends DisplacementAttackAction {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "Invalid Target");
         }
 
-        if (!game.getOptions().booleanOption(OptionsConstants.BASE_FRIENDLY_FIRE)) {
+        if (!twGame.getOptions().booleanOption(OptionsConstants.BASE_FRIENDLY_FIRE)) {
             // a friendly unit can never be the target of a direct attack.
             if (!skid && (target.getTargetType() == Targetable.TYPE_ENTITY)
                     && ((((Entity) target).getOwnerId() == ae.getOwnerId())
@@ -98,8 +98,8 @@ public class ChargeAttackAction extends DisplacementAttackAction {
             }
         }
 
-        Hex srcHex = game.getBoard().getHex(src);
-        Hex targHex = game.getBoard().getHex(target.getPosition());
+        Hex srcHex = twGame.getBoard().getHex(src);
+        Hex targHex = twGame.getBoard().getHex(target.getPosition());
         // we should not be using the attacker's hex here since the attacker
         // will end up in
         // the target's hex
@@ -124,12 +124,12 @@ public class ChargeAttackAction extends DisplacementAttackAction {
             targetElevation = target.getElevation() + targHex.getLevel();
         }
         final int targetHeight = targetElevation + target.getHeight();
-        Building bldg = game.getBoard().getBuildingAt(getTargetPos());
+        Building bldg = twGame.getBoard().getBuildingAt(getTargetPos());
         ToHitData toHit;
         boolean targIsBuilding = ((getTargetType() == Targetable.TYPE_FUEL_TANK)
                 || (getTargetType() == Targetable.TYPE_BUILDING));
 
-        boolean inSameBuilding = Compute.isInSameBuilding(game, ae, te);
+        boolean inSameBuilding = Compute.isInSameBuilding(twGame, ae, te);
 
         // can't target yourself
         if (ae.equals(te)) {
@@ -210,10 +210,10 @@ public class ChargeAttackAction extends DisplacementAttackAction {
 
         // Can't target units in buildings (from the outside).
         if ((null != bldg) && (!targIsBuilding)
-                && Compute.isInBuilding(game, te)) {
-            if (!Compute.isInBuilding(game, ae)) {
+                && Compute.isInBuilding(twGame, te)) {
+            if (!Compute.isInBuilding(twGame, ae)) {
                 return new ToHitData(TargetRoll.IMPOSSIBLE, "Target is inside building");
-            } else if (!game.getBoard().getBuildingAt(ae.getPosition()).equals(bldg)) {
+            } else if (!twGame.getBoard().getBuildingAt(ae.getPosition()).equals(bldg)) {
                 return new ToHitData(TargetRoll.IMPOSSIBLE, "Target is inside different building");
             }
         }
@@ -239,16 +239,16 @@ public class ChargeAttackAction extends DisplacementAttackAction {
         toHit.addModifier(0, "Charge");
 
         // attacker movement
-        toHit.append(Compute.getAttackerMovementModifier(game, ae.getId(), movement));
+        toHit.append(Compute.getAttackerMovementModifier(twGame, ae.getId(), movement));
 
         // target movement
-        toHit.append(Compute.getTargetMovementModifier(game, targetId));
+        toHit.append(Compute.getTargetMovementModifier(twGame, targetId));
 
         // attacker terrain
-        toHit.append(Compute.getAttackerTerrainModifier(game, ae.getId()));
+        toHit.append(Compute.getAttackerTerrainModifier(twGame, ae.getId()));
 
         // target terrain
-        toHit.append(Compute.getTargetTerrainModifier(game, te, 0, inSameBuilding));
+        toHit.append(Compute.getTargetTerrainModifier(twGame, te, 0, inSameBuilding));
 
         if ((ae instanceof Mek) && ((Mek) ae).isSuperHeavy()) {
             toHit.addModifier(+1, "attacker is superheavy mek");
@@ -298,7 +298,7 @@ public class ChargeAttackAction extends DisplacementAttackAction {
             toHit.addModifier(3, "unintentional charge");
         }
 
-        Compute.modifyPhysicalBTHForAdvantages(ae, te, toHit, game);
+        Compute.modifyPhysicalBTHForAdvantages(ae, te, toHit, twGame);
 
         // evading bonuses (
         if (te.isEvading()) {
@@ -333,7 +333,7 @@ public class ChargeAttackAction extends DisplacementAttackAction {
         }
 
         // Attacking Weight Class Modifier.
-        if (game.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_PHYSICAL_ATTACK_PSR)) {
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_PHYSICAL_ATTACK_PSR)) {
             if (ae.getWeightClass() == EntityWeightClass.WEIGHT_LIGHT) {
                 toHit.addModifier(-2, "Weight Class Attack Modifier");
             } else if (ae.getWeightClass() == EntityWeightClass.WEIGHT_MEDIUM) {
@@ -351,12 +351,12 @@ public class ChargeAttackAction extends DisplacementAttackAction {
 
     /**
      * Checks if a charge can hit the target, taking account of movement
-     * 
-     * @param game The current {@link Game}
+     *
+     * @param twGame The current {@link TWGame}
      */
-    public ToHitData toHit(Game game, MovePath md) {
-        final Entity ae = game.getEntity(getEntityId());
-        final Targetable target = getTarget(game);
+    public ToHitData toHit(TWGame twGame, MovePath md) {
+        final Entity ae = twGame.getEntity(getEntityId());
+        final Targetable target = getTarget(twGame);
         Coords chargeSrc = ae.getPosition();
         int chargeEl = ae.getElevation();
         MoveStep chargeStep = null;
@@ -384,7 +384,7 @@ public class ChargeAttackAction extends DisplacementAttackAction {
         }
 
         // determine last valid step
-        md.compile(game, ae);
+        md.compile(twGame, ae);
         for (final Enumeration<MoveStep> i = md.getSteps(); i.hasMoreElements();) {
             final MoveStep step = i.nextElement();
             if (step.getMovementType(md.isEndStep(step)) == EntityMovementType.MOVE_ILLEGAL) {
@@ -423,7 +423,7 @@ public class ChargeAttackAction extends DisplacementAttackAction {
         }
 
         return toHit(
-                game,
+                TWGame,
                 target,
                 chargeSrc,
                 chargeEl,
@@ -505,8 +505,8 @@ public class ChargeAttackAction extends DisplacementAttackAction {
     }
 
     @Override
-    public String toSummaryString(final Game game) {
-        final String roll = this.toHit(game).getValueAsString();
+    public String toSummaryString(final TWGame twGame) {
+        final String roll = this.toHit(twGame).getValueAsString();
         return Messages.getString("BoardView1.ChargeAttackAction", roll);
     }
 }

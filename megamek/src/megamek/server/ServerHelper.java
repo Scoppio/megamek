@@ -43,7 +43,7 @@ public class ServerHelper {
      *
      * @param te                         Target entity.
      * @param te_hex                     Hex where target entity is located.
-     * @param game                       The current {@link Game}
+     * @param IGame                       The current {@link TWGame}
      * @param isPlatoon                  Whether the target unit is a platoon.
      * @param ammoExplosion              Whether we're considering a "big boom" ammo
      *                                   explosion from TacOps.
@@ -51,13 +51,13 @@ public class ServerHelper {
      *                                   infantry.
      * @return Whether the infantry unit can be considered to be "in the open"
      */
-    public static boolean infantryInOpen(Entity te, Hex te_hex, Game game,
+    public static boolean infantryInOpen(Entity te, Hex te_hex, IGame IGame,
             boolean isPlatoon, boolean ammoExplosion, boolean ignoreInfantryDoubleDamage) {
         if (isPlatoon && !te.isDestroyed() && !te.isDoomed() && !ignoreInfantryDoubleDamage
                 && (((Infantry) te).getDugIn() != Infantry.DUG_IN_COMPLETE)) {
 
             if (te_hex == null) {
-                te_hex = game.getBoard().getHex(te.getPosition());
+                te_hex = IGame.getBoard().getHex(te.getPosition());
             }
 
             if ((te_hex != null) && !te_hex.containsTerrain(Terrains.WOODS) && !te_hex.containsTerrain(Terrains.JUNGLE)
@@ -77,13 +77,13 @@ public class ServerHelper {
     /**
      * Worker function that handles heat as applied to aerospace fighter
      */
-    public static void resolveAeroHeat(Game game, Entity entity, Vector<Report> vPhaseReport, Vector<Report> rhsReports,
-            int radicalHSBonus, int hotDogMod, TWGameManager s) {
+    public static void resolveAeroHeat(TWGame twGame, Entity entity, Vector<Report> vPhaseReport, Vector<Report> rhsReports,
+                                       int radicalHSBonus, int hotDogMod, TWGameManager s) {
         Report r;
 
         // If this aero is part of a squadron, we will deal with its
         // heat with the fighter squadron
-        if (game.getEntity(entity.getTransportId()) instanceof FighterSquadron) {
+        if (twGame.getEntity(entity.getTransportId()) instanceof FighterSquadron) {
             return;
         }
 
@@ -106,7 +106,7 @@ public class ServerHelper {
         }
 
         // Add or subtract heat due to extreme temperatures TO:AR p60
-        adjustHeatExtremeTemp(game, entity, vPhaseReport);
+        adjustHeatExtremeTemp(twGame, entity, vPhaseReport);
 
         // Combat computers help manage heat
         if (entity.hasQuirk(OptionsConstants.QUIRK_POS_COMBAT_COMPUTER)) {
@@ -119,7 +119,7 @@ public class ServerHelper {
         }
 
         // Add heat from external sources to the heat buildup
-        int max_ext_heat = game.getOptions().intOption(
+        int max_ext_heat = twGame.getOptions().intOption(
                 OptionsConstants.ADVCOMBAT_MAX_EXTERNAL_HEAT); // Check Game Options
         if (max_ext_heat < 0) {
             max_ext_heat = 15; // standard value specified in TW p.159
@@ -191,7 +191,7 @@ public class ServerHelper {
             // only check for a possible control roll
             if (entity.heat > 0) {
                 int bonus = (int) Math.ceil(entity.heat / 100.0);
-                game.addControlRoll(new PilotingRollData(
+                twGame.addControlRoll(new PilotingRollData(
                         entity.getId(), bonus, "used too much heat"));
                 entity.heat = 0;
             }
@@ -201,7 +201,7 @@ public class ServerHelper {
         // Capital fighters can overheat and require control rolls
         if (entity.isCapitalFighter() && (entity.heat > 0)) {
             int penalty = (int) Math.ceil(entity.heat / 15.0);
-            game.addControlRoll(new PilotingRollData(entity.getId(),
+            twGame.addControlRoll(new PilotingRollData(entity.getId(),
                     penalty, "used too much heat"));
         }
 
@@ -212,7 +212,7 @@ public class ServerHelper {
         }
 
         int autoShutDownHeat = 30;
-        boolean mtHeat = game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_HEAT);
+        boolean mtHeat = twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_HEAT);
         if (mtHeat) {
             autoShutDownHeat = 50;
         }
@@ -411,9 +411,9 @@ public class ServerHelper {
         }
     }
 
-    public static void adjustHeatExtremeTemp(Game game, Entity entity, Vector<Report> vPhaseReport) {
+    public static void adjustHeatExtremeTemp(TWGame twGame, Entity entity, Vector<Report> vPhaseReport) {
         Report r;
-        int tempDiff = game.getPlanetaryConditions().getTemperatureDifference(50, -30);
+        int tempDiff = twGame.getPlanetaryConditions().getTemperatureDifference(50, -30);
         boolean heatArmor = false;
         boolean laserHS = false;
 
@@ -422,10 +422,10 @@ public class ServerHelper {
             heatArmor = ((Mek) entity).hasIntactHeatDissipatingArmor();
         }
 
-        if (game.getBoard().inSpace() || (tempDiff == 0) || laserHS) {
+        if (twGame.getBoard().inSpace() || (tempDiff == 0) || laserHS) {
             return;
         } else {
-            if (game.getPlanetaryConditions().getTemperature() > 50) {
+            if (twGame.getPlanetaryConditions().getTemperature() > 50) {
                 int heatToAdd = tempDiff;
                 if (heatArmor) {
                     heatToAdd /= 2;
@@ -538,8 +538,8 @@ public class ServerHelper {
     /**
      * Loops through all active entities in the game and performs mine detection
      */
-    public static void detectMinefields(Game game, Vector<Report> vPhaseReport, TWGameManager gameManager) {
-        boolean tacOpsBap = game.getOptions().booleanOption(OptionsConstants.ADVANCED_TACOPS_BAP);
+    public static void detectMinefields(TWGame twGame, Vector<Report> vPhaseReport, TWGameManager gameManager) {
+        boolean tacOpsBap = twGame.getOptions().booleanOption(OptionsConstants.ADVANCED_TACOPS_BAP);
 
         // if the entity is on the board
         // and it either a) hasn't moved or b) we're not using TacOps BAP rules
@@ -548,10 +548,10 @@ public class ServerHelper {
         // if we are using TacOps BAP rules, all moved entities have made all their
         // checks already
         // so we just need to do the unmoved entities
-        for (Entity entity : game.getEntitiesVector()) {
+        for (Entity entity : twGame.getEntitiesVector()) {
             if (!entity.isOffBoard() && entity.isDeployed() &&
                     ((entity.delta_distance == 0) || !tacOpsBap)) {
-                detectMinefields(game, entity, entity.getPosition(), vPhaseReport, gameManager);
+                detectMinefields(twGame, entity, entity.getPosition(), vPhaseReport, gameManager);
             }
         }
     }
@@ -561,9 +561,9 @@ public class ServerHelper {
      *
      * @return True if any minefields have been detected.
      */
-    public static boolean detectMinefields(Game game, Entity entity, Coords coords,
-            Vector<Report> vPhaseReport, TWGameManager gameManager) {
-        if (!game.getOptions().booleanOption(OptionsConstants.ADVANCED_MINEFIELDS)) {
+    public static boolean detectMinefields(TWGame twGame, Entity entity, Coords coords,
+                                           Vector<Report> vPhaseReport, TWGameManager gameManager) {
+        if (!twGame.getOptions().booleanOption(OptionsConstants.ADVANCED_MINEFIELDS)) {
             return false;
         }
 
@@ -573,7 +573,7 @@ public class ServerHelper {
         }
 
         // can't detect minefields if there aren't any to detect
-        if (!game.getMinedCoords().hasMoreElements()) {
+        if (!twGame.getMinedCoords().hasMoreElements()) {
             return false;
         }
 
@@ -587,11 +587,11 @@ public class ServerHelper {
 
         for (int distance = 1; distance <= probeRange; distance++) {
             for (Coords potentialMineCoords : coords.allAtDistance(distance)) {
-                if (!game.getBoard().contains(potentialMineCoords)) {
+                if (!twGame.getBoard().contains(potentialMineCoords)) {
                     continue;
                 }
 
-                for (Minefield minefield : game.getMinefields(potentialMineCoords)) {
+                for (Minefield minefield : twGame.getMinefields(potentialMineCoords)) {
                     // no need to roll for already revealed minefields
                     if (entity.getOwner().containsMinefield(minefield)) {
                         continue;
@@ -620,10 +620,10 @@ public class ServerHelper {
     /**
      * Checks to see if any units can detected hidden units.
      */
-    public static boolean detectHiddenUnits(Game game, Entity detector, Coords detectorCoords,
-            Vector<Report> vPhaseReport, TWGameManager gameManager) {
+    public static boolean detectHiddenUnits(TWGame twGame, Entity detector, Coords detectorCoords,
+                                            Vector<Report> vPhaseReport, TWGameManager gameManager) {
         // If hidden units aren't on, nothing to do
-        if (!game.getOptions().booleanOption(OptionsConstants.ADVANCED_HIDDEN_UNITS)) {
+        if (!twGame.getOptions().booleanOption(OptionsConstants.ADVANCED_HIDDEN_UNITS)) {
             return false;
         }
 
@@ -644,7 +644,7 @@ public class ServerHelper {
         List<Entity> hiddenUnits = new ArrayList<>();
         // TODO: Check if this function is not suffering of an off-by-one error
         for (Coords coords : detectorCoords.allLessThanDistance(probeRange)) {
-            for (Entity entity : game.getEntitiesVector(coords, true)) {
+            for (Entity entity : twGame.getEntitiesVector(coords, true)) {
                 if (entity.isHidden() && entity.isEnemyOf(detector)) {
                     hiddenUnits.add(entity);
                 }
@@ -693,7 +693,7 @@ public class ServerHelper {
                 }
             }
 
-            LosEffects los = LosEffects.calculateLOS(game, detector, detected, detectorCoords, detected.getPosition(),
+            LosEffects los = LosEffects.calculateLOS(twGame, detector, detected, detectorCoords, detected.getPosition(),
                     false);
             if (los.canSee() || !beyondPointBlankRange) {
                 detected.setHidden(false);
@@ -711,8 +711,8 @@ public class ServerHelper {
             }
         }
 
-        if (!vPhaseReport.isEmpty() && game.getPhase().isMovement()
-                && ((game.getTurnIndex() + 1) < game.getTurnsList().size())) {
+        if (!vPhaseReport.isEmpty() && twGame.getPhase().isMovement()
+                && ((twGame.getTurnIndex() + 1) < twGame.getTurnsList().size())) {
             for (Integer playerId : reportPlayers) {
                 gameManager.send(playerId, gameManager.createSpecialReportPacket());
             }
@@ -725,8 +725,8 @@ public class ServerHelper {
      * Loop through the game and clear 'blood stalker' flag for
      * any entities that have the given unit as the blood stalker target.
      */
-    public static void clearBloodStalkers(Game game, int stalkeeID, TWGameManager gameManager) {
-        for (Entity entity : game.getEntitiesVector()) {
+    public static void clearBloodStalkers(TWGame twGame, int stalkeeID, TWGameManager gameManager) {
+        for (Entity entity : twGame.getEntitiesVector()) {
             if (entity.getBloodStalkerTarget() == stalkeeID) {
                 entity.setBloodStalkerTarget(Entity.BLOOD_STALKER_TARGET_CLEARED);
                 gameManager.entityUpdate(entity.getId());

@@ -13,7 +13,7 @@
  */
 package megamek.common.weapons.prototypes;
 
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Mounted;
 import megamek.common.SimpleTechLevel;
 import megamek.common.ToHitData;
@@ -75,12 +75,12 @@ public class ISUAC5Prototype extends UACWeapon {
      * megamek.common.actions.WeaponAttackAction, megamek.common.Game)
      */
     @Override
-    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, Game game,
+    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, TWGame twGame,
             TWGameManager manager) {
-        Mounted<?> weapon = game.getEntity(waa.getEntityId()).getEquipment(waa.getWeaponId());
+        Mounted<?> weapon = twGame.getEntity(waa.getEntityId()).getEquipment(waa.getWeaponId());
         if (weapon.curMode().equals("Ultra")) {
-            return new PrototypeISUltraWeaponHandler(toHit, waa, game, manager);
+            return new PrototypeISUltraWeaponHandler(toHit, waa, twGame, manager);
         }
-        return super.getCorrectHandler(toHit, waa, game, manager);
+        return super.getCorrectHandler(toHit, waa, twGame, manager);
     }
 }

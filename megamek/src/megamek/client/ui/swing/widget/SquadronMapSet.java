@@ -25,11 +25,7 @@ import java.util.Vector;
 import javax.swing.JComponent;
 
 import megamek.MMConstants;
-import megamek.common.Configuration;
-import megamek.common.Entity;
-import megamek.common.FighterSquadron;
-import megamek.common.Game;
-import megamek.common.IAero;
+import megamek.common.*;
 import megamek.common.options.OptionsConstants;
 import megamek.common.util.fileUtils.MegaMekFile;
 
@@ -75,7 +71,7 @@ public class SquadronMapSet implements DisplayMapSet {
 
     private static final Font FONT_LABEL = new Font(MMConstants.FONT_SANS_SERIF, Font.PLAIN, 9);
 
-    public SquadronMapSet(JComponent c, Game g) {
+    public SquadronMapSet(JComponent c, IGame g) {
         comp = c;
 
         /*

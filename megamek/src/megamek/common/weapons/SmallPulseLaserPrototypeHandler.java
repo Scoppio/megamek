@@ -1,20 +1,20 @@
 /**
  * MegaMek - Copyright (C) 2005 Ben Mazur (bmazur@sev.org)
- * 
- *  This program is free software; you can redistribute it and/or modify it 
- *  under the terms of the GNU General Public License as published by the Free 
- *  Software Foundation; either version 2 of the License, or (at your option) 
+ *
+ *  This program is free software; you can redistribute it and/or modify it
+ *  under the terms of the GNU General Public License as published by the Free
+ *  Software Foundation; either version 2 of the License, or (at your option)
  *  any later version.
- * 
- *  This program is distributed in the hope that it will be useful, but 
- *  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
- *  or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
+ *
+ *  This program is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ *  or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  *  for more details.
  */
 package megamek.common.weapons;
 
 import megamek.common.Compute;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.TargetRoll;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
@@ -26,7 +26,7 @@ import megamek.server.totalwarfare.TWGameManager;
 public class SmallPulseLaserPrototypeHandler extends EnergyWeaponHandler {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 6832340682515730916L;
 
@@ -36,14 +36,14 @@ public class SmallPulseLaserPrototypeHandler extends EnergyWeaponHandler {
      * @param g
      * @param m
      */
-    public SmallPulseLaserPrototypeHandler(ToHitData t, WeaponAttackAction w, Game g,
+    public SmallPulseLaserPrototypeHandler(ToHitData t, WeaponAttackAction w, TWGame g,
             TWGameManager m) {
         super(t, w, g, m);
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#addHeat()
      */
     @Override
@@ -56,9 +56,9 @@ public class SmallPulseLaserPrototypeHandler extends EnergyWeaponHandler {
             super.addHeat();
             ae.heatBuildup += Compute.d6()/2;
         }
-        
+
     }
-    
+
 
 
 }

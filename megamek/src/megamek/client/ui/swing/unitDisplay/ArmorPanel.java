@@ -71,10 +71,10 @@ class ArmorPanel extends PicMap {
     private static final int minAeroTopMargin = 8;
     private static final int minAeroLeftMargin = 8;
 
-    private Game game;
+    private IGame IGame;
 
-    ArmorPanel(Game g, UnitDisplay unitDisplay) {
-        game = g;
+    ArmorPanel(IGame g, UnitDisplay unitDisplay) {
+        IGame = g;
         this.unitDisplay = unitDisplay;
     }
 
@@ -98,7 +98,7 @@ class ArmorPanel extends PicMap {
         sphere = new SpheroidMapSet(this, unitDisplay);
         jump = new JumpshipMapSet(this, unitDisplay);
         warship = new WarshipMapSet(this, unitDisplay);
-        squad = new SquadronMapSet(this, game);
+        squad = new SquadronMapSet(this, IGame);
     }
 
     @Override

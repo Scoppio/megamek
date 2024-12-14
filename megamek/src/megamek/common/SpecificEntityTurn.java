@@ -36,8 +36,8 @@ public class SpecificEntityTurn extends GameTurn {
     }
 
     @Override
-    public boolean isValidEntity(Entity entity, Game game, boolean useValidNonInfantryCheck) {
-        return super.isValidEntity(entity, game, useValidNonInfantryCheck) && (entity.getId() == entityId);
+    public boolean isValidEntity(Entity entity, TWGame twGame, boolean useValidNonInfantryCheck) {
+        return super.isValidEntity(entity, twGame, useValidNonInfantryCheck) && (entity.getId() == entityId);
     }
 
     @Override

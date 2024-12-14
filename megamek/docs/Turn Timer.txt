@@ -3,7 +3,7 @@ by Graysho
 
 The turn timer works as a count down for movement and fire phase, visible as a progress bar with label on the menu bar in movement and fire phase
 
-If set to 0 in game options, it is deactivated.
+If set to 0 in TWGame options, it is deactivated.
 
 Once the time, defined in options runs out, the turn of the player ends with the current state. It is as if the player had clicked the "Fire" or "Move" button.
 

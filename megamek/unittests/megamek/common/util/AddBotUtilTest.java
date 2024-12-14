@@ -32,6 +32,7 @@ import static org.mockito.Mockito.when;
 import java.util.HashSet;
 import java.util.Vector;
 
+import megamek.common.IGame;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +41,7 @@ import megamek.client.bot.princess.BehaviorSettings;
 import megamek.client.bot.princess.BehaviorSettingsFactory;
 import megamek.client.bot.princess.Princess;
 import megamek.common.Coords;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Player;
 import megamek.common.event.GameListener;
 
@@ -54,7 +55,7 @@ class AddBotUtilTest {
         private static final String BOT_PLAYER_NAME = "MockBot";
 
         private Client mockClient;
-        private Game mockGame;
+        private IGame mockGame;
         private Princess mockPrincess;
         private AddBotUtil testAddBotUtil;
 
@@ -72,7 +73,7 @@ class AddBotUtilTest {
                 playerVector.add(mockHumanPlayer);
                 playerVector.add(mockBotPlayer);
 
-                mockGame = mock(Game.class);
+                mockGame = mock(twGame.class);
                 when(mockGame.getPlayersList()).thenReturn(playerVector);
                 doNothing().when(mockGame).addGameListener(any(GameListener.class));
 

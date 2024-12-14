@@ -1,28 +1,22 @@
 /**
  * MegaMek - Copyright (C) 2005 Ben Mazur (bmazur@sev.org)
- * 
- *  This program is free software; you can redistribute it and/or modify it 
- *  under the terms of the GNU General Public License as published by the Free 
- *  Software Foundation; either version 2 of the License, or (at your option) 
+ *
+ *  This program is free software; you can redistribute it and/or modify it
+ *  under the terms of the GNU General Public License as published by the Free
+ *  Software Foundation; either version 2 of the License, or (at your option)
  *  any later version.
- * 
- *  This program is distributed in the hope that it will be useful, but 
- *  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
- *  or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
+ *
+ *  This program is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ *  or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  *  for more details.
  */
 package megamek.common.weapons;
 
 import java.util.Vector;
 
-import megamek.common.Coords;
-import megamek.common.Entity;
-import megamek.common.FighterSquadron;
-import megamek.common.HitData;
-import megamek.common.Game;
-import megamek.common.Report;
-import megamek.common.TargetRoll;
-import megamek.common.ToHitData;
+import megamek.common.*;
+import megamek.common.TWGame;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.enums.GamePhase;
 import megamek.server.totalwarfare.TWGameManager;
@@ -33,7 +27,7 @@ import megamek.server.totalwarfare.TWGameManager;
 public class ScreenLauncherHandler extends AmmoWeaponHandler {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = -2536312899803153911L;
 
@@ -43,14 +37,14 @@ public class ScreenLauncherHandler extends AmmoWeaponHandler {
      * @param g
      * @param m
      */
-    public ScreenLauncherHandler(ToHitData t, WeaponAttackAction w, Game g,
+    public ScreenLauncherHandler(ToHitData t, WeaponAttackAction w, TWGame g,
             TWGameManager m) {
         super(t, w, g, m);
     }
 
     /**
      * handle this weapons firing
-     * 
+     *
      * @return a <code>boolean</code> value indicating wether this should be
      *         kept or not
      */
@@ -96,7 +90,7 @@ public class ScreenLauncherHandler extends AmmoWeaponHandler {
         gameManager.deliverScreen(coords, vPhaseReport);
 
         // damage any entities in the hex
-        for (Entity entity :  game.getEntitiesVector(coords)) {
+        for (Entity entity :  twGame.getEntitiesVector(coords)) {
             // if fighter squadron all fighters are damaged
             if (entity instanceof FighterSquadron) {
                 entity.getSubEntities().forEach(

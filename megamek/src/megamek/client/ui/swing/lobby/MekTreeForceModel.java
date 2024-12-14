@@ -19,10 +19,7 @@
 package megamek.client.ui.swing.lobby;
 
 import megamek.client.ui.swing.lobby.sorters.MekTreeTopLevelSorter;
-import megamek.common.Entity;
-import megamek.common.ForceAssignable;
-import megamek.common.Game;
-import megamek.common.Player;
+import megamek.common.*;
 import megamek.common.force.Force;
 import megamek.common.force.Forces;
 import megamek.common.options.OptionsConstants;
@@ -44,12 +41,12 @@ public class MekTreeForceModel extends DefaultTreeModel {
         super(new DefaultMutableTreeNode("Root"));
         lobby = cl;
     }
-    
+
     public void refreshData() {
         allToplevel = null;
         nodeStructureChanged(root);
     }
-    
+
     public void refreshDisplay() {
         nodeChanged(root);
     }
@@ -73,8 +70,8 @@ public class MekTreeForceModel extends DefaultTreeModel {
                 return lobby.game().getEntity(pnt.getEntityId(index));
             } else if (index < pnt.getChildCount()) {
                 return forces.getForce(pnt.getSubForceId(index - pnt.entityCount()));
-            } 
-        } 
+            }
+        }
         return null;
     }
 
@@ -88,20 +85,20 @@ public class MekTreeForceModel extends DefaultTreeModel {
 
         } else if (parent instanceof Force) {
             Force pnt = (Force) parent;
-            return pnt.getChildCount(); 
+            return pnt.getChildCount();
 
         } else { // Entity
             return 0;
         }
     }
 
-    /** 
+    /**
      * Creates and stores a sorted list of the top-level forces and entities.
-     * Removes those that aren't visible in real blind drop. 
+     * Removes those that aren't visible in real blind drop.
      */
     private void createTopLevel() {
-        Game game = lobby.getClientgui().getClient().getGame();
-        boolean realBD = game.getOptions().booleanOption(OptionsConstants.BASE_REAL_BLIND_DROP);
+        IGame IGame = lobby.getClientgui().getClient().getGame();
+        boolean realBD = IGame.getOptions().booleanOption(OptionsConstants.BASE_REAL_BLIND_DROP);
         Forces forces = lobby.game().getForces();
         Player localPlayer = lobby.getClientgui().getClient().getLocalPlayer();
         boolean localGM = localPlayer.isGameMaster();
@@ -120,7 +117,7 @@ public class MekTreeForceModel extends DefaultTreeModel {
 
     @Override
     public boolean isLeaf(Object node) {
-        return node instanceof Entity; 
+        return node instanceof Entity;
     }
 
     @Override

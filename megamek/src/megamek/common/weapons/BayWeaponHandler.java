@@ -37,7 +37,7 @@ public class BayWeaponHandler extends WeaponHandler {
         // deserialization only
     }
 
-    public BayWeaponHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public BayWeaponHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 
@@ -81,7 +81,7 @@ public class BayWeaponHandler extends WeaponHandler {
             return;
         }
         if (!(toHit.getValue() == TargetRoll.IMPOSSIBLE)) {
-            if (game.getOptions().booleanOption(OptionsConstants.ADVAERORULES_HEAT_BY_BAY)) {
+            if (twGame.getOptions().booleanOption(OptionsConstants.ADVAERORULES_HEAT_BY_BAY)) {
                 for (WeaponMounted m : weapon.getBayWeapons()) {
                     ae.heatBuildup += m.getCurrentHeat();
                 }
@@ -108,7 +108,7 @@ public class BayWeaponHandler extends WeaponHandler {
     @Override
     public boolean handle(GamePhase phase, Vector<Report> vPhaseReport) {
 
-        if (game.getOptions().booleanOption(OptionsConstants.ADVAERORULES_AERO_SANITY)) {
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVAERORULES_AERO_SANITY)) {
             return handleAeroSanity(phase, vPhaseReport);
         }
 
@@ -119,7 +119,7 @@ public class BayWeaponHandler extends WeaponHandler {
                 && (target.getTargetType() != Targetable.TYPE_HEX_CLEAR
                         && target.getTargetType() != Targetable.TYPE_HEX_IGNITE
                         && target.getTargetType() != Targetable.TYPE_BUILDING))
-                || game.getBoard().inSpace()
+                || twGame.getBoard().inSpace()
                 // Capital missile launchers should return the root handler...
                 || (wtype.getAtClass() == (WeaponType.CLASS_CAPITAL_MISSILE))
                 || (wtype.getAtClass() == (WeaponType.CLASS_AR10))) {
@@ -130,7 +130,7 @@ public class BayWeaponHandler extends WeaponHandler {
         // way
         insertAttacks(phase, vPhaseReport);
 
-        final boolean targetInBuilding = Compute.isInBuilding(game,
+        final boolean targetInBuilding = Compute.isInBuilding(twGame,
                 entityTarget);
         final boolean bldgDamagedOnMiss = targetInBuilding
                 && !(target instanceof Infantry)
@@ -142,7 +142,7 @@ public class BayWeaponHandler extends WeaponHandler {
         }
 
         // Which building takes the damage?
-        Building bldg = game.getBoard().getBuildingAt(target.getPosition());
+        Building bldg = twGame.getBoard().getBuildingAt(target.getPosition());
         String number = nweapons > 1 ? " (" + nweapons + ")" : "";
 
         // Report weapon attack and its to-hit value.
@@ -202,7 +202,7 @@ public class BayWeaponHandler extends WeaponHandler {
 
         // Set Margin of Success/Failure.
         toHit.setMoS(roll.getIntValue() - Math.max(2, toHit.getValue()));
-        bDirect = game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_DIRECT_BLOW)
+        bDirect = twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_DIRECT_BLOW)
                 && ((toHit.getMoS() / 3) >= 1) && (entityTarget != null);
         if (bDirect) {
             r = new Report(3189);
@@ -343,7 +343,7 @@ public class BayWeaponHandler extends WeaponHandler {
 
         Entity entityTarget = (target.getTargetType() == Targetable.TYPE_ENTITY) ? (Entity) target
                 : null;
-        final boolean targetInBuilding = Compute.isInBuilding(game,
+        final boolean targetInBuilding = Compute.isInBuilding(twGame,
                 entityTarget);
         final boolean bldgDamagedOnMiss = targetInBuilding
                 && !(target instanceof Infantry)
@@ -354,7 +354,7 @@ public class BayWeaponHandler extends WeaponHandler {
             ae.setLastTargetDisplayName(entityTarget.getDisplayName());
         }
         // Which building takes the damage?
-        Building bldg = game.getBoard().getBuildingAt(target.getPosition());
+        Building bldg = twGame.getBoard().getBuildingAt(target.getPosition());
         // Report weapon attack and its to-hit value.
         Report r = new Report(3115);
         r.indent();
@@ -450,7 +450,7 @@ public class BayWeaponHandler extends WeaponHandler {
 
         // Set Margin of Success/Failure.
         toHit.setMoS(roll.getIntValue() - Math.max(2, toHit.getValue()));
-        bDirect = game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_DIRECT_BLOW)
+        bDirect = twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_DIRECT_BLOW)
                 && ((toHit.getMoS() / 3) >= 1) && (entityTarget != null);
         if (bDirect) {
             r = new Report(3189);
@@ -552,7 +552,7 @@ public class BayWeaponHandler extends WeaponHandler {
                     replaceReport = vPhaseReport.size();
                     WeaponAttackAction bayWaa = new WeaponAttackAction(waa.getEntityId(), waa.getTargetType(),
                             waa.getTargetId(), m.getEquipmentNum());
-                    AttackHandler bayWHandler = ((Weapon) bayWType).getCorrectHandler(autoHit, bayWaa, game,
+                    AttackHandler bayWHandler = ((Weapon) bayWType).getCorrectHandler(autoHit, bayWaa, twGame,
                             gameManager);
                     bayWHandler.setAnnouncedEntityFiring(false);
                     // This should always be true

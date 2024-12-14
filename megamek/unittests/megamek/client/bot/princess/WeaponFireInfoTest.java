@@ -59,7 +59,7 @@ class WeaponFireInfoTest {
     private static EntityState mockShooterState;
     private static BipedMek mockTarget;
     private static EntityState mockTargetState;
-    private static Game mockGame;
+    private static TWGame mockTWGame;
     private static WeaponMounted mockWeapon;
     private static WeaponType mockWeaponType;
     private static WeaponAttackAction mockWeaponAttackAction;
@@ -69,7 +69,7 @@ class WeaponFireInfoTest {
 
     @BeforeAll
     static void beforeAll() {
-        mockGame = mock(Game.class);
+        mockTWGame = mock(twGame.class);
 
         mockToHitSix = mock(ToHitData.class);
         when(mockToHitSix.getValue()).thenReturn(6);
@@ -83,7 +83,7 @@ class WeaponFireInfoTest {
         mockFireControl = mock(FireControl.class);
         when(mockFireControl.guessToHitModifierForWeapon(any(Entity.class), any(EntityState.class),
                 any(Targetable.class), any(EntityState.class), any(WeaponMounted.class), any(AmmoMounted.class),
-                any(Game.class)))
+                any(twGame.class)))
                 .thenReturn(mockToHitEight);
 
         mockPrincess = mock(Princess.class);
@@ -119,7 +119,7 @@ class WeaponFireInfoTest {
         when(mockWeapon.curMode()).thenReturn(mockEquipmentMode);
 
         mockWeaponAttackAction = mock(WeaponAttackAction.class);
-        when(mockWeaponAttackAction.getEntity(any(Game.class))).thenReturn(mockShooter);
+        when(mockWeaponAttackAction.getEntity(any(twGame.class))).thenReturn(mockShooter);
     }
 
     private void setupLightTarget() {
@@ -170,7 +170,7 @@ class WeaponFireInfoTest {
         testWeaponFireInfo.setTarget(mockTarget);
         testWeaponFireInfo.setTargetState(mockTargetState);
         testWeaponFireInfo.setWeapon(mockWeapon);
-        testWeaponFireInfo.setGame(mockGame);
+        testWeaponFireInfo.setGame(mockTWGame);
         return testWeaponFireInfo;
     }
 

@@ -47,7 +47,7 @@ public class ArtilleryWeaponIndirectHomingHandler extends ArtilleryWeaponIndirec
      * @param g
      */
     public ArtilleryWeaponIndirectHomingHandler(ToHitData t,
-            WeaponAttackAction w, Game g, TWGameManager m) {
+                                                WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
         advancedAMS = g.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_AMS);
         advancedPD = g.getOptions().booleanOption(OptionsConstants.ADVAERORULES_STRATOPS_ADV_POINTDEF);
@@ -93,15 +93,15 @@ public class ArtilleryWeaponIndirectHomingHandler extends ArtilleryWeaponIndirec
 
         convertHomingShotToEntityTarget();
         Entity entityTarget = (aaa.getTargetType() == Targetable.TYPE_ENTITY) ? (Entity) aaa
-                .getTarget(game) : null;
-        final boolean targetInBuilding = Compute.isInBuilding(game,
+                .getTarget(twGame) : null;
+        final boolean targetInBuilding = Compute.isInBuilding(twGame,
                 entityTarget);
         final boolean bldgDamagedOnMiss = targetInBuilding
                 && !(target instanceof Infantry)
                 && ae.getPosition().distance(target.getPosition()) <= 1;
 
         // Which building takes the damage?
-        Building bldg = game.getBoard().getBuildingAt(target.getPosition());
+        Building bldg = twGame.getBoard().getBuildingAt(target.getPosition());
 
         // Report weapon attack and its to-hit value.
         Report r = new Report(3115);
@@ -159,7 +159,7 @@ public class ArtilleryWeaponIndirectHomingHandler extends ArtilleryWeaponIndirec
 
         // Set Margin of Success/Failure.
         toHit.setMoS(roll.getIntValue() - Math.max(2, toHit.getValue()));
-        bDirect = game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_DIRECT_BLOW)
+        bDirect = twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_DIRECT_BLOW)
                 && ((toHit.getMoS() / 3) >= 1) && (entityTarget != null);
         if (bDirect) {
             r = new Report(3189);
@@ -282,16 +282,16 @@ public class ArtilleryWeaponIndirectHomingHandler extends ArtilleryWeaponIndirec
         int hexDamage = targetingHex ? wtype.getRackSize() : ratedDamage * 2;
 
         bldg = null;
-        bldg = game.getBoard().getBuildingAt(coords);
+        bldg = twGame.getBoard().getBuildingAt(coords);
         bldgAbsorbs = (bldg != null) ? bldg.getAbsorbtion(coords) : 0;
         bldgAbsorbs = Math.min(bldgAbsorbs, ratedDamage);
         handleClearDamage(vPhaseReport, bldg, hexDamage, false);
         ratedDamage -= bldgAbsorbs;
 
         if (ratedDamage > 0) {
-            Hex hex = game.getBoard().getHex(coords);
+            Hex hex = twGame.getBoard().getHex(coords);
 
-            for (Entity entity : game.getEntitiesVector(coords)) {
+            for (Entity entity : twGame.getEntitiesVector(coords)) {
                 if (!bMissed && (entity == entityTarget)) {
                     continue; // don't splash the original target unless it's a miss
                 }
@@ -316,13 +316,13 @@ public class ArtilleryWeaponIndirectHomingHandler extends ArtilleryWeaponIndirec
         final Coords tc = target.getPosition();
         Targetable newTarget = null;
 
-        Vector<TagInfo> v = game.getTagInfo();
+        Vector<TagInfo> v = twGame.getTagInfo();
         Vector<TagInfo> allowed = new Vector<>();
-        Entity attacker = game.getEntityFromAllSources(getAttackerId());
+        Entity attacker = twGame.getEntityFromAllSources(getAttackerId());
 
         // get only TagInfo on the same side
         for (TagInfo ti : v) {
-            Entity tagger = game.getEntityFromAllSources(ti.attackerId);
+            Entity tagger = twGame.getEntityFromAllSources(ti.attackerId);
             if (attacker.getOwner().isEnemyOf(tagger.getOwner())) {
                 continue;
             }
@@ -334,7 +334,7 @@ public class ArtilleryWeaponIndirectHomingHandler extends ArtilleryWeaponIndirec
                     break;
                 case Targetable.TYPE_ENTITY:
                     if (ae.isEnemyOf((Entity) ti.target)
-                            || game.getOptions().booleanOption(OptionsConstants.BASE_FRIENDLY_FIRE)) {
+                            || twGame.getOptions().booleanOption(OptionsConstants.BASE_FRIENDLY_FIRE)) {
                         allowed.add(ti);
                     }
                     break;
@@ -427,7 +427,7 @@ public class ArtilleryWeaponIndirectHomingHandler extends ArtilleryWeaponIndirec
      */
     @Override
     protected boolean checkPDConditions() {
-        advancedPD = game.getOptions().booleanOption(OptionsConstants.ADVAERORULES_STRATOPS_ADV_POINTDEF);
+        advancedPD = twGame.getOptions().booleanOption(OptionsConstants.ADVAERORULES_STRATOPS_ADV_POINTDEF);
         if ((target == null) || !advancedPD || (target.getTargetType() != Targetable.TYPE_ENTITY)) {
             return false;
         }

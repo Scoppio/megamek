@@ -20,7 +20,7 @@
 package megamek.common.weapons.missiles;
 
 import megamek.common.AmmoType;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.options.GameOptions;
@@ -47,12 +47,12 @@ public abstract class MMLWeapon extends MissileWeapon {
     }
 
     @Override
-    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, Game game, TWGameManager manager) {
-        AmmoType atype = (AmmoType) game.getEntity(waa.getEntityId()).getEquipment(waa.getWeaponId()).getLinked().getType();
+    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, TWGame twGame, TWGameManager manager) {
+        AmmoType atype = (AmmoType) twGame.getEntity(waa.getEntityId()).getEquipment(waa.getWeaponId()).getLinked().getType();
         if (atype.hasFlag(AmmoType.F_MML_LRM)) {
-            return LRMWeapon.getLRMHandler(toHit, waa, game, manager);
+            return LRMWeapon.getLRMHandler(toHit, waa, twGame, manager);
         } else {
-            return SRMWeapon.getSRMHandler(toHit, waa, game, manager);
+            return SRMWeapon.getSRMHandler(toHit, waa, twGame, manager);
         }
     }
 

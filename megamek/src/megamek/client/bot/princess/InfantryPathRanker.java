@@ -21,11 +21,8 @@ package megamek.client.bot.princess;
 import java.util.List;
 
 import megamek.client.bot.princess.FireControl.FireControlType;
-import megamek.common.Coords;
-import megamek.common.Entity;
-import megamek.common.Game;
-import megamek.common.MekWarrior;
-import megamek.common.MovePath;
+import megamek.common.*;
+import megamek.common.TWGame;
 import megamek.common.options.OptionsConstants;
 
 public class InfantryPathRanker extends BasicPathRanker {
@@ -37,8 +34,8 @@ public class InfantryPathRanker extends BasicPathRanker {
     }
 
     @Override
-    protected RankedPath rankPath(MovePath path, Game game, int maxRange, double fallTolerance,
-            List<Entity> enemies, Coords friendsCoords) {
+    protected RankedPath rankPath(MovePath path, TWGame twGame, int maxRange, double fallTolerance,
+                                  List<Entity> enemies, Coords friendsCoords) {
         Entity movingUnit = path.getEntity();
         StringBuilder formula = new StringBuilder("Calculation: {");
 
@@ -50,9 +47,9 @@ public class InfantryPathRanker extends BasicPathRanker {
 
         double expectedDamageTaken = checkPathForHazards(pathCopy,
                                                   movingUnit,
-                                                  game);
-        boolean extremeRange = game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE);
-        boolean losRange = game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS_RANGE);
+                TWGame);
+        boolean extremeRange = twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE);
+        boolean losRange = twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS_RANGE);
         for (Entity enemy : enemies) {
 
             // Skip ejected pilots.
@@ -62,7 +59,7 @@ public class InfantryPathRanker extends BasicPathRanker {
 
             // Skip units not actually on the board.
             if (enemy.isOffBoard() || (enemy.getPosition() == null)
-                    || !game.getBoard().contains(enemy.getPosition())) {
+                    || !twGame.getBoard().contains(enemy.getPosition())) {
                 continue;
             }
 
@@ -77,7 +74,7 @@ public class InfantryPathRanker extends BasicPathRanker {
             // TODO: Always consider Aero's to have moved, as right now we
             // don't try to predict their movement.
             if (!enemy.isSelectableThisTurn() || enemy.isImmobile() || enemy.isAero()) {
-                eval = evaluateMovedEnemy(enemy, pathCopy, game);
+                eval = evaluateMovedEnemy(enemy, pathCopy, twGame);
             } else { //for units that have not moved this round
                 eval = evaluateUnmovedEnemy(enemy, pathCopy, extremeRange, losRange);
             }
@@ -89,7 +86,7 @@ public class InfantryPathRanker extends BasicPathRanker {
             expectedDamageTaken += eval.getEstimatedEnemyDamage();
         }
 
-        calcDamageToStrategicTargets(pathCopy, game, getOwner().getFireControlState(), damageEstimate);
+        calcDamageToStrategicTargets(pathCopy, twGame, getOwner().getFireControlState(), damageEstimate);
         double maximumDamageDone = damageEstimate.firingDamage;
 
         // My bravery modifier is based on my chance of getting to the
@@ -110,7 +107,7 @@ public class InfantryPathRanker extends BasicPathRanker {
         // then we want it to move closer. Otherwise, let's avoid charging up to unmoved units,
         // that's not going to end well.
         if (maximumDamageDone <= 0) {
-            utility -= calculateAggressionMod(movingUnit, pathCopy, game, formula);
+            utility -= calculateAggressionMod(movingUnit, pathCopy, twGame, formula);
         }
 
         // The further I am from my teammates, the lower this path
@@ -118,7 +115,7 @@ public class InfantryPathRanker extends BasicPathRanker {
         utility -= calculateHerdingMod(friendsCoords, pathCopy, formula);
 
         // If I need to flee the board, I want to get closer to my home edge.
-        utility -= calculateSelfPreservationMod(movingUnit, pathCopy, game,
+        utility -= calculateSelfPreservationMod(movingUnit, pathCopy, twGame,
                                          formula);
 
         RankedPath rankedPath = new RankedPath(utility, pathCopy, formula.toString());

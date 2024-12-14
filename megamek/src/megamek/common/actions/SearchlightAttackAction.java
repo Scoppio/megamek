@@ -19,14 +19,8 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 import megamek.client.ui.Messages;
-import megamek.common.Compute;
-import megamek.common.Coords;
-import megamek.common.Entity;
-import megamek.common.Game;
-import megamek.common.LosEffects;
-import megamek.common.Report;
-import megamek.common.Tank;
-import megamek.common.Targetable;
+import megamek.common.*;
+import megamek.common.TWGame;
 
 /**
  * Used for aiming a searchlight at a target.
@@ -47,12 +41,12 @@ public class SearchlightAttackAction extends AbstractAttackAction {
         super(entityId, targetType, targetId);
     }
 
-    public boolean isPossible(Game game) {
-        return SearchlightAttackAction.isPossible(game, getEntityId(), game.getTarget(getTargetType(), getTargetId()), this);
+    public boolean isPossible(TWGame twGame) {
+        return SearchlightAttackAction.isPossible(twGame, getEntityId(), twGame.getTarget(getTargetType(), getTargetId()), this);
     }
 
-    public static boolean isPossible(Game game, int attackerId, Targetable target, SearchlightAttackAction exempt) {
-        final Entity attacker = game.getEntity(attackerId);
+    public static boolean isPossible(TWGame twGame, int attackerId, Targetable target, SearchlightAttackAction exempt) {
+        final Entity attacker = twGame.getEntity(attackerId);
 
         // can't light up if either you or the target don't exist, or you don't have your light on
         if ((attacker == null) || !attacker.isUsingSearchlight() || (target == null)) {
@@ -70,7 +64,7 @@ public class SearchlightAttackAction extends AbstractAttackAction {
         }
 
         // can't light up more than once per round
-        for (Enumeration<EntityAction> actions = game.getActions(); actions.hasMoreElements(); ) {
+        for (Enumeration<EntityAction> actions = twGame.getActions(); actions.hasMoreElements(); ) {
             EntityAction action = actions.nextElement();
             if (action instanceof SearchlightAttackAction) {
                 SearchlightAttackAction act = (SearchlightAttackAction) action;
@@ -90,25 +84,25 @@ public class SearchlightAttackAction extends AbstractAttackAction {
         }
 
         // can't light up if out of LOS. Most expensive calculation, so keep it last
-        return LosEffects.calculateLOS(game, attacker, target).canSee();
+        return LosEffects.calculateLOS(twGame, attacker, target).canSee();
     }
 
     /**
      * illuminate an entity and all entities that are between us and the hex
      */
-    public Vector<Report> resolveAction(Game game) {
+    public Vector<Report> resolveAction(TWGame twGame) {
         Vector<Report> reports = new Vector<>();
         Report r;
-        if (!isPossible(game)) {
+        if (!isPossible(twGame)) {
             r = new Report(3445);
             r.subject = getEntityId();
             r.newlines = 1;
             reports.addElement(r);
             return reports;
         }
-        final Entity attacker = getEntity(game);
+        final Entity attacker = getEntity(twGame);
         final Coords apos = attacker.getPosition();
-        final Targetable target = getTarget(game);
+        final Targetable target = getTarget(twGame);
         final Coords tpos = target.getPosition();
 
         if (attacker.usedSearchlight()) {
@@ -125,8 +119,8 @@ public class SearchlightAttackAction extends AbstractAttackAction {
         // attacker &
         // target
         for (Coords c : in) {
-            for (Entity en : game.getEntitiesVector(c)) {
-                LosEffects los = LosEffects.calculateLOS(game, attacker, en);
+            for (Entity en : twGame.getEntitiesVector(c)) {
+                LosEffects los = LosEffects.calculateLOS(twGame, attacker, en);
                 if (los.canSee()) {
                     en.setIlluminated(true);
                     r = new Report(3455);
@@ -144,41 +138,41 @@ public class SearchlightAttackAction extends AbstractAttackAction {
     /**
      * Updates the supplied Game's list of hexes illuminated.
      *
-     * @param game The {@link Game} to update
+     * @param twGame The {@link TWGame} to update
      * @return True if new hexes were added, else false.
      */
-    public boolean setHexesIlluminated(Game game) {
+    public boolean setHexesIlluminated(TWGame twGame) {
         boolean hexesAdded = false;
 
-        final Entity attacker = getEntity(game);
+        final Entity attacker = getEntity(twGame);
         final Coords apos = attacker.getPosition();
-        final Targetable target = getTarget(game);
+        final Targetable target = getTarget(twGame);
         final Coords tpos = target.getPosition();
 
         ArrayList<Coords> intervening = Coords.intervening(apos, tpos);
         for (Coords c : intervening) {
-            if (game.getBoard().contains(c)) {
-                hexesAdded |= game.addIlluminatedPosition(c);
+            if (twGame.getBoard().contains(c)) {
+                hexesAdded |= twGame.addIlluminatedPosition(c);
             }
         }
         return hexesAdded;
     }
 
-    public boolean willIlluminate(Game game, Entity who) {
-        if (!isPossible(game)) {
+    public boolean willIlluminate(TWGame twGame, Entity who) {
+        if (!isPossible(twGame)) {
             return false;
         }
-        final Entity attacker = getEntity(game);
+        final Entity attacker = getEntity(twGame);
         final Coords apos = attacker.getPosition();
-        final Targetable target = getTarget(game);
+        final Targetable target = getTarget(twGame);
         final Coords tpos = target.getPosition();
 
         ArrayList<Coords> in = Coords.intervening(apos, tpos); // nb includes
         // attacker &
         // target
         for (Coords c : in) {
-            for (Entity en : game.getEntitiesVector(c)) {
-                LosEffects los = LosEffects.calculateLOS(game, attacker, en);
+            for (Entity en : twGame.getEntitiesVector(c)) {
+                LosEffects los = LosEffects.calculateLOS(twGame, attacker, en);
                 if (los.canSee() && en.equals(who)) {
                     return true;
                 }
@@ -188,8 +182,8 @@ public class SearchlightAttackAction extends AbstractAttackAction {
     }
 
     @Override
-    public String toSummaryString(final Game game) {
-        Entity target = game.getEntity(this.getTargetId());
+    public String toSummaryString(final TWGame twGame) {
+        Entity target = twGame.getEntity(this.getTargetId());
         return Messages.getString("BoardView1.SearchlightAttackAction") + ((target != null) ? ' ' + target.getShortName() : "");
     }
 }

@@ -71,8 +71,8 @@ public class LobbyUtility {
      * <P>
      * See also {@link #startPosOverlap(Player, Player)}
      */
-    static boolean isValidStartPos(Game game, Player player) {
-        return isValidStartPos(game, player, player.getStartingPos());
+    static boolean isValidStartPos(IGame IGame, Player player) {
+        return isValidStartPos(IGame, player, player.getStartingPos());
     }
 
     /**
@@ -85,12 +85,12 @@ public class LobbyUtility {
      * <P>
      * See also {@link #startPosOverlap(Player, Player)}
      */
-    static boolean isValidStartPos(Game game, Player player, int pos) {
-        if (!isExclusiveDeployment(game)) {
+    static boolean isValidStartPos(IGame IGame, Player player, int pos) {
+        if (!isExclusiveDeployment(IGame)) {
             return true;
         } else {
-            final GameOptions gOpts = game.getOptions();
-            List<Player> players = game.getPlayersList();
+            final GameOptions gOpts = IGame.getOptions();
+            List<Player> players = IGame.getPlayersList();
 
             if (gOpts.booleanOption(OptionsConstants.BASE_SET_PLAYER_DEPLOYMENT_TO_PLAYER0) && !player.isBot()
                     && player.getId() != 0) {
@@ -101,7 +101,7 @@ public class LobbyUtility {
                 players = players.stream().filter(p -> p.isBot() || p.getId() == 0).collect(Collectors.toList());
             }
 
-            if (isTeamsShareVision(game)) {
+            if (isTeamsShareVision(IGame)) {
                 return players.stream().filter(p -> p.isEnemyOf(player))
                         .noneMatch(p -> startPosOverlap(pos, p.getStartingPos()));
             } else {
@@ -115,8 +115,8 @@ public class LobbyUtility {
      * Returns true when double blind and exclusive deployment are on,
      * meaning that player's deployment zones may not overlap.
      */
-    static boolean isExclusiveDeployment(Game game) {
-        final GameOptions gOpts = game.getOptions();
+    static boolean isExclusiveDeployment(IGame IGame) {
+        final GameOptions gOpts = IGame.getOptions();
         return gOpts.booleanOption(OptionsConstants.ADVANCED_DOUBLE_BLIND)
                 && gOpts.booleanOption(OptionsConstants.BASE_EXCLUSIVE_DB_DEPLOYMENT);
     }
@@ -124,16 +124,16 @@ public class LobbyUtility {
     /**
      * Returns true when blind drop is on.
      */
-    static boolean isBlindDrop(Game game) {
-        final GameOptions gOpts = game.getOptions();
+    static boolean isBlindDrop(IGame IGame) {
+        final GameOptions gOpts = IGame.getOptions();
         return gOpts.booleanOption(OptionsConstants.BASE_BLIND_DROP);
     }
 
     /**
      * Returns true when real blind drop is on.
      */
-    static boolean isRealBlindDrop(Game game) {
-        final GameOptions gOpts = game.getOptions();
+    static boolean isRealBlindDrop(IGame IGame) {
+        final GameOptions gOpts = IGame.getOptions();
         return gOpts.booleanOption(OptionsConstants.BASE_REAL_BLIND_DROP);
     }
 
@@ -141,8 +141,8 @@ public class LobbyUtility {
      * Returns true when teams share vision is on, reagardless of whether
      * double blind is on.
      */
-    static boolean isTeamsShareVision(Game game) {
-        final GameOptions gOpts = game.getOptions();
+    static boolean isTeamsShareVision(IGame IGame) {
+        final GameOptions gOpts = IGame.getOptions();
         return gOpts.booleanOption(OptionsConstants.ADVANCED_TEAM_VISION);
     }
 
@@ -264,12 +264,12 @@ public class LobbyUtility {
      * Ignores entity ids that don't exist. The resulting list may be empty but not
      * null.
      */
-    public static HashSet<Entity> getEntities(Game game, String idList) {
+    public static HashSet<Entity> getEntities(TWGame twGame, String idList) {
         StringTokenizer st = new StringTokenizer(idList, ",");
         HashSet<Entity> result = new HashSet<>();
         while (st.hasMoreTokens()) {
             int id = Integer.parseInt(st.nextToken());
-            Entity entity = game.getEntity(id);
+            Entity entity = twGame.getEntity(id);
             if (entity != null) {
                 result.add(entity);
             }
@@ -282,12 +282,12 @@ public class LobbyUtility {
      * Ignores force ids that don't exist. The resulting list may be empty but not
      * null.
      */
-    public static HashSet<Force> getForces(Game game, String idList) {
+    public static HashSet<Force> getForces(IGame IGame, String idList) {
         StringTokenizer st = new StringTokenizer(idList, ",");
         HashSet<Force> result = new HashSet<>();
         while (st.hasMoreTokens()) {
             int id = Integer.parseInt(st.nextToken());
-            Force force = game.getForces().getForce(id);
+            Force force = IGame.getForces().getForce(id);
             if (force != null) {
                 result.add(force);
             }

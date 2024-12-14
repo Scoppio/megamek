@@ -15,7 +15,7 @@ package megamek.common.weapons.prototypes;
 
 import megamek.common.AmmoType;
 import megamek.common.alphaStrike.AlphaStrikeElement;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.SimpleTechLevel;
 import megamek.common.Mounted;
 import megamek.common.ToHitData;
@@ -67,14 +67,14 @@ public class ISLB10XACPrototype extends LBXACWeapon {
     }
 
     @Override
-    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, Game game,
+    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, TWGame twGame,
             TWGameManager manager) {
-        AmmoType atype = (AmmoType) game.getEntity(waa.getEntityId())
+        AmmoType atype = (AmmoType) twGame.getEntity(waa.getEntityId())
                 .getEquipment(waa.getWeaponId()).getLinked().getType();
         if (atype.getMunitionType().contains(AmmoType.Munitions.M_CLUSTER)) {
-            return new PrototypeLBXHandler(toHit, waa, game, manager);
+            return new PrototypeLBXHandler(toHit, waa, twGame, manager);
         }
-        return new PrototypeACWeaponHandler(toHit, waa, game, manager);
+        return new PrototypeACWeaponHandler(toHit, waa, twGame, manager);
     }
 
     @Override

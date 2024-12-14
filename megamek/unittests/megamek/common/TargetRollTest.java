@@ -176,11 +176,11 @@ class TargetRollTest {
     }
 
     // Check to-hit roll mods for VTOL, WiGE, jumping Hovers, etc.
-    private Game setupGame() {
-        Game game = new Game();
+    private IGame setupGame() {
+        TWGame twGame = new TWGame();
         GameOptions gOp = new GameOptions();
-        game.setOptions(gOp);
-        return game;
+        twGame.setOptions(gOp);
+        return twGame;
     }
 
     @Test
@@ -188,8 +188,8 @@ class TargetRollTest {
         int distance = 1;
         boolean jumped = false;
         boolean vtol = true;
-        Game game = setupGame();
-        ToHitData thd = Compute.getTargetMovementModifier(distance, jumped, vtol, game);
+        IGame IGame = setupGame();
+        ToHitData thd = Compute.getTargetMovementModifier(distance, jumped, vtol, IGame);
         assertEquals(1, thd.getValue());
     }
 
@@ -198,8 +198,8 @@ class TargetRollTest {
         int distance = 1;
         boolean jumped = true;
         boolean vtol = false;
-        Game game = setupGame();
-        ToHitData thd = Compute.getTargetMovementModifier(distance, jumped, vtol, game);
+        IGame IGame = setupGame();
+        ToHitData thd = Compute.getTargetMovementModifier(distance, jumped, vtol, IGame);
         assertEquals(1, thd.getValue());
     }
 }

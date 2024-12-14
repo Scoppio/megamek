@@ -45,7 +45,7 @@ public class ArtilleryBayWeaponIndirectFireHandler extends AmmoBayWeaponHandler 
         super();
     }
 
-    public ArtilleryBayWeaponIndirectFireHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public ArtilleryBayWeaponIndirectFireHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 
@@ -70,7 +70,7 @@ public class ArtilleryBayWeaponIndirectFireHandler extends AmmoBayWeaponHandler 
             int shots = bayW.getCurrentShots();
             // if this option is on, we may have odd amounts of ammo in multiple bins. Only
             // fire rounds that we have.
-            if (game.getOptions().booleanOption(OptionsConstants.ADVAERORULES_AERO_ARTILLERY_MUNITIONS)) {
+            if (twGame.getOptions().booleanOption(OptionsConstants.ADVAERORULES_AERO_ARTILLERY_MUNITIONS)) {
                 if (bayWAmmo.getUsableShotsLeft() < 1) {
                     nweaponsHit--;
                 } else {
@@ -122,15 +122,15 @@ public class ArtilleryBayWeaponIndirectFireHandler extends AmmoBayWeaponHandler 
                 handledAmmoAndReport = true;
 
                 artyMsg = "Artillery bay fire Incoming, landing on round "
-                        + (game.getRoundCount() + aaa.getTurnsTilHit())
+                        + (twGame.getRoundCount() + aaa.getTurnsTilHit())
                         + ", fired by "
-                        + game.getPlayer(aaa.getPlayerId()).getName();
-                game.getBoard().addSpecialHexDisplay(
-                        aaa.getTarget(game).getPosition(),
+                        + twGame.getPlayer(aaa.getPlayerId()).getName();
+                twGame.getBoard().addSpecialHexDisplay(
+                        aaa.getTarget(twGame).getPosition(),
                         new SpecialHexDisplay(
-                                SpecialHexDisplay.Type.ARTILLERY_INCOMING, game
+                                SpecialHexDisplay.Type.ARTILLERY_INCOMING, TWGame
                                         .getRoundCount() + aaa.getTurnsTilHit(),
-                                game.getPlayer(aaa.getPlayerId()), artyMsg,
+                                twGame.getPlayer(aaa.getPlayerId()), artyMsg,
                                 SpecialHexDisplay.SHD_OBSCURED_TEAM));
             }
             // if this is the last targeting phase before we hit,
@@ -176,7 +176,7 @@ public class ArtilleryBayWeaponIndirectFireHandler extends AmmoBayWeaponHandler 
         // Are there any valid spotters?
         if ((null != spottersBefore) && !isFlak) {
             // fetch possible spotters now
-            Iterator<Entity> spottersAfter = game.getSelectedEntities(new EntitySelector() {
+            Iterator<Entity> spottersAfter = twGame.getSelectedEntities(new EntitySelector() {
                 public int player = playerId;
 
                 public Targetable targ = target;
@@ -186,7 +186,7 @@ public class ArtilleryBayWeaponIndirectFireHandler extends AmmoBayWeaponHandler 
                     Integer id = entity.getId();
                     if ((player == entity.getOwnerId())
                             && spottersBefore.contains(id)
-                            && !LosEffects.calculateLOS(game, entity, targ, true).isBlocked()
+                            && !LosEffects.calculateLOS(twGame, entity, targ, true).isBlocked()
                             && entity.isActive()
                     // airborne aeros can't spot for arty
                             && !(entity.isAero() && entity.isAirborne())
@@ -329,12 +329,12 @@ public class ArtilleryBayWeaponIndirectFireHandler extends AmmoBayWeaponHandler 
             if (!mineClear) {
                 vPhaseReport.addElement(r);
             }
-            artyMsg = "Artillery hit here on round " + game.getRoundCount()
-                    + ", fired by " + game.getPlayer(aaa.getPlayerId()).getName()
+            artyMsg = "Artillery hit here on round " + twGame.getRoundCount()
+                    + ", fired by " + twGame.getPlayer(aaa.getPlayerId()).getName()
                     + " (this hex is now an auto-hit)";
-            game.getBoard().addSpecialHexDisplay(targetPos,
+            twGame.getBoard().addSpecialHexDisplay(targetPos,
                     new SpecialHexDisplay(SpecialHexDisplay.Type.ARTILLERY_HIT,
-                            game.getRoundCount(), game.getPlayer(aaa.getPlayerId()), artyMsg));
+                            twGame.getRoundCount(), twGame.getPlayer(aaa.getPlayerId()), artyMsg));
         } else {
             int moF = toHit.getMoS();
             if (ae.hasAbility(OptionsConstants.GUNNERY_OBLIQUE_ARTILLERY)) {
@@ -350,15 +350,15 @@ public class ArtilleryBayWeaponIndirectFireHandler extends AmmoBayWeaponHandler 
             // target
             // Any drifted shots will be indicated at their end points
             artyMsg = "Bay Artillery missed here on round "
-                    + game.getRoundCount() + ", by "
-                    + game.getPlayer(aaa.getPlayerId()).getName();
-            game.getBoard().addSpecialHexDisplay(origPos,
-                    new SpecialHexDisplay(SpecialHexDisplay.Type.ARTILLERY_MISS, game.getRoundCount(),
-                            game.getPlayer(aaa.getPlayerId()), artyMsg));
+                    + twGame.getRoundCount() + ", by "
+                    + twGame.getPlayer(aaa.getPlayerId()).getName();
+            twGame.getBoard().addSpecialHexDisplay(origPos,
+                    new SpecialHexDisplay(SpecialHexDisplay.Type.ARTILLERY_MISS, twGame.getRoundCount(),
+                            twGame.getPlayer(aaa.getPlayerId()), artyMsg));
             while (nweaponsHit > 0) {
                 // We'll generate a new report and scatter for each weapon fired
                 targetPos = Compute.scatterDirectArty(origPos, moF);
-                if (game.getBoard().contains(targetPos)) {
+                if (twGame.getBoard().contains(targetPos)) {
                     targets.add(targetPos);
                     // misses and scatters to another hex
                     if (!isFlak) {
@@ -502,13 +502,13 @@ public class ArtilleryBayWeaponIndirectFireHandler extends AmmoBayWeaponHandler 
         // check to see if this is a mine clearing attack
         // According to the RAW you have to hit the right hex to hit even if the
         // scatter hex has minefields
-        if (mineClear && game.containsMinefield(targetPos) && !isFlak && !bMissed) {
+        if (mineClear && twGame.containsMinefield(targetPos) && !isFlak && !bMissed) {
             r = new Report(3255);
             r.indent(1);
             r.subject = subjectId;
             vPhaseReport.addElement(r);
 
-            Enumeration<Minefield> minefields = game.getMinefields(targetPos).elements();
+            Enumeration<Minefield> minefields = twGame.getMinefields(targetPos).elements();
             ArrayList<Minefield> mfRemoved = new ArrayList<>();
             while (minefields.hasMoreElements()) {
                 Minefield mf = minefields.nextElement();
@@ -524,8 +524,8 @@ public class ArtilleryBayWeaponIndirectFireHandler extends AmmoBayWeaponHandler 
         if (!bMissed) {
             // artillery may unintentionally clear minefields, but only if it wasn't
             // trying to. For a hit on the target, just do this once.
-            if (!mineClear && game.containsMinefield(targetPos)) {
-                Enumeration<Minefield> minefields = game.getMinefields(targetPos).elements();
+            if (!mineClear && twGame.containsMinefield(targetPos)) {
+                Enumeration<Minefield> minefields = twGame.getMinefields(targetPos).elements();
                 ArrayList<Minefield> mfRemoved = new ArrayList<>();
                 while (minefields.hasMoreElements()) {
                     Minefield mf = minefields.nextElement();
@@ -549,8 +549,8 @@ public class ArtilleryBayWeaponIndirectFireHandler extends AmmoBayWeaponHandler 
             // Now if we missed, resolve a strike on each scatter hex
             for (Coords c : targets) {
                 // Accidental mine clearance...
-                if (!mineClear && game.containsMinefield(c)) {
-                    Enumeration<Minefield> minefields = game.getMinefields(c).elements();
+                if (!mineClear && twGame.containsMinefield(c)) {
+                    Enumeration<Minefield> minefields = twGame.getMinefields(c).elements();
                     ArrayList<Minefield> mfRemoved = new ArrayList<>();
                     while (minefields.hasMoreElements()) {
                         Minefield mf = minefields.nextElement();

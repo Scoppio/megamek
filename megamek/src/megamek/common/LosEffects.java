@@ -345,14 +345,14 @@ public class LosEffects {
                       // + heavySmoke) * 2) < 3;
     }
 
-    public static AttackInfo prepLosAttackInfo(Game game, @Nullable Entity ae, @Nullable Entity te,
-            Coords c1, Coords c2, boolean mekInFirst, boolean mekInSecond) {
+    public static AttackInfo prepLosAttackInfo(IGame IGame, @Nullable Entity ae, @Nullable Entity te,
+                                               Coords c1, Coords c2, boolean mekInFirst, boolean mekInSecond) {
         AttackInfo ai = new AttackInfo();
 
         ai.attackPos = c1;
         ai.targetPos = c2;
         ai.targetEntity = (te != null);
-        if (game.getBoard().inAtmosphere()) {
+        if (IGame.getBoard().inAtmosphere()) {
             // Assume LOS is from Alt 1 above c1 to Alt 1 above c2, due to Low Altitude LOS
             // calc differences from ground.
             ai.attackHeight = (ae == null) ? 1 : ae.getAltitude();
@@ -362,29 +362,29 @@ public class LosEffects {
             ai.attLowAlt = true;
             ai.targetLowAlt = true;
             ai.lowAltitude = true;
-            ai.attackAbsHeight = (ae == null) ? game.getBoard().getHex(c1).floor() + ai.attackHeight : ai.attackHeight;
-            ai.targetAbsHeight = (te == null) ? game.getBoard().getHex(c2).floor() + ai.targetHeight : ai.targetHeight;
-        } else if (game.getBoard().onGround()) {
+            ai.attackAbsHeight = (ae == null) ? IGame.getBoard().getHex(c1).floor() + ai.attackHeight : ai.attackHeight;
+            ai.targetAbsHeight = (te == null) ? IGame.getBoard().getHex(c2).floor() + ai.targetHeight : ai.targetHeight;
+        } else if (IGame.getBoard().onGround()) {
             ai.attackHeight = mekInFirst ? 1 : 0;
             ai.targetHeight = mekInSecond ? 1 : 0;
             ai.attackerIsMek = mekInFirst;
             ai.targetIsMek = mekInSecond;
-            ai.attackAbsHeight = game.getBoard().getHex(c1).floor() + ai.attackHeight;
-            ai.targetAbsHeight = game.getBoard().getHex(c2).floor() + ai.targetHeight;
+            ai.attackAbsHeight = IGame.getBoard().getHex(c1).floor() + ai.attackHeight;
+            ai.targetAbsHeight = IGame.getBoard().getHex(c2).floor() + ai.targetHeight;
         }
 
         return ai;
     }
 
     @Deprecated // Deprecated for nullable passing
-    public static LosEffects calculateLos(final Game game, final int attackerId,
-            final @Nullable Targetable target) {
-        return calculateLOS(game, game.getEntity(attackerId), target, false);
+    public static LosEffects calculateLos(final TWGame twGame, final int attackerId,
+                                          final @Nullable Targetable target) {
+        return calculateLOS(twGame, twGame.getEntity(attackerId), target, false);
     }
 
-    public static LosEffects calculateLOS(final Game game, final @Nullable Entity attacker,
-            final @Nullable Targetable target) {
-        return calculateLOS(game, attacker, target, false);
+    public static LosEffects calculateLOS(final TWGame twGame, final @Nullable Entity attacker,
+                                          final @Nullable Targetable target) {
+        return calculateLOS(twGame, attacker, target, false);
     }
 
     /**
@@ -395,17 +395,17 @@ public class LosEffects {
      * line will pass between two hexes. If so, calls losDivided, otherwise calls
      * losStraight.
      *
-     * @param game     The current {@link Game}
+     * @param twGame     The current {@link TWGame}
      * @param attacker the attacker, which may be null. If it is, the view is
      *                 blocked.
      * @param target   the target, which may be null. If it is, the view is blocked.
      * @param spotting if the person is spotting
      * @return the found LOS Effects
      */
-    public static LosEffects calculateLOS(final Game game, final @Nullable Entity attacker,
-            final @Nullable Targetable target, final boolean spotting) {
+    public static LosEffects calculateLOS(final TWGame twGame, final @Nullable Entity attacker,
+                                          final @Nullable Targetable target, final boolean spotting) {
         if ((attacker == null) || (target == null)) {
-            return calculateLOS(game, attacker, target,
+            return calculateLOS(twGame, attacker, target,
                     (attacker == null) ? null : attacker.getPosition(),
                     (target == null) ? null : target.getPosition(), spotting);
         }
@@ -438,32 +438,32 @@ public class LosEffects {
         LosEffects bestLOS = null;
         for (final Coords attackerPosition : attackerPositions) {
             for (final Coords targetPosition : targetPositions) {
-                LosEffects newLos = calculateLOS(game, attacker, target, attackerPosition, targetPosition, spotting);
+                LosEffects newLos = calculateLOS(twGame, attacker, target, attackerPosition, targetPosition, spotting);
                 // is the new one better?
                 if ((bestLOS == null) || bestLOS.isBlocked()
-                        || (newLos.losModifiers(game).getValue() < bestLOS.losModifiers(game).getValue())) {
+                        || (newLos.losModifiers(twGame).getValue() < bestLOS.losModifiers(twGame).getValue())) {
                     bestLOS = newLos;
                 }
             }
         }
 
         if (bestLOS == null) {
-            bestLOS = calculateLOS(game, attacker, target, attacker.getPosition(), target.getPosition(), spotting);
+            bestLOS = calculateLOS(twGame, attacker, target, attacker.getPosition(), target.getPosition(), spotting);
         }
 
         bestLOS.targetLoc = target.getPosition();
         return bestLOS;
     }
 
-    public static LosEffects calculateLOS(final Game game, final @Nullable Entity attacker,
-            final @Nullable Targetable target,
-            final @Nullable Coords attackerPosition,
-            final @Nullable Coords targetPosition,
-            final boolean spotting) {
+    public static LosEffects calculateLOS(final TWGame twGame, final @Nullable Entity attacker,
+                                          final @Nullable Targetable target,
+                                          final @Nullable Coords attackerPosition,
+                                          final @Nullable Coords targetPosition,
+                                          final boolean spotting) {
 
         // Handle Low Atmosphere maps separately
-        if (game.getBoard().inAtmosphere()) {
-            return calculateLowAtmoLOS(game, attacker, target, attackerPosition, targetPosition);
+        if (twGame.getBoard().inAtmosphere()) {
+            return calculateLowAtmoLOS(twGame, attacker, target, attackerPosition, targetPosition);
         }
 
         // LOS fails if one of the entities is not deployed.
@@ -476,8 +476,8 @@ public class LosEffects {
             return los;
         }
 
-        final Hex attackerHex = game.getBoard().getHex(attackerPosition);
-        final Hex targetHex = game.getBoard().getHex(targetPosition);
+        final Hex attackerHex = twGame.getBoard().getHex(attackerPosition);
+        final Hex targetHex = twGame.getBoard().getHex(targetPosition);
         if ((attackerHex == null) || (targetHex == null)) {
             LosEffects los = new LosEffects();
             los.blocked = true; // TODO: come up with a better "impossible"
@@ -488,7 +488,7 @@ public class LosEffects {
 
         // this will adjust the effective height of a building target by 1 if the hex
         // contains a rooftop gun emplacement
-        final int targetHeightAdjustment = game.hasRooftopGunEmplacement(targetHex.getCoords()) ? 1 : 0;
+        final int targetHeightAdjustment = twGame.hasRooftopGunEmplacement(targetHex.getCoords()) ? 1 : 0;
 
         final AttackInfo ai = new AttackInfo();
         ai.attackerIsMek = attacker instanceof Mek;
@@ -505,7 +505,7 @@ public class LosEffects {
 
         // Adjust units' altitudes for low-altitude map LOS caclulations
         // Revisit once we have ground units on low-alt and dual-map functional
-        final boolean lowAlt = game.getBoard().inAtmosphere() && !game.getBoard().onGround();
+        final boolean lowAlt = twGame.getBoard().inAtmosphere() && !twGame.getBoard().onGround();
         if (attacker.isAirborne() && lowAlt) {
             ai.attLowAlt = true;
         }
@@ -550,7 +550,7 @@ public class LosEffects {
         final boolean targetUnderWater;
         final boolean targetInWater;
         final boolean targetOnLand;
-        if (game.getBoard().contains(targetPosition)) {
+        if (twGame.getBoard().contains(targetPosition)) {
             targetUnderWater = targetHex.containsTerrain(Terrains.WATER)
                     && (targetHex.depth() > 0) && (targetElevation < targetHex.getLevel());
             targetInWater = targetHex.containsTerrain(Terrains.WATER)
@@ -587,7 +587,7 @@ public class LosEffects {
             ai.attackPos = ai.targetPos;
         }
 
-        final LosEffects finalLoS = calculateLos(game, ai);
+        final LosEffects finalLoS = calculateLos(twGame, ai);
         finalLoS.setMinimumWaterDepth(ai.minimumWaterDepth);
         finalLoS.targetLoc = target.getPosition();
         finalLoS.targetIsOversized = ai.targetEntity
@@ -595,10 +595,10 @@ public class LosEffects {
         return finalLoS;
     }
 
-    public static LosEffects calculateLowAtmoLOS(final Game game, final @Nullable Entity attacker,
-            final @Nullable Targetable target,
-            final @Nullable Coords attackerPosition,
-            final @Nullable Coords targetPosition) {
+    public static LosEffects calculateLowAtmoLOS(final TWGame twGame, final @Nullable Entity attacker,
+                                                 final @Nullable Targetable target,
+                                                 final @Nullable Coords attackerPosition,
+                                                 final @Nullable Coords targetPosition) {
 
         // LOS fails if one of the entities is not deployed.
         if ((attacker == null) || (target == null) || (attackerPosition == null)
@@ -610,8 +610,8 @@ public class LosEffects {
             return los;
         }
 
-        final Hex attackerHex = game.getBoard().getHex(attackerPosition);
-        final Hex targetHex = game.getBoard().getHex(targetPosition);
+        final Hex attackerHex = twGame.getBoard().getHex(attackerPosition);
+        final Hex targetHex = twGame.getBoard().getHex(targetPosition);
         if ((attackerHex == null) || (targetHex == null)) {
             LosEffects los = new LosEffects();
             los.blocked = true; // TODO: come up with a better "impossible"
@@ -637,7 +637,7 @@ public class LosEffects {
 
         // Adjust units' altitudes for low-altitude map LOS caclulations
         // Revisit once we have ground units on low-alt and dual-map functional
-        final boolean lowAlt = game.getBoard().inAtmosphere() && !game.getBoard().onGround();
+        final boolean lowAlt = twGame.getBoard().inAtmosphere() && !twGame.getBoard().onGround();
         if (attacker.isAirborne() && lowAlt) {
             ai.attLowAlt = true;
         }
@@ -668,7 +668,7 @@ public class LosEffects {
         ai.targetOnLand = false;
         ai.underWaterCombat = false;
 
-        final LosEffects finalLoS = calculateLos(game, ai);
+        final LosEffects finalLoS = calculateLos(twGame, ai);
         finalLoS.setMinimumWaterDepth(ai.minimumWaterDepth);
         finalLoS.targetLoc = target.getPosition();
         finalLoS.targetIsOversized = ai.targetEntity
@@ -676,7 +676,7 @@ public class LosEffects {
         return finalLoS;
     }
 
-    public static LosEffects calculateLos(Game game, AttackInfo ai) {
+    public static LosEffects calculateLos(TWGame twGame, AttackInfo ai) {
         if (ai.attOffBoard) {
             LosEffects los = new LosEffects();
             los.blocked = true;
@@ -694,7 +694,7 @@ public class LosEffects {
             return los;
         }
 
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_DEAD_ZONES) && isDeadZone(game, ai)) {
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_DEAD_ZONES) && isDeadZone(twGame, ai)) {
             LosEffects los = new LosEffects();
             los.blocked = true;
             los.blockedByHill = true;
@@ -704,14 +704,14 @@ public class LosEffects {
             return los;
         }
 
-        boolean diagramLos = game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS1);
-        boolean partialCover = game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_PARTIAL_COVER);
+        boolean diagramLos = twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS1);
+        boolean partialCover = twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_PARTIAL_COVER);
         double degree = ai.attackPos.degree(ai.targetPos);
         LosEffects finalLoS;
         if (degree % 60 == 30) {
-            finalLoS = LosEffects.losDivided(game, ai, diagramLos, partialCover);
+            finalLoS = LosEffects.losDivided(twGame, ai, diagramLos, partialCover);
         } else {
-            finalLoS = LosEffects.losStraight(game, ai, diagramLos, partialCover);
+            finalLoS = LosEffects.losStraight(twGame, ai, diagramLos, partialCover);
         }
 
         finalLoS.hasLoS = !finalLoS.blocked &&
@@ -730,15 +730,15 @@ public class LosEffects {
      * Returns ToHitData indicating the modifiers to fire for the specified LOS
      * effects data.
      */
-    public ToHitData losModifiers(Game game) {
-        return losModifiers(game, 0, false);
+    public ToHitData losModifiers(IGame IGame) {
+        return losModifiers(IGame, 0, false);
     }
 
-    public ToHitData losModifiers(Game game, boolean underWaterWeapon) {
-        return losModifiers(game, 0, underWaterWeapon);
+    public ToHitData losModifiers(IGame IGame, boolean underWaterWeapon) {
+        return losModifiers(IGame, 0, underWaterWeapon);
     }
 
-    public ToHitData losModifiers(Game game, int eistatus, boolean underwaterWeapon) {
+    public ToHitData losModifiers(IGame IGame, int eistatus, boolean underwaterWeapon) {
         ToHitData modifiers = new ToHitData();
 
         if (arcedShot) {
@@ -850,7 +850,7 @@ public class LosEffects {
 
         // partial cover modifiers apply unless the target is oversized
         if ((targetCover != COVER_NONE) && !targetIsOversized) {
-            if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_PARTIAL_COVER)) {
+            if (IGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_PARTIAL_COVER)) {
                 if ((targetCover == COVER_75LEFT) || (targetCover == COVER_75RIGHT)) {
                     modifiers.addModifier(1, "target has 75% cover");
                 } else if (targetCover >= COVER_HORIZONTAL) {
@@ -873,29 +873,29 @@ public class LosEffects {
      * hexes. Since intervening() returns all the coordinates, we just add the
      * effects of all those hexes.
      */
-    private static LosEffects losStraight(Game game, AttackInfo ai,
-            boolean diagramLoS, boolean partialCover) {
+    private static LosEffects losStraight(TWGame twGame, AttackInfo ai,
+                                          boolean diagramLoS, boolean partialCover) {
         ArrayList<Coords> in = Coords.intervening(ai.attackPos, ai.targetPos);
         LosEffects los = new LosEffects();
         boolean targetInBuilding = false;
         if (ai.targetEntity) {
-            targetInBuilding = Compute.isInBuilding(game, ai.targetAbsHeight
-                    - game.getBoard().getHex(ai.targetPos).getLevel(), ai.targetPos);
+            targetInBuilding = Compute.isInBuilding(twGame, ai.targetAbsHeight
+                    - twGame.getBoard().getHex(ai.targetPos).getLevel(), ai.targetPos);
         }
 
         // If the target and attacker are both in a
         // building, set that as the first LOS effect.
         if (targetInBuilding
-                && Compute.isInBuilding(game, ai.attackAbsHeight
-                        - game.getBoard().getHex(ai.attackPos).getLevel(), ai.attackPos)) {
-            los.setThruBldg(game.getBoard().getBuildingAt(in.get(0)));
+                && Compute.isInBuilding(twGame, ai.attackAbsHeight
+                        - twGame.getBoard().getHex(ai.attackPos).getLevel(), ai.attackPos)) {
+            los.setThruBldg(twGame.getBoard().getBuildingAt(in.get(0)));
             // elevation differences count as building hexes passed through
             los.buildingLevelsOrHexes += (Math
                     .abs((ai.attackAbsHeight - ai.attackHeight) - (ai.targetAbsHeight - ai.targetHeight)));
         }
 
         for (Coords c : in) {
-            los.add(LosEffects.losForCoords(game, ai, c, los.getThruBldg(),
+            los.add(LosEffects.losForCoords(twGame, ai, c, los.getThruBldg(),
                     diagramLoS, partialCover));
         }
 
@@ -937,22 +937,22 @@ public class LosEffects {
      * attacker partial cover blocks leg weapons, as we want to return the same
      * sequence regardless of what weapon is attacking.
      */
-    private static LosEffects losDivided(Game game, AttackInfo ai, boolean diagramLoS,
-            boolean partialCover) {
+    private static LosEffects losDivided(TWGame twGame, AttackInfo ai, boolean diagramLoS,
+                                         boolean partialCover) {
         ArrayList<Coords> in = Coords.intervening(ai.attackPos, ai.targetPos, true);
         LosEffects los = new LosEffects();
         boolean targetInBuilding = false;
         if (ai.targetEntity) {
-            targetInBuilding = Compute.isInBuilding(game, ai.targetAbsHeight
-                    - game.getBoard().getHex(ai.targetPos).getLevel(), ai.targetPos);
+            targetInBuilding = Compute.isInBuilding(twGame, ai.targetAbsHeight
+                    - twGame.getBoard().getHex(ai.targetPos).getLevel(), ai.targetPos);
         }
 
         // If the target and attacker are both in a
         // building, set that as the first LOS effect.
         if (targetInBuilding
-                && Compute.isInBuilding(game, ai.attackAbsHeight
-                        - game.getBoard().getHex(ai.attackPos).getLevel(), ai.attackPos)) {
-            los.setThruBldg(game.getBoard().getBuildingAt(in.get(0)));
+                && Compute.isInBuilding(twGame, ai.attackAbsHeight
+                        - twGame.getBoard().getHex(ai.attackPos).getLevel(), ai.attackPos)) {
+            los.setThruBldg(twGame.getBoard().getBuildingAt(in.get(0)));
             // elevation differences count as building hexes passed through
             los.buildingLevelsOrHexes += (Math
                     .abs((ai.attackAbsHeight - ai.attackHeight)
@@ -961,7 +961,7 @@ public class LosEffects {
 
         // add non-divided line segments
         for (int i = 3; i < in.size() - 2; i += 3) {
-            los.add(losForCoords(game, ai, in.get(i), los.getThruBldg(),
+            los.add(losForCoords(twGame, ai, in.get(i), los.getThruBldg(),
                     diagramLoS, partialCover));
         }
 
@@ -970,7 +970,7 @@ public class LosEffects {
         }
 
         // if blocked already, return that
-        if (los.losModifiers(game).getValue() == TargetRoll.IMPOSSIBLE) {
+        if (los.losModifiers(twGame).getValue() == TargetRoll.IMPOSSIBLE) {
             return los;
         }
 
@@ -983,9 +983,9 @@ public class LosEffects {
         LosEffects totalLeftLos = new LosEffects();
         LosEffects totalRightLos = new LosEffects();
         for (int i = 1; i < in.size() - 2; i += 3) {
-            LosEffects leftLos = losForCoords(game, ai, in.get(i), los
+            LosEffects leftLos = losForCoords(twGame, ai, in.get(i), los
                     .getThruBldg(), diagramLoS, partialCover);
-            LosEffects rightLos = losForCoords(game, ai, in.get(i + 1), los
+            LosEffects rightLos = losForCoords(twGame, ai, in.get(i + 1), los
                     .getThruBldg(), diagramLoS, partialCover);
 
             // Infantry inside a building can only be
@@ -999,7 +999,7 @@ public class LosEffects {
             }
 
             // Check for advanced cover, only 'meks can get partial cover
-            if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_PARTIAL_COVER) &&
+            if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_PARTIAL_COVER) &&
                     ai.targetIsMek) {
                 // 75% and vertical cover will have blocked LoS
                 boolean losBlockedByCover = false;
@@ -1070,7 +1070,7 @@ public class LosEffects {
                 }
             }
 
-            if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_PARTIAL_COVER) &&
+            if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_PARTIAL_COVER) &&
                     ai.attackerIsMek) {
                 // 75% and vertical cover will have blocked LoS
                 boolean losBlockedByCover = false;
@@ -1131,8 +1131,8 @@ public class LosEffects {
             totalRightLos.add(rightLos);
         }
         // Determine whether left or right is worse and update los with it
-        int lVal = totalLeftLos.losModifiers(game).getValue();
-        int rVal = totalRightLos.losModifiers(game).getValue();
+        int lVal = totalLeftLos.losModifiers(twGame).getValue();
+        int rVal = totalRightLos.losModifiers(twGame).getValue();
         if ((lVal > rVal) ||
                 ((lVal == rVal) && totalLeftLos.isAttackerCover())) {
             los.add(totalLeftLos);
@@ -1178,23 +1178,23 @@ public class LosEffects {
      * Returns a LosEffects object representing the LOS effects of anything at
      * the specified coordinate.
      */
-    private static LosEffects losForCoords(Game game, AttackInfo ai,
-            Coords coords, Building thruBldg,
-            boolean diagramLoS, boolean partialCover) {
+    private static LosEffects losForCoords(TWGame twGame, AttackInfo ai,
+                                           Coords coords, Building thruBldg,
+                                           boolean diagramLoS, boolean partialCover) {
 
         // Handle Low Atmosphere hexes differently
-        if (game.getBoard().inAtmosphere()) {
-            return losForLowAtmoCoords(game, ai, coords, diagramLoS);
+        if (twGame.getBoard().inAtmosphere()) {
+            return losForLowAtmoCoords(twGame, ai, coords, diagramLoS);
         }
 
         LosEffects los = new LosEffects();
         // ignore hexes not on board
-        if (!game.getBoard().contains(coords)) {
+        if (!twGame.getBoard().contains(coords)) {
             return los;
         }
 
         // Is there a building in this hex?
-        Building bldg = game.getBoard().getBuildingAt(coords);
+        Building bldg = twGame.getBoard().getBuildingAt(coords);
 
         // We're only tracing thru a single building if there
         // is a building in this hex, and if it isn't the same
@@ -1210,15 +1210,15 @@ public class LosEffects {
 
         // we are an attack in a building, +1 for each building hex between the
         // 2 units
-        if ((game.getBoard().getBuildingAt(ai.attackPos) != null)
-                && (game.getBoard().getBuildingAt(ai.targetPos) != null)
+        if ((twGame.getBoard().getBuildingAt(ai.attackPos) != null)
+                && (twGame.getBoard().getBuildingAt(ai.targetPos) != null)
                 && (thruBldg != null)
-                && game.getBoard().getBuildingAt(ai.attackPos).equals(game.getBoard().getBuildingAt(ai.targetPos))
-                && ai.targetEntity && thruBldg.equals(game.getBoard().getBuildingAt(ai.attackPos))) {
+                && twGame.getBoard().getBuildingAt(ai.attackPos).equals(twGame.getBoard().getBuildingAt(ai.targetPos))
+                && ai.targetEntity && thruBldg.equals(twGame.getBoard().getBuildingAt(ai.attackPos))) {
             los.buildingLevelsOrHexes += 1;
         }
 
-        Hex hex = game.getBoard().getHex(coords);
+        Hex hex = twGame.getBoard().getHex(coords);
         int hexEl = ai.underWaterCombat ? hex.floor() : hex.getLevel();
 
         // Handle minimum water depth.
@@ -1251,7 +1251,7 @@ public class LosEffects {
 
         // check for grounded dropships - treat like a building 10 elevations tall
         if (bldgEl < 10) {
-            for (Entity inHex : game.getEntitiesVector(coords)) {
+            for (Entity inHex : twGame.getEntitiesVector(coords)) {
                 if (ai.attackerId == inHex.getId() || ai.targetId == inHex.getId()) {
                     continue;
                 }
@@ -1479,11 +1479,11 @@ public class LosEffects {
      * Returns a LosEffects object representing the LOS effects of anything at
      * the specified coordinate on a Low Altitude map.
      */
-    private static LosEffects losForLowAtmoCoords(Game game, AttackInfo ai,
-            Coords coords, boolean diagramLoS) {
+    private static LosEffects losForLowAtmoCoords(IGame IGame, AttackInfo ai,
+                                                  Coords coords, boolean diagramLoS) {
         LosEffects los = new LosEffects();
         // ignore hexes not on board
-        if (!game.getBoard().contains(coords)) {
+        if (!IGame.getBoard().contains(coords)) {
             return los;
         }
 
@@ -1493,7 +1493,7 @@ public class LosEffects {
             return los;
         }
 
-        Hex hex = game.getBoard().getHex(coords);
+        Hex hex = IGame.getBoard().getHex(coords);
         int hexAlt = hex.getLevel();
 
         // check for block by terrain
@@ -1577,15 +1577,15 @@ public class LosEffects {
         return los;
     }
 
-    public static boolean hasFireBetween(Coords start, Coords end, Game game) {
+    public static boolean hasFireBetween(Coords start, Coords end, IGame IGame) {
         ArrayList<Coords> in = Coords.intervening(start, end);
         for (Coords hex : in) {
             // ignore off-board hexes
-            if (!game.getBoard().contains(hex)) {
+            if (!IGame.getBoard().contains(hex)) {
                 continue;
             }
 
-            if (game.getBoard().getHex(hex).containsTerrain(Terrains.FIRE)) {
+            if (IGame.getBoard().getHex(hex).containsTerrain(Terrains.FIRE)) {
                 return true;
             }
         }
@@ -1630,25 +1630,25 @@ public class LosEffects {
     /**
      * Finds out if the left or right side of the divided LOS is better for the
      * target
-     * 
+     *
      * @param in
-     * @param game             The current {@link Game}
+     * @param twGame             The current {@link TWGame}
      * @param ai
      * @param targetInBuilding
      * @param los
      * @return 0 if right is better, 1 if left is better, 2 if both are equal
      */
-    public static int dividedLeftBetter(ArrayList<Coords> in, Game game,
+    public static int dividedLeftBetter(ArrayList<Coords> in, TWGame twGame,
             AttackInfo ai, boolean targetInBuilding, LosEffects los) {
-        boolean diagramLos = game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS1);
-        boolean partialCover = game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_PARTIAL_COVER);
+        boolean diagramLos = twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS1);
+        boolean partialCover = twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_PARTIAL_COVER);
         LosEffects leftTotal = new LosEffects();
         LosEffects rightTotal = new LosEffects();
         for (int i = 1; i < in.size() - 2; i += 3) {
             // get effects of each side
-            LosEffects left = losForCoords(game, ai, in.get(i), los
+            LosEffects left = losForCoords(twGame, ai, in.get(i), los
                     .getThruBldg(), diagramLos, partialCover);
-            LosEffects right = losForCoords(game, ai, in.get(i + 1), los
+            LosEffects right = losForCoords(twGame, ai, in.get(i + 1), los
                     .getThruBldg(), diagramLos, partialCover);
 
             // Include all previous LOS effects.
@@ -1666,16 +1666,16 @@ public class LosEffects {
             }
 
             // which is better?
-            int lVal = left.losModifiers(game).getValue();
-            int rVal = right.losModifiers(game).getValue();
+            int lVal = left.losModifiers(twGame).getValue();
+            int rVal = right.losModifiers(twGame).getValue();
             if ((lVal > rVal) || ((lVal == rVal) && left.isAttackerCover())) {
                 leftTotal.add(left);
             } else {
                 rightTotal.add(right);
             }
         }
-        int leftTotalValue = leftTotal.losModifiers(game).getValue();
-        int rightTotalValue = rightTotal.losModifiers(game).getValue();
+        int leftTotalValue = leftTotal.losModifiers(twGame).getValue();
+        int rightTotalValue = rightTotal.losModifiers(twGame).getValue();
         if (leftTotalValue > rightTotalValue) {
             return 1;
         } else if (leftTotalValue < rightTotalValue) {
@@ -1685,7 +1685,7 @@ public class LosEffects {
         }
     }
 
-    private static boolean isDeadZone(Game game, AttackInfo ai) {
+    private static boolean isDeadZone(TWGame twGame, AttackInfo ai) {
         // determine who is higher and who is lower
         int highElev = ai.attackAbsHeight;
         int lowElev = ai.targetAbsHeight;
@@ -1704,11 +1704,11 @@ public class LosEffects {
         Coords IntPos = lowPos;
         for (Coords c : in) {
             // ignore off-board coords
-            if (!game.getBoard().contains(c)) {
+            if (!twGame.getBoard().contains(c)) {
                 continue;
             }
             if (!c.equals(lowPos)) {
-                Hex hex = game.getBoard().getHex(c);
+                Hex hex = twGame.getBoard().getHex(c);
                 int hexEl = ai.underWaterCombat ? hex.floor() : hex.getLevel();
                 // Handle building elevation.
                 // Attacks thru a building are not blocked by that building.
@@ -1719,7 +1719,7 @@ public class LosEffects {
                 }
                 // check for grounded dropships - treat like a building 10 elevations tall
                 if (bldgEl < 10) {
-                    for (Entity inHex : game.getEntitiesVector(c)) {
+                    for (Entity inHex : twGame.getEntitiesVector(c)) {
                         if (ai.attackerId == inHex.getId() || ai.targetId == inHex.getId()) {
                             continue;
                         }

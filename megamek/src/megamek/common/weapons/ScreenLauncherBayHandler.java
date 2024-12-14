@@ -1,14 +1,14 @@
 /**
  * MegaMek - Copyright (C) 2005 Ben Mazur (bmazur@sev.org)
- * 
- *  This program is free software; you can redistribute it and/or modify it 
- *  under the terms of the GNU General Public License as published by the Free 
- *  Software Foundation; either version 2 of the License, or (at your option) 
+ *
+ *  This program is free software; you can redistribute it and/or modify it
+ *  under the terms of the GNU General Public License as published by the Free
+ *  Software Foundation; either version 2 of the License, or (at your option)
  *  any later version.
- * 
- *  This program is distributed in the hope that it will be useful, but 
- *  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
- *  or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
+ *
+ *  This program is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ *  or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  *  for more details.
  */
 package megamek.common.weapons;
@@ -19,7 +19,7 @@ import megamek.common.Coords;
 import megamek.common.Entity;
 import megamek.common.FighterSquadron;
 import megamek.common.HitData;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Report;
 import megamek.common.TargetRoll;
 import megamek.common.ToHitData;
@@ -33,7 +33,7 @@ import megamek.server.totalwarfare.TWGameManager;
 public class ScreenLauncherBayHandler extends AmmoBayWeaponHandler {
 
     /**
-     * 
+     *
      */
 
     private static final long serialVersionUID = -1618484541772117621L;
@@ -44,14 +44,14 @@ public class ScreenLauncherBayHandler extends AmmoBayWeaponHandler {
      * @param g
      * @param m
      */
-    public ScreenLauncherBayHandler(ToHitData t, WeaponAttackAction w, Game g,
+    public ScreenLauncherBayHandler(ToHitData t, WeaponAttackAction w, TWGame g,
             TWGameManager m) {
         super(t, w, g, m);
     }
 
     /**
      * handle this weapons firing
-     * 
+     *
      * @return a <code>boolean</code> value indicating wether this should be
      *         kept or not
      */
@@ -102,7 +102,7 @@ public class ScreenLauncherBayHandler extends AmmoBayWeaponHandler {
             Coords coords = target.getPosition();
             gameManager.deliverScreen(coords, vPhaseReport);
             // damage any entities in the hex
-            for (Entity entity : game.getEntitiesVector(coords)) {
+            for (Entity entity : twGame.getEntitiesVector(coords)) {
                 // if fighter squadron all fighters are damaged
                 if (entity instanceof FighterSquadron) {
                     entity.getSubEntities().forEach(

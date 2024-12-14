@@ -30,7 +30,7 @@ public class MekTaserHandler extends AmmoWeaponHandler {
     @Serial
     private static final long serialVersionUID = 1308895663099714573L;
 
-    public MekTaserHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public MekTaserHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
         generalDamageType = HitData.DAMAGE_ENERGY;
     }

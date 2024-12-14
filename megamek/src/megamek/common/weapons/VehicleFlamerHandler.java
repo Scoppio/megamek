@@ -21,7 +21,7 @@ import megamek.common.Compute;
 import megamek.common.Entity;
 import megamek.common.EquipmentMode;
 import megamek.common.HitData;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Report;
 import megamek.common.TargetRoll;
 import megamek.common.ToHitData;
@@ -44,14 +44,14 @@ public class VehicleFlamerHandler extends AmmoWeaponHandler {
      * @param g
      */
     public VehicleFlamerHandler(ToHitData toHit, WeaponAttackAction waa,
-            Game g, TWGameManager m) {
+                                TWGame g, TWGameManager m) {
         super(toHit, waa, g, m);
         generalDamageType = HitData.DAMAGE_ENERGY;
     }
-    
+
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * megamek.common.weapons.WeaponHandler#handleEntityDamage(megamek.common
      * .Entity, java.util.Vector, megamek.common.Building, int, int, int, int)
@@ -60,15 +60,15 @@ public class VehicleFlamerHandler extends AmmoWeaponHandler {
     protected void handleEntityDamage(Entity entityTarget,
             Vector<Report> vPhaseReport, Building bldg, int hits, int nCluster,
             int bldgAbsorbs) {
-        boolean bmmFlamerDamage = game.getOptions().booleanOption(OptionsConstants.BASE_FLAMER_HEAT);
-        EquipmentMode currentWeaponMode = game.getEntity(waa.getEntityId()).getEquipment(waa.getWeaponId()).curMode();
-        
+        boolean bmmFlamerDamage = twGame.getOptions().booleanOption(OptionsConstants.BASE_FLAMER_HEAT);
+        EquipmentMode currentWeaponMode = twGame.getEntity(waa.getEntityId()).getEquipment(waa.getWeaponId()).curMode();
+
         boolean flamerDoesHeatOnlyDamage = currentWeaponMode != null && currentWeaponMode.equals(Weapon.MODE_FLAMER_HEAT);
         boolean flamerDoesOnlyDamage = currentWeaponMode != null && currentWeaponMode.equals(Weapon.MODE_FLAMER_DAMAGE);
-        
+
         if (bmmFlamerDamage || flamerDoesOnlyDamage || (flamerDoesHeatOnlyDamage && !entityTarget.tracksHeat())) {
             super.handleEntityDamage(entityTarget, vPhaseReport, bldg, hits, nCluster, bldgAbsorbs);
-            
+
             if (bmmFlamerDamage && entityTarget.tracksHeat()) {
                 FlamerHandlerHelper.doHeatDamage(entityTarget, vPhaseReport, wtype, subjectId, hit);
             }
@@ -91,15 +91,15 @@ public class VehicleFlamerHandler extends AmmoWeaponHandler {
             r.add(toHit.getTableDesc());
             r.add(entityTarget.getLocationAbbr(hit));
             vPhaseReport.addElement(r);
-            
+
             FlamerHandlerHelper.doHeatDamage(entityTarget, vPhaseReport, wtype, subjectId, hit);
         }
     }
-    
+
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#calcDamagePerHit()
      */
     @Override

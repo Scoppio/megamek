@@ -13,7 +13,7 @@
  */
 package megamek.common.weapons.lasers;
 
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.ToHitData;
 import megamek.common.WeaponType;
 import megamek.common.actions.WeaponAttackAction;
@@ -36,8 +36,8 @@ public abstract class EnergyWeapon extends Weapon {
     }
 
     @Override
-    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, Game game, TWGameManager manager) {
-        return new EnergyWeaponHandler(toHit, waa, game, manager);
+    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, TWGame twGame, TWGameManager manager) {
+        return new EnergyWeaponHandler(toHit, waa, twGame, manager);
     }
 
     @Override

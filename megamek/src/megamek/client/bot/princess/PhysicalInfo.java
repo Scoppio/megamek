@@ -23,15 +23,8 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 import megamek.client.bot.PhysicalOption;
-import megamek.common.BipedMek;
-import megamek.common.Compute;
-import megamek.common.Coords;
-import megamek.common.Entity;
-import megamek.common.Game;
-import megamek.common.Mek;
-import megamek.common.Targetable;
-import megamek.common.ToHitData;
-import megamek.common.TripodMek;
+import megamek.common.*;
+import megamek.common.TWGame;
 import megamek.common.actions.KickAttackAction;
 import megamek.common.actions.PhysicalAttackAction;
 import megamek.common.actions.PunchAttackAction;
@@ -88,20 +81,20 @@ public class PhysicalInfo {
      *                           {@link megamek.client.bot.princess.EntityState} of
      *                           the target.
      * @param physicalAttackType The type of attack being made.
-     * @param game               The current {@link Game}
+     * @param twGame               The current {@link TWGame}
      * @param owner              The owning {@link Princess} bot.
      * @param guess              Set TRUE to estimate the chance to hit rather than
      *                           doing the full calculation.
      */
     PhysicalInfo(Entity shooter, EntityState shooterState, Targetable target, EntityState targetState,
-            PhysicalAttackType physicalAttackType, Game game, Princess owner, boolean guess) {
+                 PhysicalAttackType physicalAttackType, TWGame twGame, Princess owner, boolean guess) {
 
         this.owner = owner;
 
         setShooter(shooter);
         setTarget(target);
         setAttackType(physicalAttackType);
-        initDamage(physicalAttackType, shooterState, targetState, guess, game);
+        initDamage(physicalAttackType, shooterState, targetState, guess, twGame);
     }
 
     /**
@@ -133,21 +126,21 @@ public class PhysicalInfo {
      * @param target             The {@link megamek.common.Targetable} of the
      *                           attack.
      * @param physicalAttackType The type of attack being made.
-     * @param game               The current {@link Game}
+     * @param twGame               The current {@link TWGame}
      * @param owner              The owning {@link Princess} bot.
      * @param guess              Set TRUE to estimate the chance to hit rather than
      *                           doing the full calculation.
      */
-    PhysicalInfo(Entity shooter, Targetable target, PhysicalAttackType physicalAttackType, Game game, Princess owner,
-            boolean guess) {
-        this(shooter, null, target, null, physicalAttackType, game, owner, guess);
+    PhysicalInfo(Entity shooter, Targetable target, PhysicalAttackType physicalAttackType, TWGame twGame, Princess owner,
+                 boolean guess) {
+        this(shooter, null, target, null, physicalAttackType, twGame, owner, guess);
     }
 
     /**
      * Helper function to determine damage and criticals
      */
     protected void initDamage(PhysicalAttackType physicalAttackType, EntityState shooterState, EntityState targetState,
-            boolean guess, Game game) {
+            boolean guess, TWGame twGame) {
         StringBuilder msg = new StringBuilder("Initializing Damage for ").append(getShooter().getDisplayName())
                 .append(" ").append(physicalAttackType.toString())
                 .append(" at ").append(getTarget().getDisplayName())
@@ -175,12 +168,12 @@ public class PhysicalInfo {
         if (guess) {
             setHitData(owner.getFireControl(getShooter()).guessToHitModifierPhysical(getShooter(), shooterState,
                     getTarget(),
-                    targetState, getAttackType(), game));
+                    targetState, getAttackType(), twGame));
         } else {
             PhysicalAttackAction action = buildAction(physicalAttackType, getShooter().getId(), getTarget());
             setAction(action);
-            setHitData(physicalAttackType.isPunch() ? ((PunchAttackAction) action).toHit(game)
-                    : ((KickAttackAction) action).toHit(game));
+            setHitData(physicalAttackType.isPunch() ? ((PunchAttackAction) action).toHit(twGame)
+                    : ((KickAttackAction) action).toHit(twGame));
         }
 
         // Get the attack direction.

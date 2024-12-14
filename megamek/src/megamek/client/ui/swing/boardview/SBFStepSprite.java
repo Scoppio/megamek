@@ -26,11 +26,7 @@ import megamek.client.ui.Messages;
 import megamek.client.ui.swing.GUIPreferences;
 import megamek.client.ui.swing.tileset.HexTileset;
 import megamek.client.ui.swing.util.UIUtil;
-import megamek.common.Compute;
-import megamek.common.Game;
-import megamek.common.MiscType;
-import megamek.common.MoveStep;
-import megamek.common.ToHitData;
+import megamek.common.*;
 import megamek.common.strategicBattleSystems.SBFMovePath;
 import megamek.common.strategicBattleSystems.SBFMoveStep;
 
@@ -247,7 +243,7 @@ public class SBFStepSprite extends Sprite {
         graph.drawString(costString, costX - 1, stepPos.y + 38);
     }
 
-    private void drawTMMAndRolls(MoveStep step, boolean jumped, Game game,
+    private void drawTMMAndRolls(MoveStep step, boolean jumped, IGame IGame,
                                  Point stepPos, Graphics graph, Color col, boolean shiftFlag) {
 
         StringBuilder subscriptStringBuf = new StringBuilder();
@@ -255,7 +251,7 @@ public class SBFStepSprite extends Sprite {
         int distance = step.getDistance();
         boolean isVTOL = false; //step.getEntity().;
 
-        ToHitData toHitData = Compute.getTargetMovementModifier(distance, jumped, isVTOL, game);
+        ToHitData toHitData = Compute.getTargetMovementModifier(distance, jumped, isVTOL, IGame);
         subscriptStringBuf.append((toHitData.getValue() < 0) ? '-' : '+');
         subscriptStringBuf.append(toHitData.getValue());
 

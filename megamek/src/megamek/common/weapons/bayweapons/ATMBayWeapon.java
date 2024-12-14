@@ -14,7 +14,7 @@
 package megamek.common.weapons.bayweapons;
 
 import megamek.common.EquipmentTypeLookup;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.SimpleTechLevel;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
@@ -52,10 +52,10 @@ public class ATMBayWeapon extends AmmoBayWeapon {
                 .setClanApproximate(true, true, true).setPrototypeFactions(F_CCY)
                 .setProductionFactions(F_CCY).setStaticTechLevel(SimpleTechLevel.STANDARD);
     }
-    
+
     @Override
     protected AttackHandler getCorrectHandler(ToHitData toHit,
-            WeaponAttackAction waa, Game game, TWGameManager manager) {
-        return new MissileBayWeaponHandler(toHit, waa, game, manager);
+                                              WeaponAttackAction waa, TWGame twGame, TWGameManager manager) {
+        return new MissileBayWeaponHandler(toHit, waa, twGame, manager);
     }
 }

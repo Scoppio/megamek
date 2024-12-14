@@ -19,7 +19,7 @@ import megamek.common.AmmoType;
 import megamek.common.Building;
 import megamek.common.Compute;
 import megamek.common.Entity;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Infantry;
 import megamek.common.MiscType;
 import megamek.common.Mounted;
@@ -53,7 +53,7 @@ public class MissileBayWeaponHandler extends AmmoBayWeaponHandler {
      * @param g
      * @param m
      */
-    public MissileBayWeaponHandler(ToHitData t, WeaponAttackAction w, Game g,
+    public MissileBayWeaponHandler(ToHitData t, WeaponAttackAction w, TWGame g,
             TWGameManager m) {
         super(t, w, g, m);
     }
@@ -263,7 +263,7 @@ public class MissileBayWeaponHandler extends AmmoBayWeaponHandler {
     @Override
     public boolean handle(GamePhase phase, Vector<Report> vPhaseReport) {
 
-        if (game.getOptions().booleanOption(OptionsConstants.ADVAERORULES_AERO_SANITY)) {
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVAERORULES_AERO_SANITY)) {
             return handleAeroSanity(phase, vPhaseReport);
         }
 
@@ -274,7 +274,7 @@ public class MissileBayWeaponHandler extends AmmoBayWeaponHandler {
                 && (target.getTargetType() != Targetable.TYPE_HEX_CLEAR
                         && target.getTargetType() != Targetable.TYPE_HEX_IGNITE
                         && target.getTargetType() != Targetable.TYPE_BUILDING))
-                || game.getBoard().inSpace()) {
+                || twGame.getBoard().inSpace()) {
             return super.handle(phase, vPhaseReport);
         }
 
@@ -282,7 +282,7 @@ public class MissileBayWeaponHandler extends AmmoBayWeaponHandler {
         // way
         insertAttacks(phase, vPhaseReport);
 
-        final boolean targetInBuilding = Compute.isInBuilding(game,
+        final boolean targetInBuilding = Compute.isInBuilding(twGame,
                 entityTarget);
         final boolean bldgDamagedOnMiss = targetInBuilding
                 && !(target instanceof Infantry)
@@ -294,7 +294,7 @@ public class MissileBayWeaponHandler extends AmmoBayWeaponHandler {
         }
 
         // Which building takes the damage?
-        Building bldg = game.getBoard().getBuildingAt(target.getPosition());
+        Building bldg = twGame.getBoard().getBuildingAt(target.getPosition());
         String number = nweapons > 1 ? " (" + nweapons + ")" : "";
 
         // Report weapon attack and its to-hit value.
@@ -354,7 +354,7 @@ public class MissileBayWeaponHandler extends AmmoBayWeaponHandler {
 
         // Set Margin of Success/Failure.
         toHit.setMoS(roll.getIntValue() - Math.max(2, toHit.getValue()));
-        bDirect = game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_DIRECT_BLOW)
+        bDirect = twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_DIRECT_BLOW)
                 && ((toHit.getMoS() / 3) >= 1) && (entityTarget != null);
         if (bDirect) {
             r = new Report(3189);

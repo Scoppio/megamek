@@ -34,18 +34,18 @@ public class PhysicalAttackAction extends AbstractAttackAction {
     /**
      * Common checking whether is it possible to physically attack the target
      *
-     * @param game   The current {@link Game}
+     * @param IGame   The current {@link TWGame}
      * @param ae     the attacking {@link Entity}, which may be null
      * @param target the attack's target
      * @return reason the attack is impossible, or null if it is possible
      */
-    protected static @Nullable String toHitIsImpossible(Game game, @Nullable Entity ae,
-            Targetable target) {
+    protected static @Nullable String toHitIsImpossible(IGame IGame, @Nullable Entity ae,
+                                                        Targetable target) {
         if (target == null) {
             return "target is null";
         }
 
-        if (!game.getOptions().booleanOption(OptionsConstants.BASE_FRIENDLY_FIRE)) {
+        if (!IGame.getOptions().booleanOption(OptionsConstants.BASE_FRIENDLY_FIRE)) {
             // a friendly unit can never be the target of a direct attack.
             if ((target.getTargetType() == Targetable.TYPE_ENTITY)
                     && ((((Entity) target).getOwnerId() == ae.getOwnerId())
@@ -57,7 +57,7 @@ public class PhysicalAttackAction extends AbstractAttackAction {
         }
 
         // check range
-        if (Compute.effectiveDistance(game, ae, target) > 1) {
+        if (Compute.effectiveDistance(IGame, ae, target) > 1) {
             return "Target not in range";
         }
 
@@ -101,14 +101,14 @@ public class PhysicalAttackAction extends AbstractAttackAction {
             }
 
             // target unit in building checks
-            final boolean targetInBuilding = Compute.isInBuilding(game, te);
+            final boolean targetInBuilding = Compute.isInBuilding(IGame, te);
             if (targetInBuilding) {
-                Building TargBldg = game.getBoard().getBuildingAt(te.getPosition());
+                Building TargBldg = IGame.getBoard().getBuildingAt(te.getPosition());
 
                 // Can't target units in buildings (from the outside).
-                if (!Compute.isInBuilding(game, ae)) {
+                if (!Compute.isInBuilding(IGame, ae)) {
                     return "Target is inside building";
-                } else if (!game.getBoard().getBuildingAt(ae.getPosition()).equals(TargBldg)) {
+                } else if (!IGame.getBoard().getBuildingAt(ae.getPosition()).equals(TargBldg)) {
                     return "Target is inside different building";
                 }
             }
@@ -129,8 +129,8 @@ public class PhysicalAttackAction extends AbstractAttackAction {
         return null;
     }
 
-    protected static void setCommonModifiers(ToHitData toHit, Game game, Entity ae, Targetable target) {
-        boolean inSameBuilding = Compute.isInSameBuilding(game, ae, target);
+    protected static void setCommonModifiers(ToHitData toHit, TWGame twGame, Entity ae, Targetable target) {
+        boolean inSameBuilding = Compute.isInSameBuilding(twGame, ae, target);
         int attackerId = ae.getId();
         int targetId = target.getId();
         // Battle Armor targets are hard for Meks and Tanks to hit.
@@ -150,13 +150,13 @@ public class PhysicalAttackAction extends AbstractAttackAction {
             toHit.addModifier(2, "ejected Pilot target");
         }
         // attacker movement
-        toHit.append(Compute.getAttackerMovementModifier(game, attackerId));
+        toHit.append(Compute.getAttackerMovementModifier(twGame, attackerId));
 
         // attacker terrain
-        toHit.append(Compute.getAttackerTerrainModifier(game, attackerId));
+        toHit.append(Compute.getAttackerTerrainModifier(twGame, attackerId));
 
         // target terrain
-        toHit.append(Compute.getTargetTerrainModifier(game, target, 0, inSameBuilding));
+        toHit.append(Compute.getTargetTerrainModifier(twGame, target, 0, inSameBuilding));
 
         if (ae.hasModularArmor()) {
             toHit.addModifier(1, "Modular Armor");
@@ -189,21 +189,21 @@ public class PhysicalAttackAction extends AbstractAttackAction {
 
         // if we're spotting for indirect fire, add +1
         if (ae.isSpotting() && !ae.getCrew().hasActiveCommandConsole()
-                && game.getTagInfo().stream().noneMatch(inf -> inf.attackerId == ae.getId())) {
+                && twGame.getTagInfo().stream().noneMatch(inf -> inf.attackerId == ae.getId())) {
             toHit.addModifier(+1, "attacker is spotting for indirect LRM fire");
         }
 
         // target immobile
         toHit.append(Compute.getImmobileMod(target));
 
-        toHit.append(nightModifiers(game, target, null, ae, false));
+        toHit.append(nightModifiers(twGame, target, null, ae, false));
 
         if (target.getTargetType() == Targetable.TYPE_ENTITY) {
             // Checks specific to entity targets
             Entity te = (Entity) target;
 
             // target movement
-            toHit.append(Compute.getTargetMovementModifier(game, targetId));
+            toHit.append(Compute.getTargetMovementModifier(twGame, targetId));
 
             // target prone
             if (te.isProne()) {
@@ -223,7 +223,7 @@ public class PhysicalAttackAction extends AbstractAttackAction {
                 }
             }
 
-            Hex targHex = game.getBoard().getHex(te.getPosition());
+            Hex targHex = twGame.getBoard().getHex(te.getPosition());
             // water partial cover?
             if ((te.height() > 0) && (te.getElevation() == -1)
                     && (targHex.terrainLevel(Terrains.WATER) == te.height())) {
@@ -231,10 +231,10 @@ public class PhysicalAttackAction extends AbstractAttackAction {
             }
 
             // Pilot skills
-            Compute.modifyPhysicalBTHForAdvantages(ae, te, toHit, game);
+            Compute.modifyPhysicalBTHForAdvantages(ae, te, toHit, twGame);
 
             // Attacking Weight Class Modifier.
-            if (game.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_PHYSICAL_ATTACK_PSR)) {
+            if (twGame.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_PHYSICAL_ATTACK_PSR)) {
                 if (ae.getWeightClass() == EntityWeightClass.WEIGHT_LIGHT) {
                     toHit.addModifier(-2, "Weight Class Attack Modifier");
                 } else if (ae.getWeightClass() == EntityWeightClass.WEIGHT_MEDIUM) {

@@ -31,7 +31,7 @@ public class FluidGunCoolHandler extends AmmoWeaponHandler {
      * @param waa
      * @param g
      */
-    public FluidGunCoolHandler(ToHitData toHit, WeaponAttackAction waa, Game g, TWGameManager m) {
+    public FluidGunCoolHandler(ToHitData toHit, WeaponAttackAction waa, TWGame g, TWGameManager m) {
         super(toHit, waa, g, m);
     }
 

@@ -1394,16 +1394,16 @@ public class PhysicalDisplay extends AttackPhaseDisplay {
      * @param pos - the <code>Coords</code> containing targets.
      */
     private Targetable chooseTarget(Coords pos) {
-        final Game game = clientgui.getClient().getGame();
+        final TWGame twGame = clientgui.getClient().getGame();
         // Assume that we have *no* choice.
         Targetable choice = null;
 
         // Get the available choices.
-        Iterator<Entity> choices = game.getEntities(pos);
+        Iterator<Entity> choices = twGame.getEntities(pos);
 
         // Convert the choices into a List of targets.
         List<Targetable> targets = new ArrayList<>();
-        boolean friendlyFire = game.getOptions().booleanOption(OptionsConstants.BASE_FRIENDLY_FIRE);
+        boolean friendlyFire = twGame.getOptions().booleanOption(OptionsConstants.BASE_FRIENDLY_FIRE);
         while (choices.hasNext()) {
             choice = choices.next();
             if (!ce().equals(choice) && (friendlyFire || choice.isEnemyOf(ce()))) {
@@ -1423,9 +1423,9 @@ public class PhysicalDisplay extends AttackPhaseDisplay {
         });
 
         // Is there a building in the hex?
-        Building bldg = game.getBoard().getBuildingAt(pos);
+        Building bldg = twGame.getBoard().getBuildingAt(pos);
         if (bldg != null) {
-            targets.add(new BuildingTarget(pos, game.getBoard(), false));
+            targets.add(new BuildingTarget(pos, twGame.getBoard(), false));
         }
 
         // Is the attacker targeting its own hex?

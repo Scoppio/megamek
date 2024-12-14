@@ -44,7 +44,7 @@ during the Movement Phase, and the results may affect the actions of the target
 unit for the rest of the phase." I believe that the rule intends for PSRs to
 be resolved immediately, and the moving player can use any remaining MPs
 to react to the revealed unit. Therefore, insert a new SpecificEntityTurn
-into the game following the HiddenUnitTurn (and add a HiddenUnitTurn after the
+into the TWGame following the HiddenUnitTurn (and add a HiddenUnitTurn after the
 SpecificUnitTurn:) to allow the moving player to finish his move after the
 hidden unit revealed itself.
 

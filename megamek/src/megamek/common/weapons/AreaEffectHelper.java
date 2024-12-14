@@ -127,12 +127,12 @@ public class AreaEffectHelper {
      */
     public static void processFuelAirDamage(Entity target, Coords center, EquipmentType ordnanceType, Entity attacker,
             Vector<Report> vPhaseReport, TWGameManager gameManager) {
-        Game game = attacker.getGame();
-        PlanetaryConditions conditions = game.getPlanetaryConditions();
+        TWGame twGame = attacker.getGame();
+        PlanetaryConditions conditions = twGame.getPlanetaryConditions();
         // sanity check: if this attack is happening in vacuum through very thin atmo,
         // add that to the phase report and terminate early
 
-        if (game.getBoard().inSpace()
+        if (twGame.getBoard().inSpace()
                 || conditions.getAtmosphere().isLighterThan(Atmosphere.THIN)) {
             Report r = new Report(9986);
             r.indent(1);
@@ -176,7 +176,7 @@ public class AreaEffectHelper {
             damage = (int) Math.ceil(damage / 2.0);
         }
 
-        checkInfantryDestruction(target, distFromCenter, attacker, entitiesToExclude, vPhaseReport, game, gameManager);
+        checkInfantryDestruction(target, distFromCenter, attacker, entitiesToExclude, vPhaseReport, twGame, gameManager);
 
         artilleryDamageEntity(target, damage, null, 0, false, false, false, 0, center, (AmmoType) ordnanceType,
                 target.getPosition(), true,
@@ -188,12 +188,12 @@ public class AreaEffectHelper {
      */
     public static Vector<Integer> processFuelAirDamage(Coords center, EquipmentType ordnanceType, Entity attacker,
             Vector<Report> vPhaseReport, TWGameManager gameManager) {
-        Game game = attacker.getGame();
+        TWGame twGame = attacker.getGame();
         Vector<Integer> entitiesToExclude = new Vector<>();
-        PlanetaryConditions conditions = game.getPlanetaryConditions();
+        PlanetaryConditions conditions = twGame.getPlanetaryConditions();
         // sanity check: if this attack is happening in vacuum through very thin atmo,
         // add that to the phase report and terminate early
-        if (game.getBoard().inSpace()
+        if (twGame.getBoard().inSpace()
                 || conditions.getAtmosphere().isLighterThan(Atmosphere.THIN)) {
             Report r = new Report(9986);
             r.indent(1);
@@ -235,7 +235,7 @@ public class AreaEffectHelper {
                     damage = (int) Math.ceil(damage / 2.0);
                 }
 
-                checkInfantryDestruction(coords, distFromCenter, attacker, entitiesToExclude, vPhaseReport, game,
+                checkInfantryDestruction(coords, distFromCenter, attacker, entitiesToExclude, vPhaseReport, twGame,
                         gameManager);
 
                 gameManager.artilleryDamageHex(coords, center, damage, (AmmoType) ordnanceType, attacker.getId(),
@@ -245,7 +245,7 @@ public class AreaEffectHelper {
                 TargetRoll fireRoll = new TargetRoll(7, "fuel-air ordnance");
                 gameManager.tryIgniteHex(coords, attacker.getId(), false, false, fireRoll, true, -1, vPhaseReport);
 
-                clearMineFields(coords, Minefield.CLEAR_NUMBER_WEAPON_ACCIDENT, attacker, vPhaseReport, game,
+                clearMineFields(coords, Minefield.CLEAR_NUMBER_WEAPON_ACCIDENT, attacker, vPhaseReport, twGame,
                         gameManager);
             }
         }
@@ -258,10 +258,10 @@ public class AreaEffectHelper {
      * Checks all units at given coords.
      */
     public static void checkInfantryDestruction(Coords coords, int distFromCenter, Entity attacker,
-            Vector<Integer> alreadyHit,
-            Vector<Report> vPhaseReport, Game game, TWGameManager gameManager) {
-        for (Entity entity : game.getEntitiesVector(coords)) {
-            checkInfantryDestruction(entity, distFromCenter, attacker, alreadyHit, vPhaseReport, game, gameManager);
+                                                Vector<Integer> alreadyHit,
+                                                Vector<Report> vPhaseReport, TWGame twGame, TWGameManager gameManager) {
+        for (Entity entity : twGame.getEntitiesVector(coords)) {
+            checkInfantryDestruction(entity, distFromCenter, attacker, alreadyHit, vPhaseReport, twGame, gameManager);
         }
     }
 
@@ -271,8 +271,8 @@ public class AreaEffectHelper {
      * Single-entity version.
      */
     public static void checkInfantryDestruction(Entity entity, int distFromCenter, Entity attacker,
-            Vector<Integer> alreadyHit,
-            Vector<Report> vPhaseReport, Game game, TWGameManager gameManager) {
+                                                Vector<Integer> alreadyHit,
+                                                Vector<Report> vPhaseReport, IGame IGame, TWGameManager gameManager) {
         int rollTarget = -1;
         if (entity instanceof BattleArmor) {
             rollTarget = 7;
@@ -308,8 +308,8 @@ public class AreaEffectHelper {
      * Worker function that clears minefields.
      */
     public static void clearMineFields(Coords targetPos, int targetNum, Entity ae, Vector<Report> vPhaseReport,
-            Game game, TWGameManager gameManager) {
-        Enumeration<Minefield> minefields = game.getMinefields(targetPos).elements();
+                                       TWGame twGame, TWGameManager gameManager) {
+        Enumeration<Minefield> minefields = twGame.getMinefields(targetPos).elements();
         ArrayList<Minefield> mfRemoved = new ArrayList<>();
         while (minefields.hasMoreElements()) {
             Minefield mf = minefields.nextElement();

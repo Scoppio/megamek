@@ -22,19 +22,8 @@ package megamek.common.weapons;
 import java.io.Serial;
 import java.util.Vector;
 
-import megamek.common.BattleArmor;
-import megamek.common.Building;
-import megamek.common.Compute;
-import megamek.common.ComputeECM;
-import megamek.common.Entity;
-import megamek.common.Game;
-import megamek.common.Infantry;
-import megamek.common.Mounted;
-import megamek.common.Report;
-import megamek.common.TargetRoll;
-import megamek.common.Targetable;
-import megamek.common.ToHitData;
-import megamek.common.WeaponType;
+import megamek.common.*;
+import megamek.common.TWGame;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.enums.GamePhase;
 import megamek.common.options.OptionsConstants;
@@ -50,7 +39,7 @@ public class LRMSwarmHandler extends LRMHandler {
     private int swarmMissilesNowLeft = 0;
     private boolean handledHeat = false;
 
-    public LRMSwarmHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public LRMSwarmHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
         sSalvoType = " swarm missile(s) ";
     }
@@ -62,7 +51,7 @@ public class LRMSwarmHandler extends LRMHandler {
         }
         Entity entityTarget = (target.getTargetType() == Targetable.TYPE_ENTITY) ? (Entity) target
                 : null;
-        final boolean targetInBuilding = Compute.isInBuilding(game,
+        final boolean targetInBuilding = Compute.isInBuilding(twGame,
                 entityTarget);
         final boolean bldgDamagedOnMiss = targetInBuilding
                 && !(target instanceof Infantry)
@@ -74,7 +63,7 @@ public class LRMSwarmHandler extends LRMHandler {
         }
 
         // Which building takes the damage?
-        Building bldg = game.getBoard().getBuildingAt(target.getPosition());
+        Building bldg = twGame.getBoard().getBuildingAt(target.getPosition());
 
         // Report weapon attack and its to-hit value.
         Report r = new Report(3115);
@@ -134,7 +123,7 @@ public class LRMSwarmHandler extends LRMHandler {
 
         // Set Margin of Success/Failure.
         toHit.setMoS(roll.getIntValue() - Math.max(2, toHit.getValue()));
-        bDirect = game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_DIRECT_BLOW)
+        bDirect = twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_DIRECT_BLOW)
                 && ((toHit.getMoS() / 3) >= 1) && (entityTarget != null);
         if (bDirect) {
             r = new Report(3189);
@@ -257,7 +246,7 @@ public class LRMSwarmHandler extends LRMHandler {
         } // Handle the next cluster.
         Report.addNewline(vPhaseReport);
         if (swarmMissilesNowLeft > 0) {
-            Entity swarmTarget = Compute.getSwarmMissileTarget(game,
+            Entity swarmTarget = Compute.getSwarmMissileTarget(twGame,
                     ae.getId(), target.getPosition(), waa.getWeaponId());
             boolean stoppedByECM = ComputeECM.isAffectedByECM(ae,
                     target.getPosition(), target.getPosition())
@@ -286,7 +275,7 @@ public class LRMSwarmHandler extends LRMHandler {
                 // in the next line
                 weapon.getLinked().setShotsLeft(
                         weapon.getLinked().getBaseShotsLeft() + 1);
-                AttackHandler ah = w.fire(newWaa, game, gameManager);
+                AttackHandler ah = w.fire(newWaa, twGame, gameManager);
                 LRMSwarmHandler wh = (LRMSwarmHandler) ah;
                 // attack the new target
                 wh.handledHeat = true;
@@ -349,7 +338,7 @@ public class LRMSwarmHandler extends LRMHandler {
             ae.setLastTargetDisplayName(entityTarget.getDisplayName());
         }
 
-        Entity swarmTarget = Compute.getSwarmMissileTarget(game, ae.getId(),
+        Entity swarmTarget = Compute.getSwarmMissileTarget(twGame, ae.getId(),
                 target.getPosition(), waa.getWeaponId());
         boolean stoppedByECM = ComputeECM.isAffectedByECM(ae,
                 target.getPosition(), target.getPosition())
@@ -378,7 +367,7 @@ public class LRMSwarmHandler extends LRMHandler {
             // in the next line
             weapon.getLinked().setShotsLeft(
                     weapon.getLinked().getBaseShotsLeft() + 1);
-            AttackHandler ah = w.fire(newWaa, game, gameManager);
+            AttackHandler ah = w.fire(newWaa, twGame, gameManager);
             LRMSwarmHandler wh = (LRMSwarmHandler) ah;
             // attack the new target
             wh.handledHeat = true;
@@ -418,7 +407,7 @@ public class LRMSwarmHandler extends LRMHandler {
 
         // add AMS mods
         int amsMod = getAMSHitsMod(vPhaseReport);
-        if (game.getOptions().booleanOption(OptionsConstants.ADVAERORULES_AERO_SANITY)) {
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVAERORULES_AERO_SANITY)) {
             Entity entityTarget = (target.getTargetType() == Targetable.TYPE_ENTITY) ? (Entity) target
                     : null;
             if (entityTarget != null && entityTarget.isLargeCraft()) {

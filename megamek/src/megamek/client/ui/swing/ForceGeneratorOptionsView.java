@@ -42,11 +42,8 @@ import javax.swing.*;
 import megamek.client.ratgenerator.*;
 import megamek.client.ratgenerator.Ruleset.ProgressListener;
 import megamek.client.ui.Messages;
-import megamek.common.Entity;
-import megamek.common.EntityWeightClass;
-import megamek.common.Game;
-import megamek.common.Player;
-import megamek.common.UnitType;
+import megamek.common.*;
+import megamek.common.TWGame;
 import megamek.common.options.OptionsConstants;
 import megamek.logging.MMLogger;
 
@@ -921,18 +918,18 @@ public class ForceGeneratorOptionsView extends JPanel implements FocusListener, 
         fd.addAllEntities(list);
         // Create a fake game so we can write the entities to a file without adding them
         // to the real game.
-        Game game = new Game();
+        TWGame twGame = new TWGame();
         // Add a player to prevent complaining in the log file
         Player p = new Player(1, "Observer");
-        game.addPlayer(1, p);
-        game.setOptions(clientGui.getClient().getGame().getOptions());
+        twGame.addPlayer(1, p);
+        twGame.setOptions(clientGui.getClient().getGame().getOptions());
         list.stream().forEach(en -> {
             en.setOwner(p);
             // If we don't set the id, the first unit will be left at -1, which in most
             // cases is interpreted
             // as no entity
-            en.setId(game.getNextEntityId());
-            game.addEntity(en);
+            en.setId(twGame.getNextEntityId());
+            twGame.addEntity(en);
         });
         configureNetworks(fd);
         clientGui.saveListFile(list, clientGui.getClient().getLocalPlayer().getName());

@@ -1,7 +1,7 @@
 package megamek.common.pathfinder;
 
 import megamek.client.bot.princess.AeroPathUtil;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.IAero;
 import megamek.common.MovePath;
 import megamek.common.MovePath.MoveStepType;
@@ -14,29 +14,29 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class is intended to be used by the bot for generating possible paths for 
+ * This class is intended to be used by the bot for generating possible paths for
  * aerospace units on a low-altitude atmospheric map.
  * @author NickAragua
  */
 public class AeroLowAltitudePathFinder extends AeroGroundPathFinder {
-    protected AeroLowAltitudePathFinder(Game game) {
-        super(game);
+    protected AeroLowAltitudePathFinder(TWGame twGame) {
+        super(twGame);
     }
 
-    public static AeroLowAltitudePathFinder getInstance(Game game) {
-        return new AeroLowAltitudePathFinder(game);
+    public static AeroLowAltitudePathFinder getInstance(TWGame twGame) {
+        return new AeroLowAltitudePathFinder(twGame);
     }
-    
+
     @Override
     protected int getMinimumVelocity(IAero mover) {
         return 1;
     }
-    
+
     @Override
     protected int getMaximumVelocity(IAero mover) {
         return mover.getCurrentThrust() * 2;
     }
-    
+
     /**
      * Generate all possible paths given a starting movement path.
      * This includes increases and decreases in elevation.
@@ -45,32 +45,32 @@ public class AeroLowAltitudePathFinder extends AeroGroundPathFinder {
     protected List<MovePath> GenerateAllPaths(MovePath mp) {
         List<MovePath> altitudePaths = AeroPathUtil.generateValidAltitudeChanges(mp);
         List<MovePath> fullMovePaths = new ArrayList<>();
-        
+
         for (MovePath altitudePath : altitudePaths) {
             fullMovePaths.addAll(super.GenerateAllPaths(altitudePath.clone()));
         }
-        
+
         List<MovePath> fullMovePathsWithTurns = new ArrayList<>();
-        
+
         for (MovePath movePath : fullMovePaths) {
             fullMovePathsWithTurns.add(movePath);
-            
+
             MoveStep lastStep = movePath.getLastStep();
-            
-            if ((lastStep != null) && lastStep.canAeroTurn(game)) {
+
+            if ((lastStep != null) && lastStep.canAeroTurn(twGame)) {
                 MovePath left = movePath.clone();
                 left.addStep(MoveStepType.TURN_LEFT);
                 fullMovePathsWithTurns.add(left);
-                
+
                 MovePath right = movePath.clone();
                 right.addStep(MoveStepType.TURN_RIGHT);
                 fullMovePathsWithTurns.add(right);
             }
         }
-        
+
         return fullMovePathsWithTurns;
     }
-    
+
     /**
      * Get a list of movement paths with end-of-path altitude adjustments.
      * Irrelevant for low-atmo maps, so simply returns the passed-in list.
@@ -79,7 +79,7 @@ public class AeroLowAltitudePathFinder extends AeroGroundPathFinder {
     protected List<MovePath> getAltitudeAdjustedPaths(List<MovePath> startingPaths) {
         return startingPaths;
     }
-    
+
     // this data structure maps a set of coordinates with facing
     // to a map between height and "used MP".
     private Map<CoordsWithFacing, Map<Integer, Integer>> visitedCoords = new HashMap<>();
@@ -94,8 +94,8 @@ public class AeroLowAltitudePathFinder extends AeroGroundPathFinder {
             if (!visitedCoords.containsKey(destinationCoords)) {
                 visitedCoords.put(destinationCoords, new HashMap<>());
             }
-            
-            // we may or may not have been to these coordinates before, but we haven't been to this height. Not redundant. 
+
+            // we may or may not have been to these coordinates before, but we haven't been to this height. Not redundant.
             if (!visitedCoords.get(destinationCoords).containsKey(mp.getFinalAltitude())) {
                 visitedCoords.get(destinationCoords).put(mp.getFinalAltitude(), mp.getMpUsed());
                 return false;

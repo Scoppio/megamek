@@ -18,8 +18,8 @@
 package megamek.common.weapons.gaussrifles;
 
 import megamek.common.AmmoType;
+import megamek.common.TWGame;
 import megamek.common.alphaStrike.AlphaStrikeElement;
-import megamek.common.Game;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.weapons.AttackHandler;
@@ -53,8 +53,8 @@ public abstract class HAGWeapon extends GaussWeapon {
      */
     @Override
     protected AttackHandler getCorrectHandler(ToHitData toHit,
-            WeaponAttackAction waa, Game game, TWGameManager manager) {
-        return new HAGWeaponHandler(toHit, waa, game, manager);
+                                              WeaponAttackAction waa, TWGame twGame, TWGameManager manager) {
+        return new HAGWeaponHandler(toHit, waa, twGame, manager);
     }
 
     @Override
@@ -80,7 +80,7 @@ public abstract class HAGWeapon extends GaussWeapon {
         }
         return 0;
     }
-    
+
     @Override
     public int getBattleForceClass() {
         return BFCLASS_FLAK;

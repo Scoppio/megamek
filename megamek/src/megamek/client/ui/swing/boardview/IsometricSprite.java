@@ -230,7 +230,7 @@ class IsometricSprite extends HexSprite {
             return false;
         }
 
-        AbstractOptions opts = this.bv.game.getOptions();
+        AbstractOptions opts = this.bv.twGame.getOptions();
         return opts.booleanOption(OptionsConstants.ADVANCED_DOUBLE_BLIND)
                 && ((e.getOwner().getId() == localPlayer.getId())
                         || (opts.booleanOption(OptionsConstants.ADVANCED_TEAM_VISION)
@@ -244,10 +244,10 @@ class IsometricSprite extends HexSprite {
      * @return
      */
     private boolean onlyDetectedBySensors() {
-        boolean sensors = (bv.game.getOptions().booleanOption(OptionsConstants.ADVANCED_TACOPS_SENSORS)
-                || bv.game.getOptions().booleanOption(OptionsConstants.ADVAERORULES_STRATOPS_ADVANCED_SENSORS));
-        boolean sensorsDetectAll = bv.game.getOptions().booleanOption(OptionsConstants.ADVANCED_SENSORS_DETECT_ALL);
-        boolean doubleBlind = bv.game.getOptions().booleanOption(OptionsConstants.ADVANCED_DOUBLE_BLIND);
+        boolean sensors = (bv.twGame.getOptions().booleanOption(OptionsConstants.ADVANCED_TACOPS_SENSORS)
+                || bv.twGame.getOptions().booleanOption(OptionsConstants.ADVAERORULES_STRATOPS_ADVANCED_SENSORS));
+        boolean sensorsDetectAll = bv.twGame.getOptions().booleanOption(OptionsConstants.ADVANCED_SENSORS_DETECT_ALL);
+        boolean doubleBlind = bv.twGame.getOptions().booleanOption(OptionsConstants.ADVANCED_DOUBLE_BLIND);
         boolean hasVisual = entity.hasSeenEntity(bv.getLocalPlayer());
         boolean hasDetected = entity.hasDetectedEntity(bv.getLocalPlayer());
 

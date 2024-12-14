@@ -16,7 +16,7 @@ package megamek.common.weapons;
 import java.util.Vector;
 
 import megamek.common.Compute;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Report;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
@@ -35,14 +35,14 @@ public class PrototypeLBXHandler extends LBXHandler {
      * @param g
      * @param m
      */
-    public PrototypeLBXHandler(ToHitData t, WeaponAttackAction w, Game g,
+    public PrototypeLBXHandler(ToHitData t, WeaponAttackAction w, TWGame g,
             TWGameManager m) {
         super(t, w, g, m);
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#calcHits(Vector<Report>
      * vPhaseReport)
      */
@@ -75,7 +75,7 @@ public class PrototypeLBXHandler extends LBXHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#doChecks(java.util.Vector)
      */
     @Override
@@ -83,7 +83,7 @@ public class PrototypeLBXHandler extends LBXHandler {
         if (doAmmoFeedProblemCheck(vPhaseReport)) {
             return true;
         }
-        
+
         if ((roll.getIntValue() == 2) && !ae.isConventionalInfantry()) {
             Report r = new Report(3165);
             r.subject = subjectId;

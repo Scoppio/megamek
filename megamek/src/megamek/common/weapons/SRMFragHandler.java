@@ -33,7 +33,7 @@ public class SRMFragHandler extends SRMHandler {
     @Serial
     private static final long serialVersionUID = -2281133981582906299L;
 
-    public SRMFragHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public SRMFragHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
         sSalvoType = " fragmentation missile(s) ";
         damageType = DamageType.FRAGMENTATION;

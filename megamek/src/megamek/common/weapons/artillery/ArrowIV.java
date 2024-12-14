@@ -76,10 +76,10 @@ public abstract class ArrowIV extends ArtilleryWeapon {
 
     @Override
     protected AttackHandler getCorrectHandler(ToHitData toHit,
-            WeaponAttackAction waa, Game game, TWGameManager manager) {
+                                              WeaponAttackAction waa, TWGame twGame, TWGameManager manager) {
         if (waa.getAmmoMunitionType().contains(AmmoType.Munitions.M_ADA)) {
-            return new ADAMissileWeaponHandler(toHit, waa, game, manager);
+            return new ADAMissileWeaponHandler(toHit, waa, twGame, manager);
         }
-        return super.getCorrectHandler(toHit, waa, game, manager);
+        return super.getCorrectHandler(toHit, waa, twGame, manager);
     }
 }

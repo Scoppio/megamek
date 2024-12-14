@@ -38,22 +38,22 @@ public class MockGenerators {
 	 * @param entities
 	 * @return
 	 */
-	public static Game generateMockGame(List<Entity> entities, Board mockBoard) {
+	public static IGame generateMockGame(List<Entity> entities, Board mockBoard) {
 
-		final Game mockGame = mock(Game.class);
+		final TWGame mockTWGame = mock(twGame.class);
 
-		when(mockGame.getBoard()).thenReturn(mockBoard);
+		when(mocktwGame.getBoard()).thenReturn(mockBoard);
 		final GameOptions mockGameOptions = mock(GameOptions.class);
-		when(mockGame.getOptions()).thenReturn(mockGameOptions);
+		when(mocktwGame.getOptions()).thenReturn(mockGameOptions);
 		when(mockGameOptions.booleanOption(anyString())).thenReturn(false);
 
 		for (int x = 0; x < entities.size(); x++) {
-			when(mockGame.getEntity(x + 1)).thenReturn(entities.get(x));
-			when(entities.get(x).getGame()).thenReturn(mockGame);
+			when(mocktwGame.getEntity(x + 1)).thenReturn(entities.get(x));
+			when(entities.get(x).getGame()).thenReturn(mockTWGame);
 			when(entities.get(x).getId()).thenReturn(x + 1);
 		}
 
-		return mockGame;
+		return mockTWGame;
 	}
 
 	/**

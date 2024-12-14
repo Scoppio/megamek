@@ -45,7 +45,7 @@ public class OffBoardTargetOverlay implements IDisplayable {
 
     private static final GUIPreferences GUIP = GUIPreferences.getInstance();
 
-    private Game getCurrentGame() {
+    private TWGame getCurrentGame() {
         return clientgui.getClient().getGame();
     }
 

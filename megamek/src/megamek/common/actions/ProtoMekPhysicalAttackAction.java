@@ -73,13 +73,13 @@ public class ProtoMekPhysicalAttackAction extends AbstractAttackAction {
         return toReturn;
     }
 
-    public ToHitData toHit(Game game) {
-        return toHit(game, getEntityId(), game.getTarget(getTargetType(),
+    public ToHitData toHit(TWGame twGame) {
+        return toHit(twGame, getEntityId(), twGame.getTarget(getTargetType(),
                 getTargetId()));
     }
 
-    public static ToHitData toHit(Game game, int attackerId, Targetable target) {
-        final Entity ae = game.getEntity(attackerId);
+    public static ToHitData toHit(TWGame twGame, int attackerId, Targetable target) {
+        final Entity ae = twGame.getEntity(attackerId);
         int targetId = Entity.NONE;
         Entity te = null;
         // arguments legal?
@@ -97,7 +97,7 @@ public class ProtoMekPhysicalAttackAction extends AbstractAttackAction {
             targetId = target.getId();
         }
 
-        if (!game.getOptions().booleanOption(OptionsConstants.BASE_FRIENDLY_FIRE)) {
+        if (!twGame.getOptions().booleanOption(OptionsConstants.BASE_FRIENDLY_FIRE)) {
             // a friendly unit can never be the target of a direct attack.
             if ((target.getTargetType() == Targetable.TYPE_ENTITY)
                     && ((((Entity) target).getOwnerId() == ae.getOwnerId())
@@ -109,8 +109,8 @@ public class ProtoMekPhysicalAttackAction extends AbstractAttackAction {
             }
         }
 
-        final Hex attHex = game.getBoard().getHex(ae.getPosition());
-        final Hex targHex = game.getBoard().getHex(target.getPosition());
+        final Hex attHex = twGame.getBoard().getHex(ae.getPosition());
+        final Hex targHex = twGame.getBoard().getHex(target.getPosition());
         if ((attHex == null) || (targHex == null)) {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "off board");
         }
@@ -118,7 +118,7 @@ public class ProtoMekPhysicalAttackAction extends AbstractAttackAction {
         final int targetHeight = target.relHeight() + targHex.getLevel();
         final int targetElevation = target.getElevation() + targHex.getLevel();
 
-        boolean inSameBuilding = Compute.isInSameBuilding(game, ae, te);
+        boolean inSameBuilding = Compute.isInSameBuilding(twGame, ae, te);
 
         ToHitData toHit;
 
@@ -173,19 +173,19 @@ public class ProtoMekPhysicalAttackAction extends AbstractAttackAction {
         toHit = new ToHitData(base, "base");
 
         // attacker movement
-        toHit.append(Compute.getAttackerMovementModifier(game, attackerId));
+        toHit.append(Compute.getAttackerMovementModifier(twGame, attackerId));
 
         // target movement
         if (targetId != Entity.NONE) {
-            toHit.append(Compute.getTargetMovementModifier(game, targetId));
+            toHit.append(Compute.getTargetMovementModifier(twGame, targetId));
         }
 
         // attacker terrain
-        toHit.append(Compute.getAttackerTerrainModifier(game, attackerId));
+        toHit.append(Compute.getAttackerTerrainModifier(twGame, attackerId));
 
         // target terrain
         if (te != null) {
-            toHit.append(Compute.getTargetTerrainModifier(game, te, 0, inSameBuilding));
+            toHit.append(Compute.getTargetTerrainModifier(twGame, te, 0, inSameBuilding));
         }
 
         // target prone
@@ -198,10 +198,10 @@ public class ProtoMekPhysicalAttackAction extends AbstractAttackAction {
             toHit.append(Compute.getImmobileMod(te));
         }
 
-        toHit.append(nightModifiers(game, target, null, ae, false));
+        toHit.append(nightModifiers(twGame, target, null, ae, false));
 
         // te can be null for this
-        Compute.modifyPhysicalBTHForAdvantages(ae, te, toHit, game);
+        Compute.modifyPhysicalBTHForAdvantages(ae, te, toHit, twGame);
 
         // Standing 'meks use kick table
         if ((te instanceof Mek) && !te.isProne()) {
@@ -213,8 +213,8 @@ public class ProtoMekPhysicalAttackAction extends AbstractAttackAction {
     }
 
     @Override
-    public String toSummaryString(final Game game) {
-        final String roll = this.toHit(game).getValueAsString();
+    public String toSummaryString(final TWGame twGame) {
+        final String roll = this.toHit(twGame).getValueAsString();
         return Messages.getString("BoardView1.ProtomekPhysicalAttackAction", roll);
     }
 }

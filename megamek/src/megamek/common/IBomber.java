@@ -224,8 +224,8 @@ public interface IBomber {
      * equipment.
      */
     default void applyBombs() {
-        Game game = ((Entity) this).getGame();
-        int gameTL = TechConstants.getSimpleLevel(game.getOptions().stringOption(OptionsConstants.ALLOWED_TECHLEVEL));
+        IGame IGame = ((Entity) this).getGame();
+        int gameTL = TechConstants.getSimpleLevel(IGame.getOptions().stringOption(OptionsConstants.ALLOWED_TECHLEVEL));
         Integer[] iSorted = new Integer[BombType.B_NUM];
         // Apply the largest bombs first because we need to fit larger bombs into a
         // single location
@@ -243,7 +243,7 @@ public interface IBomber {
             for (int i = 0; i < getIntBombChoices()[type]; i++) {
                 int loc = availableBombLocation(BombType.bombCosts[type]);
                 if ((type == BombType.B_ALAMO)
-                        && !game.getOptions().booleanOption(OptionsConstants.ADVAERORULES_AT2_NUKES)) {
+                        && !IGame.getOptions().booleanOption(OptionsConstants.ADVAERORULES_AT2_NUKES)) {
                     continue;
                 }
                 if ((type > BombType.B_TAG)
@@ -266,7 +266,7 @@ public interface IBomber {
             for (int i = 0; i < getExtBombChoices()[type]; i++) {
                 int loc = availableBombLocation(BombType.bombCosts[type]);
                 if ((type == BombType.B_ALAMO)
-                        && !game.getOptions().booleanOption(OptionsConstants.ADVAERORULES_AT2_NUKES)) {
+                        && !IGame.getOptions().booleanOption(OptionsConstants.ADVAERORULES_AT2_NUKES)) {
                     continue;
                 }
                 if ((type > BombType.B_TAG)

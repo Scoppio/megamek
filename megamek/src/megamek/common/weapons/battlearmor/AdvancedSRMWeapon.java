@@ -1,14 +1,14 @@
 /**
  * MegaMek - Copyright (C) 2005 Ben Mazur (bmazur@sev.org)
- * 
- *  This program is free software; you can redistribute it and/or modify it 
- *  under the terms of the GNU General Public License as published by the Free 
- *  Software Foundation; either version 2 of the License, or (at your option) 
+ *
+ *  This program is free software; you can redistribute it and/or modify it
+ *  under the terms of the GNU General Public License as published by the Free
+ *  Software Foundation; either version 2 of the License, or (at your option)
  *  any later version.
- * 
- *  This program is distributed in the hope that it will be useful, but 
- *  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
- *  or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
+ *
+ *  This program is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ *  or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  *  for more details.
  */
 package megamek.common.weapons.battlearmor;
@@ -16,7 +16,7 @@ package megamek.common.weapons.battlearmor;
 import megamek.common.AmmoType;
 import megamek.common.alphaStrike.AlphaStrikeElement;
 import megamek.common.Compute;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.weapons.AdvancedSRMHandler;
@@ -39,14 +39,14 @@ public abstract class AdvancedSRMWeapon extends SRMWeapon {
 
     @Override
     protected AttackHandler getCorrectHandler(ToHitData toHit,
-            WeaponAttackAction waa, Game game, TWGameManager manager) {
-        return new AdvancedSRMHandler(toHit, waa, game, manager);
+                                              WeaponAttackAction waa, TWGame twGame, TWGameManager manager) {
+        return new AdvancedSRMHandler(toHit, waa, twGame, manager);
     }
 
     /**
      * non-squad size version for AlphaStrike base damage
      */
-    @Override 
+    @Override
     public double getBattleForceDamage(int range) {
         if (range > getLongRange()) {
             return 0;
@@ -69,7 +69,7 @@ public abstract class AdvancedSRMWeapon extends SRMWeapon {
         }
         return damage / 10.0;
     }
-    
+
     @Override
     public int getBattleForceClass() {
         return BFCLASS_STANDARD;

@@ -22,7 +22,7 @@ package megamek.common.weapons;
 import megamek.common.BattleArmor;
 import megamek.common.Compute;
 import megamek.common.HitData;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Infantry;
 import megamek.common.RangeType;
 import megamek.common.ToHitData;
@@ -39,21 +39,21 @@ public class EnergyWeaponHandler extends WeaponHandler {
      * @param waa
      * @param g
      */
-    public EnergyWeaponHandler(ToHitData toHit, WeaponAttackAction waa, Game g, TWGameManager m) {
+    public EnergyWeaponHandler(ToHitData toHit, WeaponAttackAction waa, TWGame g, TWGameManager m) {
         super(toHit, waa, g, m);
         generalDamageType = HitData.DAMAGE_ENERGY;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#calcDamagePerHit()
      */
     @Override
     protected int calcDamagePerHit() {
         double toReturn = wtype.getDamage(nRange);
 
-        if ((game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_ENERGY_WEAPONS)
+        if ((twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_ENERGY_WEAPONS)
             && weapon.hasModes()) || wtype.hasFlag(WeaponType.F_BOMBAST_LASER)) {
             toReturn = Compute.dialDownDamage(weapon, wtype, nRange);
         }
@@ -65,7 +65,7 @@ public class EnergyWeaponHandler extends WeaponHandler {
             toReturn *= ((BattleArmor) ae).getShootingStrength();
         }
         // Check for Altered Damage from Energy Weapons (TacOp, pg.83)
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_ALTDMG)) {
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_ALTDMG)) {
             if (nRange <= 1) {
                 toReturn++;
             } else if (nRange <= wtype.getMediumRange()) {
@@ -75,15 +75,15 @@ public class EnergyWeaponHandler extends WeaponHandler {
             }
         }
 
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE)
             && (nRange > wtype.getRanges(weapon)[RangeType.RANGE_LONG])) {
             toReturn -= 1;
         }
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS_RANGE)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS_RANGE)
                 && (nRange > wtype.getRanges(weapon)[RangeType.RANGE_EXTREME])) {
             toReturn = (int) Math.floor(toReturn * .75);
         }
-        
+
 
         if (target.isConventionalInfantry()) {
             toReturn = Compute.directBlowInfantryDamage(
@@ -94,7 +94,7 @@ public class EnergyWeaponHandler extends WeaponHandler {
         } else if (bDirect) {
             toReturn = Math.min(toReturn + (toHit.getMoS() / 3), toReturn * 2);
         }
-        
+
         toReturn = applyGlancingBlowModifier(toReturn, target.isConventionalInfantry());
         return (int) Math.ceil(toReturn);
     }

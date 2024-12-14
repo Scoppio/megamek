@@ -270,12 +270,12 @@ public class DestructionAwareDestinationPathfinder extends BoardEdgePathFinder {
      * coordinates will result in damage to friendly units. Computation is cached as
      * it is somewhat expensive to perform for each possible path node.
      */
-    private boolean friendlyFireCheck(Entity shooter, Game game, Coords position, boolean includeMobileUnits) {
+    private boolean friendlyFireCheck(Entity shooter, TWGame twGame, Coords position, boolean includeMobileUnits) {
         if (friendlyFireCheckResults.containsKey(position)) {
             return friendlyFireCheckResults.get(position);
         }
 
-        Building building = game.getBoard().getBuildingAt(position);
+        Building building = twGame.getBoard().getBuildingAt(position);
 
         // no building, no problem
         if (building == null) {
@@ -287,7 +287,7 @@ public class DestructionAwareDestinationPathfinder extends BoardEdgePathFinder {
         // criteria:
         // - is friendly
         // - if we care only about mobile units, has no MP
-        for (Entity entity : game.getEntitiesVector(position, true)) {
+        for (Entity entity : twGame.getEntitiesVector(position, true)) {
             if (!entity.isEnemyOf(shooter)
                     && (includeMobileUnits || (entity.getWalkMP(MPCalculationSetting.STANDARD) == 0))) {
                 friendlyFireCheckResults.put(position, true);

@@ -22,7 +22,7 @@ package megamek.common.weapons.mortars;
 import megamek.common.AmmoType;
 import megamek.common.alphaStrike.AlphaStrikeElement;
 import megamek.common.Compute;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.options.GameOptions;
@@ -54,24 +54,24 @@ public abstract class MekMortarWeapon extends AmmoWeapon {
 
     @Override
     protected AttackHandler getCorrectHandler(ToHitData toHit,
-            WeaponAttackAction waa, Game game, TWGameManager manager) {
+                                              WeaponAttackAction waa, TWGame twGame, TWGameManager manager) {
 
-        AmmoType atype = (AmmoType) game.getEntity(waa.getEntityId())
+        AmmoType atype = (AmmoType) twGame.getEntity(waa.getEntityId())
                 .getEquipment(waa.getWeaponId()).getLinked().getType();
         if (atype.getMunitionType().contains(AmmoType.Munitions.M_AIRBURST)) {
-            return new MekMortarAirburstHandler(toHit, waa, game, manager);
+            return new MekMortarAirburstHandler(toHit, waa, twGame, manager);
         } else if (atype.getMunitionType().contains(AmmoType.Munitions.M_ANTI_PERSONNEL)) {
-            return new MekMortarAntiPersonnelHandler(toHit, waa, game, manager);
+            return new MekMortarAntiPersonnelHandler(toHit, waa, twGame, manager);
         } else if (atype.getMunitionType().contains(AmmoType.Munitions.M_FLARE)) {
-            return new MekMortarFlareHandler(toHit, waa, game, manager);
+            return new MekMortarFlareHandler(toHit, waa, twGame, manager);
         } else if (atype.getMunitionType().contains(AmmoType.Munitions.M_SEMIGUIDED)) {
             // Semi-guided works like shaped-charge, but can benefit from tag
-            return new MekMortarHandler(toHit, waa, game, manager);
+            return new MekMortarHandler(toHit, waa, twGame, manager);
         } else if (atype.getMunitionType().contains(AmmoType.Munitions.M_SMOKE_WARHEAD)) {
-            return new MekMortarSmokeHandler(toHit, waa, game, manager);
+            return new MekMortarSmokeHandler(toHit, waa, twGame, manager);
         }
         // If it doesn't match other types, it's the default armor-piercing
-        return new MekMortarHandler(toHit, waa, game, manager);
+        return new MekMortarHandler(toHit, waa, twGame, manager);
     }
 
     @Override

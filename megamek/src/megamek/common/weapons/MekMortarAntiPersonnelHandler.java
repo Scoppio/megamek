@@ -18,7 +18,7 @@ import java.util.Vector;
 import megamek.common.Building;
 import megamek.common.Compute;
 import megamek.common.Entity;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Report;
 import megamek.common.Targetable;
 import megamek.common.ToHitData;
@@ -30,7 +30,7 @@ import megamek.server.totalwarfare.TWGameManager;
  */
 public class MekMortarAntiPersonnelHandler extends AmmoWeaponHandler {
     private static final long serialVersionUID = -2073773899108954657L;
-    
+
     String sSalvoType = " shell(s) ";
 
     /**
@@ -40,13 +40,13 @@ public class MekMortarAntiPersonnelHandler extends AmmoWeaponHandler {
      * @param m
      */
     public MekMortarAntiPersonnelHandler(ToHitData t, WeaponAttackAction w,
-            Game g, TWGameManager m) {
+                                         TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#calcHits(java.util.Vector)
      */
     @Override
@@ -96,7 +96,7 @@ public class MekMortarAntiPersonnelHandler extends AmmoWeaponHandler {
 
     /**
      * Calculate the clustering of the hits
-     * 
+     *
      * @return a <code>int</code> value saying how much hits are in each cluster
      *         of damage.
      */
@@ -107,7 +107,7 @@ public class MekMortarAntiPersonnelHandler extends AmmoWeaponHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#calcDamagePerHit()
      */
     @Override
@@ -125,13 +125,13 @@ public class MekMortarAntiPersonnelHandler extends AmmoWeaponHandler {
         }
         return 1;
     }
-    
+
     @Override
     protected void handleEntityDamage(Entity entityTarget, Vector<Report> vPhaseReport,
                                       Building bldg, int hits, int nCluster, int bldgAbsorbs) {
         super.handleEntityDamage(entityTarget, vPhaseReport, bldg, hits,
                 nCluster, bldgAbsorbs);
-        
+
         // We need to roll damage for each hit against infantry
         if (target.isConventionalInfantry()) {
             nDamPerHit = calcDamagePerHit();

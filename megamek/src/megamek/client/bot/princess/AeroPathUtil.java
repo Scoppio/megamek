@@ -25,14 +25,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import megamek.client.commands.ClientCommand;
-import megamek.common.Coords;
-import megamek.common.Dropship;
-import megamek.common.Entity;
-import megamek.common.Game;
-import megamek.common.IAero;
-import megamek.common.MovePath;
+import megamek.common.*;
+import megamek.common.TWGame;
 import megamek.common.MovePath.MoveStepType;
-import megamek.common.UnitType;
 import megamek.logging.MMLogger;
 
 /**
@@ -296,11 +291,11 @@ public class AeroPathUtil {
         return childPaths;
     }
 
-    public static int getSpheroidDir(Game game, Entity mover) {
+    public static int getSpheroidDir(TWGame twGame, Entity mover) {
         logger.debug("Deciding where to point %s...", mover.getDisplayName());
 
         // Face the center of the board
-        int dir = mover.getPosition().direction(game.getBoard().getCenter());
+        int dir = mover.getPosition().direction(twGame.getBoard().getCenter());
         logger.debug("Map center is to the %s", ClientCommand.getDirection(dir));
 
         int enemyDir = dir;
@@ -308,13 +303,13 @@ public class AeroPathUtil {
         // Get all enemies, find centroid, face that.
         final Coords centroid;
         ArrayList<Entity> enemies = new ArrayList<>();
-        Iterator<Entity> eIt = game.getAllEnemyEntities(mover);
+        Iterator<Entity> eIt = twGame.getAllEnemyEntities(mover);
         while (eIt.hasNext()) {
             enemies.add(eIt.next());
         }
         if (!enemies.isEmpty()) {
             // Calc center of allies _of the enemy_
-            centroid = PathRanker.calcAllyCenter(enemies.get(0).getId(), enemies, game);
+            centroid = PathRanker.calcAllyCenter(enemies.get(0).getId(), enemies, twGame);
             enemyDir = mover.getPosition().direction(centroid);
             logger.debug("Enemies are over in %s", ClientCommand.getDirection(enemyDir));
         }

@@ -27,7 +27,7 @@ import megamek.common.AmmoType;
 import megamek.common.Compute;
 import megamek.common.Coords;
 import megamek.common.Entity;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Report;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
@@ -40,7 +40,7 @@ public class LRMScatterableHandler extends MissileWeaponHandler {
     @Serial
     private static final long serialVersionUID = -3661776853552779877L;
 
-    public LRMScatterableHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public LRMScatterableHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 
@@ -86,7 +86,7 @@ public class LRMScatterableHandler extends MissileWeaponHandler {
                     return true;
                 }
             }
-            if (game.getBoard().contains(coords)) {
+            if (twGame.getBoard().contains(coords)) {
                 // misses and scatters to another hex
                 int reportNr = mineDelivery ? 3197 : 3195;
                 Report r = new Report(reportNr, whoReport);

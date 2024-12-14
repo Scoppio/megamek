@@ -46,7 +46,7 @@ public class FiringArcSpriteHandler extends BoardViewSpriteHandler implements IP
 
     private static final String[] rangeTexts = { "min", "S", "M", "L", "E" };
 
-    private final Game game;
+    private final IGame IGame;
     private final ClientGUI clientGUI;
 
     // In this handler, the values are cached because only some of the values are
@@ -61,7 +61,7 @@ public class FiringArcSpriteHandler extends BoardViewSpriteHandler implements IP
     public FiringArcSpriteHandler(BoardView boardView, ClientGUI clientGUI) {
         super(boardView);
         this.clientGUI = clientGUI;
-        game = clientGUI.getClient().getGame();
+        IGame = clientGUI.getClient().getGame();
     }
 
     /**
@@ -154,7 +154,7 @@ public class FiringArcSpriteHandler extends BoardViewSpriteHandler implements IP
 
         // check if extreme range is used
         int maxrange = 4;
-        if (!game.getBoard().onGround() || game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE)) {
+        if (!IGame.getBoard().onGround() || IGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE)) {
             maxrange = 5;
         }
 
@@ -192,7 +192,7 @@ public class FiringArcSpriteHandler extends BoardViewSpriteHandler implements IP
             }
 
             // Remove hexes that are not on the board or not in the arc
-            fieldFire.get(bracket).removeIf(coords -> !game.getBoard().contains(coords)
+            fieldFire.get(bracket).removeIf(coords -> !IGame.getBoard().contains(coords)
                     || !Compute.isInArc(firingPosition, facing, coords, arc));
         }
 
@@ -242,12 +242,12 @@ public class FiringArcSpriteHandler extends BoardViewSpriteHandler implements IP
                 Coords mark = firingPosition.translated((dir[0] + facing) % 6, (dist + 1) / 2)
                         .translated((dir[1] + facing) % 6, dist / 2);
                 // traverse back to the unit until a hex is onboard
-                while (!game.getBoard().contains(mark)) {
+                while (!IGame.getBoard().contains(mark)) {
                     mark = Coords.nextHex(mark, firingPosition);
                 }
 
                 // add a text range marker if the found position is good
-                if (game.getBoard().contains(mark) && fieldFire.get(bracket).contains(mark)
+                if (IGame.getBoard().contains(mark) && fieldFire.get(bracket).contains(mark)
                         && ((bracket > 0) || (numMinMarkers < 2))) {
                     TextMarkerSprite tS = new TextMarkerSprite(boardView, mark,
                             rangeTexts[bracket], FieldofFireSprite.getFieldOfFireColor(bracket));
@@ -305,7 +305,7 @@ public class FiringArcSpriteHandler extends BoardViewSpriteHandler implements IP
             return;
         }
         facing = firingEntity.getFacing();
-        if (game.getPhase().isFiring()) {
+        if (IGame.getPhase().isFiring()) {
             if (firingEntity.isSecondaryArcWeapon(firingEntity.getEquipmentNum(weapon))) {
                 facing = firingEntity.getSecondaryFacing();
             }
@@ -320,7 +320,7 @@ public class FiringArcSpriteHandler extends BoardViewSpriteHandler implements IP
             if ((firingEntity instanceof Tank) && (weapon.getLocation() == ((Tank) firingEntity).getLocTurret2())) {
                 facing = ((Tank) firingEntity).getDualTurretFacing();
             }
-        } else if (game.getPhase().isTargeting() || game.getPhase().isOffboard()) {
+        } else if (IGame.getPhase().isTargeting() || IGame.getPhase().isOffboard()) {
             if (firingEntity.isSecondaryArcWeapon(firingEntity.getEquipmentNum(weapon))) {
                 facing = firingEntity.getSecondaryFacing();
             }
@@ -383,7 +383,7 @@ public class FiringArcSpriteHandler extends BoardViewSpriteHandler implements IP
         if (wtype.hasFlag(WeaponType.F_ARTILLERY)) {
             boolean isADA = (ammoMounted != null
                     && ((AmmoType) ammoMounted.getType()).getMunitionType().contains(AmmoType.Munitions.M_ADA));
-            if (game.getPhase().isTargeting()) {
+            if (IGame.getPhase().isTargeting()) {
                 ranges[0] = (!isADA ? new int[] { 0, 0, 0, 100, 0 } : new int[] { 0, 0, 0, 51, 0 });
             } else {
                 ranges[0] = (!isADA ? new int[] { 6, 0, 0, 17, 0 } : wtype.getRanges(weapon, ammoMounted));
@@ -436,7 +436,7 @@ public class FiringArcSpriteHandler extends BoardViewSpriteHandler implements IP
                 // set the standard ranges, depending on capital or no
                 // boolean isCap = wtype.isCapital();
                 int rangeMultiplier = wtype.isCapital() ? 2 : 1;
-                if (game.getBoard().onGround()) {
+                if (IGame.getBoard().onGround()) {
                     rangeMultiplier *= 8;
                 }
 
@@ -485,12 +485,12 @@ public class FiringArcSpriteHandler extends BoardViewSpriteHandler implements IP
      */
     private boolean testUnderWater(Coords position, boolean allowSubmerge, int unitElevation) {
         if ((firingEntity == null) || clientGUI.getDisplayedWeapon().isEmpty() || (position == null)
-                || (game.getBoard().getHex(position) == null)) {
+                || (IGame.getBoard().getHex(position) == null)) {
             return false;
         }
 
         int location = clientGUI.getDisplayedWeapon().get().getLocation();
-        Hex hex = game.getBoard().getHex(position);
+        Hex hex = IGame.getBoard().getHex(position);
         int waterDepth = hex.terrainLevel(Terrains.WATER);
 
         // if this is a ship/sub on the surface and we have a weapon that only has water

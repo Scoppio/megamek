@@ -31,7 +31,7 @@ public class NarcExplosiveHandler extends MissileWeaponHandler {
      * @param g
      * @param m
      */
-    public NarcExplosiveHandler(ToHitData t, WeaponAttackAction w, Game g,
+    public NarcExplosiveHandler(ToHitData t, WeaponAttackAction w, TWGame g,
             TWGameManager m) {
         super(t, w, g, m);
         sSalvoType = " explosive pod ";
@@ -39,7 +39,7 @@ public class NarcExplosiveHandler extends MissileWeaponHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#calcHits(java.util.Vector)
      */
     @Override
@@ -93,7 +93,7 @@ public class NarcExplosiveHandler extends MissileWeaponHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#calcnCluster()
      */
     @Override
@@ -103,7 +103,7 @@ public class NarcExplosiveHandler extends MissileWeaponHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#calcDamagePerHit()
      */
     @Override
@@ -123,7 +123,7 @@ public class NarcExplosiveHandler extends MissileWeaponHandler {
                     toHit.getThruBldg() != null, ae.getId(), calcDmgPerHitReport);
             toReturn = Math.ceil(toReturn);
         }
-        
+
         toReturn = applyGlancingBlowModifier(toReturn, target.isConventionalInfantry());
         return (int) toReturn;
     }

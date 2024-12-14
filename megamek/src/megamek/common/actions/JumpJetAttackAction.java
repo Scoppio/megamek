@@ -81,27 +81,27 @@ public class JumpJetAttackAction extends PhysicalAttackAction {
         return damage;
     }
 
-    public ToHitData toHit(Game game) {
-        return toHit(game, getEntityId(), game.getTarget(getTargetType(),
+    public ToHitData toHit(TWGame twGame) {
+        return toHit(twGame, getEntityId(), twGame.getTarget(getTargetType(),
                 getTargetId()), getLeg());
     }
 
     /**
      * To-hit number for the specified leg to kick
-     * 
-     * @param game The current {@link Game}
+     *
+     * @param twGame The current {@link TWGame}
      */
-    public static ToHitData toHit(Game game, int attackerId, Targetable target, int leg) {
-        final Entity ae = game.getEntity(attackerId);
+    public static ToHitData toHit(TWGame twGame, int attackerId, Targetable target, int leg) {
+        final Entity ae = twGame.getEntity(attackerId);
         if (ae == null) {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "You can't attack from a null entity!");
         }
 
-        if (!game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_JUMP_JET_ATTACK)) {
+        if (!twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_JUMP_JET_ATTACK)) {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "no Jump Jet attack");
         }
 
-        String impossible = toHitIsImpossible(game, ae, target);
+        String impossible = toHitIsImpossible(twGame, ae, target);
         if (impossible != null) {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "impossible");
         }
@@ -111,8 +111,8 @@ public class JumpJetAttackAction extends PhysicalAttackAction {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "Can only make Jump Jet attacks in mek mode");
         }
 
-        Hex attHex = game.getBoard().getHex(ae.getPosition());
-        Hex targHex = game.getBoard().getHex(target.getPosition());
+        Hex attHex = twGame.getBoard().getHex(ae.getPosition());
+        Hex targHex = twGame.getBoard().getHex(target.getPosition());
         final int attackerElevation = ae.getElevation() + attHex.getLevel();
         final int attackerHeight = attackerElevation + ae.getHeight();
         final int targetElevation = target.getElevation()
@@ -233,7 +233,7 @@ public class JumpJetAttackAction extends PhysicalAttackAction {
         toHit = new ToHitData(base, "base");
         toHit.addModifier(+2, "Jump Jet");
 
-        setCommonModifiers(toHit, game, ae, target);
+        setCommonModifiers(toHit, twGame, ae, target);
 
         // +2 for prone
         if (ae.isProne()) {

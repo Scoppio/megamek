@@ -13,7 +13,7 @@
  */
 package megamek.common.weapons.prototypes;
 
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.SimpleTechLevel;
 import megamek.common.ToHitData;
 import megamek.common.WeaponType;
@@ -72,16 +72,16 @@ public class ISPulseLaserSmallPrototype extends PulseLaserWeapon {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * megamek.common.weapons.Weapon#getCorrectHandler(megamek.common.ToHitData,
      * megamek.common.actions.WeaponAttackAction, megamek.common.Game,
      * megamek.server.Server)
      */
     @Override
-    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, Game game,
+    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, TWGame twGame,
                                               TWGameManager manager) {
-        return new SmallPulseLaserPrototypeHandler(toHit, waa, game, manager);
+        return new SmallPulseLaserPrototypeHandler(toHit, waa, twGame, manager);
     }
 
     @Override

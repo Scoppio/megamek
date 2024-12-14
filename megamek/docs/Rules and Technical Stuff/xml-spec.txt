@@ -1,6 +1,6 @@
 This file describes the elements in a MegaMek XML file. In addition to the
 attributes defined below, an element can have any amount of CDATA text. This
-text will have no effect on the game, but it may be helpful for humans reading
+text will have no effect on the TWGame, but it may be helpful for humans reading
 the file. Unless otherwise stated, any well-formed string is a valid value.
 
 Please note, this document does *not* describe the XML files produces by The
@@ -189,7 +189,7 @@ Drawing Board.
         hash - required - the hash value that represents these coordinates.
                Any non-negative integer is valid. The value = X * 256 + Y.
 
-<entity> - A playable item in the game. Contains zero or one <pilot>
+<entity> - A playable item in the twGame. Contains zero or one <pilot>
         elements, zero or more <location> elements, and zero or one <fluff>
         elements. All optional attributes for this element are ignored if
         it appears as part of a <unit> element.

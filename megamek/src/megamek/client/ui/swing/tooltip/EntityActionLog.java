@@ -32,14 +32,14 @@ import java.util.stream.Stream;
  * created as the action is added.
  */
 public class EntityActionLog implements Collection<EntityAction> {
-    private final Game game;
+    private final TWGame twGame;
     private final ArrayList<EntityAction> actions = new ArrayList<EntityAction>();
     // cache to prevent regeneration of info if action already processed
     private final HashMap<EntityAction, String> infoCache = new HashMap<EntityAction, String>();
     private final ArrayList<String> descriptions = new ArrayList<>();
 
-    public EntityActionLog(Game game) {
-        this.game = game;
+    public EntityActionLog(TWGame twGame) {
+        this.twGame = twGame;
     }
 
     /** @return a list of description strings. Note that there may be fewer than the number of actions
@@ -184,7 +184,7 @@ public class EntityActionLog implements Collection<EntityAction> {
             // reuse previous description
             descriptions.add(infoCache.get(entityAction));
         } else {
-            final String buffer = entityAction.toSummaryString(game);
+            final String buffer = entityAction.toSummaryString(twGame);
             descriptions.add(buffer);
             infoCache.put(entityAction, buffer);
         }
@@ -194,13 +194,13 @@ public class EntityActionLog implements Collection<EntityAction> {
      * Adds description, using an existing line if the same weapon type was already listed
      */
     private void addWeaponAttackAction(WeaponAttackAction attack) {
-        ToHitData toHit = attack.toHit(game, true);
+        ToHitData toHit = attack.toHit(twGame, true);
         String tableDesc = toHit.getTableDesc();
         tableDesc = !tableDesc.isEmpty() ? ' ' + tableDesc : "";
         final String toHitDesc = toHit.getValueAsString() + tableDesc;
-        final Entity entity = game.getEntity(attack.getEntityId());
+        final Entity entity = twGame.getEntity(attack.getEntityId());
         final String weaponName = (entity.getEquipment(attack.getWeaponId()).getType()).getName();
-        Entity ammoCarrier = game.getEntity(attack.getAmmoCarrier());
+        Entity ammoCarrier = twGame.getEntity(attack.getAmmoCarrier());
         if (ammoCarrier == null) {
             ammoCarrier = entity;
         }

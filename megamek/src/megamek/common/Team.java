@@ -85,17 +85,17 @@ public final class Team extends TurnOrdered {
     }
 
     /** @return The next player on this team, starting from Player p. */
-    public Player getNextValidPlayer(Player p, Game game) {
+    public Player getNextValidPlayer(Player p, TWGame twGame) {
         // start from the next player
         for (int i = players.indexOf(p) + 1; i < players.size(); ++i) {
-            if (game.getTurnForPlayer(players.get(i).getId()) != null) {
+            if (twGame.getTurnForPlayer(players.get(i).getId()) != null) {
                 return players.get(i);
             }
         }
         // if we haven't found one yet, start again from the beginning
         // worst case we reach exactly our current player again.
         for (int i = 0; i < (players.indexOf(p) + 1); ++i) {
-            if (game.getTurnForPlayer(players.get(i).getId()) != null) {
+            if (twGame.getTurnForPlayer(players.get(i).getId()) != null) {
                 return players.get(i);
             }
         }
@@ -110,8 +110,8 @@ public final class Team extends TurnOrdered {
         TurnOrdered.rollInitiative(players, bUseInitComp);
     }
 
-    public TurnVectors determineTeamOrder(Game game) {
-        return TurnOrdered.generateTurnOrder(players, game);
+    public TurnVectors determineTeamOrder(IGame IGame) {
+        return TurnOrdered.generateTurnOrder(players, IGame);
     }
 
     public int getId() {

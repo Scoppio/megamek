@@ -64,11 +64,11 @@ class ComputeECMTest {
         when(mockOptions.booleanOption("tacops_eccm")).thenReturn(true);
 
         // Mock the game
-        Game mockGame = mock(Game.class);
-        when(mockGame.getBoard()).thenReturn(mockBoard);
-        when(mockGame.getSmokeCloudList()).thenReturn(new ArrayList<>());
-        when(mockGame.getOptions()).thenReturn(mockOptions);
-        when(mockGame.getPlayer(anyInt())).thenReturn(mockPlayer);
+        TWGame mockTWGame = mock(twGame.class);
+        when(mocktwGame.getBoard()).thenReturn(mockBoard);
+        when(mocktwGame.getSmokeCloudList()).thenReturn(new ArrayList<>());
+        when(mocktwGame.getOptions()).thenReturn(mockOptions);
+        when(mocktwGame.getPlayer(anyInt())).thenReturn(mockPlayer);
 
         File f;
         MekFileParser mfp;
@@ -102,7 +102,7 @@ class ComputeECMTest {
         Coords pos = new Coords(0, 0);
         archer.setPosition(pos);
         archer.setOwner(mockPlayer);
-        archer.setGame(mockGame);
+        archer.setGame(mockTWGame);
 
         ECMInfo testInfoECM = new ECMInfo(6, pos, mockPlayer, 1, 0);
         ecmInfo = archer.getECMInfo();
@@ -213,14 +213,14 @@ class ComputeECMTest {
         when(mockOptions.booleanOption("tacops_eccm")).thenReturn(true);
 
         // Mock the game
-        Game mockGame = mock(Game.class);
-        when(mockGame.getBoard()).thenReturn(mockBoard);
-        when(mockGame.getSmokeCloudList()).thenReturn(new ArrayList<>());
-        when(mockGame.getOptions()).thenReturn(mockOptions);
+        TWGame mockTWGame = mock(twGame.class);
+        when(mocktwGame.getBoard()).thenReturn(mockBoard);
+        when(mocktwGame.getSmokeCloudList()).thenReturn(new ArrayList<>());
+        when(mocktwGame.getOptions()).thenReturn(mockOptions);
 
         // Create a list of enemies, owned by the mockEnemy
-        Vector<Entity> entitiesVector = createECMEnemy(mockEnemy, mockGame);
-        when(mockGame.getEntitiesVector()).thenReturn(entitiesVector);
+        Vector<Entity> entitiesVector = createECMEnemy(mockEnemy, mockTWGame);
+        when(mocktwGame.getEntitiesVector()).thenReturn(entitiesVector);
 
         // Same Hex Tests
 
@@ -236,18 +236,18 @@ class ComputeECMTest {
         Entity additionalEnemy = mock(Tank.class);
         when(additionalEnemy.getOwner()).thenReturn(mockEnemy);
         when(additionalEnemy.getECMInfo()).thenReturn(null);
-        when(additionalEnemy.getGame()).thenReturn(mockGame);
+        when(additionalEnemy.getGame()).thenReturn(mockTWGame);
 
         Entity additionalAlly = mock(Tank.class);
         when(additionalAlly.getOwner()).thenReturn(mockPlayer);
         when(additionalAlly.getECMInfo()).thenReturn(null);
-        when(additionalAlly.getGame()).thenReturn(mockGame);
+        when(additionalAlly.getGame()).thenReturn(mockTWGame);
 
         // Attacking Entity
         Entity ae = mock(Mek.class);
         entitiesVector.add(ae);
         when(ae.getPosition()).thenReturn(aePos);
-        when(ae.getGame()).thenReturn(mockGame);
+        when(ae.getGame()).thenReturn(mockTWGame);
         when(ae.isINarcedWith(INarcPod.ECM)).thenReturn(false);
         when(ae.getOwner()).thenReturn(mockPlayer);
         when(ae.getECMInfo()).thenReturn(null);
@@ -320,9 +320,9 @@ class ComputeECMTest {
         result = ComputeECM.isAffectedByECCM(ae, aePos, aePos);
         assertFalse(result);
 
-        entitiesVector = createAngelEnemy(mockEnemy, mockGame);
+        entitiesVector = createAngelEnemy(mockEnemy, mockTWGame);
         entitiesVector.add(ae);
-        when(mockGame.getEntitiesVector()).thenReturn(entitiesVector);
+        when(mocktwGame.getEntitiesVector()).thenReturn(entitiesVector);
         when(ae.getECCMInfo()).thenReturn(null);
 
         // Basic Angel ECM Test
@@ -407,10 +407,10 @@ class ComputeECMTest {
         when(ae.getECCMInfo()).thenReturn(aeAngelECCM);
         enemyECMInfo = new ECMInfo(6, enemyPos, mockEnemy, 1, 0);
         when(additionalEnemy.getECMInfo()).thenReturn(enemyECMInfo);
-        entitiesVector = createECMEnemy(mockEnemy, mockGame);
+        entitiesVector = createECMEnemy(mockEnemy, mockTWGame);
         entitiesVector.add(ae);
         entitiesVector.add(additionalEnemy);
-        when(mockGame.getEntitiesVector()).thenReturn(entitiesVector);
+        when(mocktwGame.getEntitiesVector()).thenReturn(entitiesVector);
         result = ComputeECM.isAffectedByECM(ae, aePos, aePos);
         assertFalse(result);
         result = ComputeECM.isAffectedByAngelECM(ae, aePos, aePos);
@@ -447,14 +447,14 @@ class ComputeECMTest {
         when(mockOptions.booleanOption("tacops_eccm")).thenReturn(true);
 
         // Mock the game
-        Game mockGame = mock(Game.class);
-        when(mockGame.getBoard()).thenReturn(mockBoard);
-        when(mockGame.getSmokeCloudList()).thenReturn(new ArrayList<>());
-        when(mockGame.getOptions()).thenReturn(mockOptions);
+        TWGame mockTWGame = mock(twGame.class);
+        when(mocktwGame.getBoard()).thenReturn(mockBoard);
+        when(mocktwGame.getSmokeCloudList()).thenReturn(new ArrayList<>());
+        when(mocktwGame.getOptions()).thenReturn(mockOptions);
 
         // Create a list of enemies, owned by the mockEnemy
-        Vector<Entity> entitiesVector = createECMEnemy(mockEnemy, mockGame);
-        when(mockGame.getEntitiesVector()).thenReturn(entitiesVector);
+        Vector<Entity> entitiesVector = createECMEnemy(mockEnemy, mockTWGame);
+        when(mocktwGame.getEntitiesVector()).thenReturn(entitiesVector);
 
         // Same Hex Tests
 
@@ -470,18 +470,18 @@ class ComputeECMTest {
         Entity additionalEnemy = mock(Tank.class);
         when(additionalEnemy.getOwner()).thenReturn(mockEnemy);
         when(additionalEnemy.getECMInfo()).thenReturn(null);
-        when(additionalEnemy.getGame()).thenReturn(mockGame);
+        when(additionalEnemy.getGame()).thenReturn(mockTWGame);
 
         Entity additionalAlly = mock(Tank.class);
         when(additionalAlly.getOwner()).thenReturn(mockPlayer);
         when(additionalAlly.getECMInfo()).thenReturn(null);
-        when(additionalAlly.getGame()).thenReturn(mockGame);
+        when(additionalAlly.getGame()).thenReturn(mockTWGame);
 
         // Attacking Entity
         Entity ae = mock(Mek.class);
         entitiesVector.add(ae);
         when(ae.getPosition()).thenReturn(aePos);
-        when(ae.getGame()).thenReturn(mockGame);
+        when(ae.getGame()).thenReturn(mockTWGame);
         when(ae.isINarcedWith(INarcPod.ECM)).thenReturn(false);
         when(ae.getOwner()).thenReturn(mockPlayer);
         when(ae.getECMInfo()).thenReturn(null);
@@ -556,9 +556,9 @@ class ComputeECMTest {
         result = ComputeECM.isAffectedByECCM(ae, aePos, targetPos);
         assertFalse(result);
 
-        entitiesVector = createAngelEnemy(mockEnemy, mockGame);
+        entitiesVector = createAngelEnemy(mockEnemy, mockTWGame);
         entitiesVector.add(ae);
-        when(mockGame.getEntitiesVector()).thenReturn(entitiesVector);
+        when(mocktwGame.getEntitiesVector()).thenReturn(entitiesVector);
         when(ae.getECCMInfo()).thenReturn(null);
 
         // Basic Angel ECM Test
@@ -649,10 +649,10 @@ class ComputeECMTest {
         ECMInfo ecm1 = new ECMInfo(6, ecm1Pos, mockEnemy, 1, 0);
         when(enemy1.getOwner()).thenReturn(mockEnemy);
         when(enemy1.getECMInfo()).thenReturn(ecm1);
-        when(enemy1.getGame()).thenReturn(mockGame);
+        when(enemy1.getGame()).thenReturn(mockTWGame);
         entitiesVector.add(enemy1);
         entitiesVector.add(ae);
-        when(mockGame.getEntitiesVector()).thenReturn(entitiesVector);
+        when(mocktwGame.getEntitiesVector()).thenReturn(entitiesVector);
 
         aeECCM = new ECMInfo(6, aePos, mockPlayer, 0, 0);
         aeECCM.setECCMStrength(1);
@@ -674,7 +674,7 @@ class ComputeECMTest {
      * @param mockGame
      * @return
      */
-    private static Vector<Entity> createECMEnemy(Player owner, Game mockGame) {
+    private static Vector<Entity> createECMEnemy(Player owner, IGame mockGame) {
         Vector<Entity> entitiesVector = new Vector<>();
 
         // Add Entity with ECM
@@ -731,7 +731,7 @@ class ComputeECMTest {
      * @param mockGame
      * @return
      */
-    private static Vector<Entity> createAngelEnemy(Player owner, Game mockGame) {
+    private static Vector<Entity> createAngelEnemy(Player owner, IGame mockGame) {
         Vector<Entity> entitiesVector = new Vector<>();
 
         // Attacking Entity

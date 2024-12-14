@@ -153,7 +153,7 @@ public class ScenarioV2 implements Scenario {
             parsePlanetaryConditions((PlanetaryConditionsUsing) game);
         }
 
-        if (game instanceof Game twGame) {
+        if (game instanceof TWGame twGame) {
             twGame.setupDeployment();
             if (node.has(PARAM_GAME_EXTERNAL_ID)) {
                 twGame.setExternalGameId(node.get(PARAM_GAME_EXTERNAL_ID).intValue());
@@ -274,7 +274,7 @@ public class ScenarioV2 implements Scenario {
         return switch (getGameType()) {
             case AS -> new ASGame();
             case SBF -> new SBFGame();
-            default -> new Game();
+            default -> new TWGame();
         };
     }
 
@@ -354,7 +354,7 @@ public class ScenarioV2 implements Scenario {
 
             if (playerNode.has(UNITS)) {
                 JsonNode unitsNode = playerNode.get(UNITS);
-                if (game instanceof Game twGame) {
+                if (game instanceof TWGame twGame) {
                     List<Entity> units = new MMUReader(scenariofile).read(unitsNode, Entity.class).stream()
                             .filter(o -> o instanceof Entity)
                             .map(o -> (Entity) o)

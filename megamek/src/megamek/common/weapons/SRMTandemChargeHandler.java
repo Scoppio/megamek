@@ -33,7 +33,7 @@ public class SRMTandemChargeHandler extends SRMHandler {
     @Serial
     private static final long serialVersionUID = 6292692766500970690L;
 
-    public SRMTandemChargeHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public SRMTandemChargeHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
         sSalvoType = " tandem charge missile(s) ";
         generalDamageType = HitData.DAMAGE_ARMOR_PIERCING_MISSILE;
@@ -78,7 +78,7 @@ public class SRMTandemChargeHandler extends SRMHandler {
 
         // if the target was in partial cover, then we already handled
         // damage absorption by the partial cover, if it would have happened
-        Hex targetHex = game.getBoard().getHex(target.getPosition());
+        Hex targetHex = twGame.getBoard().getHex(target.getPosition());
         boolean targetStickingOutOfBuilding = unitStickingOutOfBuilding(targetHex, entityTarget);
 
         nDamage = absorbBuildingDamage(nDamage, entityTarget, bldgAbsorbs,

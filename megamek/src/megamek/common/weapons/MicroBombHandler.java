@@ -19,7 +19,7 @@ import megamek.common.AmmoType;
 import megamek.common.Compute;
 import megamek.common.Coords;
 import megamek.common.Entity;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Infantry;
 import megamek.common.Report;
 import megamek.common.ToHitData;
@@ -39,13 +39,13 @@ public class MicroBombHandler extends AmmoWeaponHandler {
      * @param waa
      * @param g
      */
-    public MicroBombHandler(ToHitData toHit, WeaponAttackAction waa, Game g, TWGameManager m) {
+    public MicroBombHandler(ToHitData toHit, WeaponAttackAction waa, TWGame g, TWGameManager m) {
         super(toHit, waa, g, m);
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * megamek.common.weapons.WeaponHandler#specialResolution(java.util.Vector,
      * megamek.common.Entity, boolean)
@@ -70,7 +70,7 @@ public class MicroBombHandler extends AmmoWeaponHandler {
 
             // magic number - BA-launched micro bombs only scatter 1 hex per TW-2018 p 228
             coords = Compute.scatter(coords, 1);
-            if (game.getBoard().contains(coords)) {
+            if (twGame.getBoard().contains(coords)) {
                 Report r = new Report(3195);
                 r.subject = subjectId;
                 r.add(coords.getBoardNum());

@@ -32,7 +32,7 @@ import megamek.server.totalwarfare.TWGameManager;
 public class NarcHandler extends MissileWeaponHandler {
     private static final long serialVersionUID = 3195613885543781820L;
 
-    public NarcHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public NarcHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 
@@ -45,7 +45,7 @@ public class NarcHandler extends MissileWeaponHandler {
     protected int calcHits(Vector<Report> vPhaseReport) {
         bSalvo = true;
         getAMSHitsMod(vPhaseReport);
-        if (game.getOptions().booleanOption(OptionsConstants.ADVAERORULES_AERO_SANITY)) {
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVAERORULES_AERO_SANITY)) {
             // Or bay AMS if Aero Sanity is on
             Entity entityTarget = (target.getTargetType() == Targetable.TYPE_ENTITY) ? (Entity) target
                     : null;

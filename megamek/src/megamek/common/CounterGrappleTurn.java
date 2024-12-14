@@ -34,10 +34,10 @@ public class CounterGrappleTurn extends SpecificEntityTurn {
      * action.
      */
     @Override
-    public boolean isValidEntity(Entity entity, Game game, boolean useValidNonInfantryCheck) {
+    public boolean isValidEntity(Entity entity, TWGame twGame, boolean useValidNonInfantryCheck) {
         final boolean oldDone = entity.done;
         entity.done = false;
-        final boolean result = super.isValidEntity(entity, game, useValidNonInfantryCheck);
+        final boolean result = super.isValidEntity(entity, twGame, useValidNonInfantryCheck);
         entity.done = oldDone;
         return result;
     }

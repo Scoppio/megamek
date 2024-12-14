@@ -21,7 +21,7 @@ package megamek.common.weapons.missiles;
 
 import megamek.common.alphaStrike.AlphaStrikeElement;
 import megamek.common.Compute;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.MiscType;
 import megamek.common.Mounted;
 import megamek.common.ToHitData;
@@ -58,8 +58,8 @@ public abstract class MissileWeapon extends AmmoWeapon {
      */
     @Override
     protected AttackHandler getCorrectHandler(ToHitData toHit,
-            WeaponAttackAction waa, Game game, TWGameManager manager) {
-        return new MissileWeaponHandler(toHit, waa, game, manager);
+                                              WeaponAttackAction waa, TWGame twGame, TWGameManager manager) {
+        return new MissileWeaponHandler(toHit, waa, twGame, manager);
     }
 
     @Override

@@ -255,8 +255,8 @@ public class DeploymentDisplay extends StatusBarPhaseDisplay {
     }
 
     private void computeCFWarningHexes(Entity ce) {
-        Game game = clientgui.getClient().getGame();
-        List<Coords> warnList = CollapseWarning.findCFWarningsDeployment(game, ce, game.getBoard());
+        TWGame twGame = clientgui.getClient().getGame();
+        List<Coords> warnList = CollapseWarning.findCFWarningsDeployment(twGame, ce, twGame.getBoard());
         clientgui.showCollapseWarning(warnList);
     }
 
@@ -271,9 +271,9 @@ public class DeploymentDisplay extends StatusBarPhaseDisplay {
 
     /** Clears out old deployment data and disables relevant buttons. */
     private void endMyTurn() {
-        final Game game = clientgui.getClient().getGame();
-        Entity next = game.getNextEntity(game.getTurnIndex());
-        if (game.getPhase().isDeployment() && (null != next) && (null != ce())
+        final TWGame twGame = clientgui.getClient().getGame();
+        Entity next = twGame.getNextEntity(twGame.getTurnIndex());
+        if (twGame.getPhase().isDeployment() && (null != next) && (null != ce())
                 && (next.getOwnerId() != ce().getOwnerId())) {
             clientgui.maybeShowUnitDisplay();
         }
@@ -306,7 +306,7 @@ public class DeploymentDisplay extends StatusBarPhaseDisplay {
     }
 
     private boolean checkNags() {
-        final Game game = clientgui.getClient().getGame();
+        final TWGame twGame = clientgui.getClient().getGame();
 
         if ((ce() != null)
                 && (ce() instanceof Dropship)
@@ -318,7 +318,7 @@ public class DeploymentDisplay extends StatusBarPhaseDisplay {
                 secondaryPositions.add(ce().getPosition().translated(dir));
             }
             for (Coords pos : secondaryPositions) {
-                Building bld = game.getBoard().getBuildingAt(pos);
+                Building bld = twGame.getBoard().getBuildingAt(pos);
                 if (bld != null) {
                     crushedBuildingLocs.add(pos);
                 }
@@ -334,7 +334,7 @@ public class DeploymentDisplay extends StatusBarPhaseDisplay {
         // Check nag for doomed planetary conditions
         if (GUIP.getNagForDoomed()) {
             if (ce() != null) {
-                String reason = game.getPlanetaryConditions().whyDoomed(ce(), game);
+                String reason = twGame.getPlanetaryConditions().whyDoomed(ce(), twGame);
                 if (reason != null) {
                     String title = Messages.getString("DeploymentDisplay.ConfirmDoomed.title");
                     String body = Messages.getString("DeploymentDisplay.ConfirmDoomed.message", reason);
@@ -410,19 +410,19 @@ public class DeploymentDisplay extends StatusBarPhaseDisplay {
             return;
         }
 
-        final Game game = clientgui.getClient().getGame();
+        final IGame IGame = clientgui.getClient().getGame();
         // On simultaneous phases, each player ending their turn will generate a turn
         // change
         // We want to ignore turns from other players and only listen to events we
         // generated
         // Except on the first turn
-        if (game.getPhase().isSimultaneous(game)
+        if (IGame.getPhase().isSimultaneous(IGame)
                 && (e.getPreviousPlayerId() != clientgui.getClient().getLocalPlayerNumber())
-                && (game.getTurnIndex() != 0)) {
+                && (IGame.getTurnIndex() != 0)) {
             return;
         }
 
-        if (!game.getPhase().isDeployment()) {
+        if (!IGame.getPhase().isDeployment()) {
             // ignore
             return;
         }

@@ -21,7 +21,6 @@ package megamek.client.ui.swing.unitDisplay;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
@@ -37,7 +36,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.MouseInputAdapter;
 
-import megamek.MMConstants;
 import megamek.client.Client;
 import megamek.client.event.MekDisplayEvent;
 import megamek.client.ui.GBC;
@@ -48,7 +46,6 @@ import megamek.client.ui.swing.FiringDisplay;
 import megamek.client.ui.swing.GUIPreferences;
 import megamek.client.ui.swing.TargetingPhaseDisplay;
 import megamek.client.ui.swing.tooltip.UnitToolTip;
-import megamek.client.ui.swing.util.UIUtil;
 import megamek.client.ui.swing.widget.BackGroundDrawer;
 import megamek.client.ui.swing.widget.PMUtil;
 import megamek.client.ui.swing.widget.PicMap;
@@ -226,9 +223,9 @@ public class WeaponPanel extends PicMap implements ListSelectionListener, Action
         public String getElementAt(int index) {
             final WeaponMounted mounted = weapons.get(index);
             final WeaponType wtype = mounted.getType();
-            Game game = null;
+            IGame IGame = null;
             if (unitDisplay.getClientGUI() != null) {
-                game = unitDisplay.getClientGUI().getClient().getGame();
+                IGame = unitDisplay.getClientGUI().getClient().getGame();
             }
 
             StringBuilder wn = new StringBuilder(mounted.getDesc());
@@ -302,8 +299,8 @@ public class WeaponPanel extends PicMap implements ListSelectionListener, Action
                     wn.append(')');
                 }
             }
-            if ((game != null)
-                    && game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_CALLED_SHOTS)) {
+            if ((IGame != null)
+                    && IGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_CALLED_SHOTS)) {
                 wn.append(' ');
                 wn.append(mounted.getCalledShot().getDisplayableName());
             }
@@ -1076,17 +1073,17 @@ public class WeaponPanel extends PicMap implements ListSelectionListener, Action
         removeListeners();
 
         // Grab a copy of the game.
-        Game game = null;
+        TWGame twGame = null;
 
         if (unitDisplay.getClientGUI() != null) {
-            game = unitDisplay.getClientGUI().getClient().getGame();
+            TWGame = unitDisplay.getClientGUI().getClient().getGame();
         }
 
         // update pointer to weapons
         entity = en;
 
         // Check Game Options for max external heat
-        int max_ext_heat = game != null ? game.getOptions().intOption(OptionsConstants.ADVCOMBAT_MAX_EXTERNAL_HEAT)
+        int max_ext_heat = TWGame != null ? twGame.getOptions().intOption(OptionsConstants.ADVCOMBAT_MAX_EXTERNAL_HEAT)
                 : 15;
         if (max_ext_heat < 0) {
             max_ext_heat = 15; // Standard value specified in TW p.159
@@ -1105,20 +1102,20 @@ public class WeaponPanel extends PicMap implements ListSelectionListener, Action
 
             if (!((Mek) en).hasLaserHeatSinks()) {
                 // extreme temperatures.
-                if ((game != null) && (game.getPlanetaryConditions().getTemperature() > 0)) {
-                    int buildup = game.getPlanetaryConditions().getTemperatureDifference(50, -30);
+                if ((TWGame != null) && (twGame.getPlanetaryConditions().getTemperature() > 0)) {
+                    int buildup = twGame.getPlanetaryConditions().getTemperatureDifference(50, -30);
                     if (((Mek) en).hasIntactHeatDissipatingArmor()) {
                         buildup /= 2;
                     }
                     currentHeatBuildup += buildup;
-                } else if (game != null) {
-                    currentHeatBuildup -= game.getPlanetaryConditions().getTemperatureDifference(50, -30);
+                } else if (TWGame != null) {
+                    currentHeatBuildup -= twGame.getPlanetaryConditions().getTemperatureDifference(50, -30);
                 }
             }
         }
         Coords position = entity.getPosition();
         if (!en.isOffBoard() && (position != null)) {
-            Hex hex = game.getBoard().getHex(position);
+            Hex hex = twGame.getBoard().getHex(position);
             if (hex.containsTerrain(Terrains.FIRE)
                     && (hex.getFireTurn() > 0)) {
                 // standing in fire
@@ -1191,13 +1188,13 @@ public class WeaponPanel extends PicMap implements ListSelectionListener, Action
 
             ((WeaponListModel) weaponList.getModel()).addWeapon(mounted);
             if (mounted.isUsedThisRound()
-                    && (game.getPhase() == mounted.usedInPhase())
-                    && game.getPhase().isFiring()) {
+                    && (twGame.getPhase() == mounted.usedInPhase())
+                    && twGame.getPhase().isFiring()) {
                 hasFiredWeapons = true;
                 // add heat from weapons fire to heat tracker
                 if (entity.usesWeaponBays()) {
                     // if using bay heat option then don't add total arc
-                    if (game.getOptions().booleanOption(OptionsConstants.ADVAERORULES_HEAT_BY_BAY)) {
+                    if (twGame.getOptions().booleanOption(OptionsConstants.ADVAERORULES_HEAT_BY_BAY)) {
                         for (WeaponMounted weapon : mounted.getBayWeapons()) {
                             currentHeatBuildup += weapon.getCurrentHeat();
                         }
@@ -1302,7 +1299,7 @@ public class WeaponPanel extends PicMap implements ListSelectionListener, Action
         }
 
         // If MaxTech range rules are in play, display the extreme range.
-        if (((game != null) && game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE))
+        if (((TWGame != null) && twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE))
                 || (entity.isAero() && (entity.isAirborne() || entity.usesWeaponBays()))) {
             wExtL.setVisible(true);
             wExtR.setVisible(true);

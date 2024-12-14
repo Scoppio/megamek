@@ -31,7 +31,7 @@ import megamek.client.ui.swing.ClientGUI;
 import megamek.client.ui.swing.GUIPreferences;
 import megamek.client.ui.swing.util.StringDrawer;
 import megamek.client.ui.swing.util.UIUtil;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.KeyBindParser;
 import megamek.common.enums.GamePhase;
 import megamek.common.event.GameListener;
@@ -67,7 +67,7 @@ public abstract class AbstractBoardViewOverlay implements IDisplayable, IPrefere
     private Image displayImage;
     /** The current game phase. */
     protected GamePhase currentPhase;
-    protected final Game currentGame;
+    protected final TWGame currentTWGame;
 
     protected final Font font;
 
@@ -85,9 +85,9 @@ public abstract class AbstractBoardViewOverlay implements IDisplayable, IPrefere
         visible = getVisibilityGUIPreference();
         this.boardView = Objects.requireNonNull(boardView);
         clientGui = boardView.clientgui;
-        currentGame = Objects.requireNonNull(boardView.game);
-        currentPhase = currentGame.getPhase();
-        currentGame.addGameListener(gameListener);
+        currentTWGame = Objects.requireNonNull(boardView.twGame);
+        currentPhase = currenttwGame.getPhase();
+        currenttwGame.addGameListener(gameListener);
         GUIPreferences.getInstance().addPreferenceChangeListener(this);
         KeyBindParser.addPreferenceChangeListener(this);
     }

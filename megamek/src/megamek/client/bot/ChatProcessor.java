@@ -29,7 +29,7 @@ import megamek.client.bot.princess.ChatCommands;
 import megamek.client.bot.princess.Princess;
 import megamek.codeUtilities.StringUtility;
 import megamek.common.Coords;
-import megamek.common.Game;
+import megamek.common.IGame;
 import megamek.common.Player;
 import megamek.common.event.GamePlayerChatEvent;
 import megamek.common.util.StringUtil;
@@ -136,8 +136,8 @@ public class ChatProcessor {
         additionalPrincessCommands(ge, (Princess) bot);
     }
 
-    private Player getPlayer(Game game, String playerName) {
-        for (Player player : game.getPlayersList()) {
+    private Player getPlayer(IGame IGame, String playerName) {
+        for (Player player : IGame.getPlayersList()) {
             if (playerName.equalsIgnoreCase(player.getName())) {
                 return player;
             }

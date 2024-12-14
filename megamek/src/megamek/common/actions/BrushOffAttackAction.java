@@ -65,11 +65,11 @@ public class BrushOffAttackAction extends AbstractAttackAction {
      * this attack misses, the Mek will suffer punch damage. This same action is
      * used to remove iNARC pods.
      *
-     * @param game The current {@link Game} containing all entities.
+     * @param twGame The current {@link TWGame} containing all entities.
      * @return the <code>ToHitData</code> containing the target roll.
      */
-    public ToHitData toHit(Game game) {
-        return toHit(game, getEntityId(), game.getTarget(getTargetType(), getTargetId()), getArm());
+    public ToHitData toHit(TWGame twGame) {
+        return toHit(twGame, getEntityId(), twGame.getTarget(getTargetType(), getTargetId()), getArm());
     }
 
     /**
@@ -77,7 +77,7 @@ public class BrushOffAttackAction extends AbstractAttackAction {
      * this attack misses, the Mek will suffer punch damage. This same action is
      * used to remove iNARC pods.
      *
-     * @param game       The current {@link Game} containing all entities.
+     * @param twGame       The current {@link TWGame} containing all entities.
      * @param attackerId the <code>int</code> ID of the attacking unit.
      * @param target     the <code>Targetable</code> object being targeted.
      * @param arm        the <code>int</code> of the arm making the attack; this
@@ -86,9 +86,9 @@ public class BrushOffAttackAction extends AbstractAttackAction {
      *                   <code>BrushOffAttackAction.LEFT</code>.
      * @return the <code>ToHitData</code> containing the target roll.
      */
-    public static ToHitData toHit(Game game, int attackerId,
-            Targetable target, int arm) {
-        final Entity ae = game.getEntity(attackerId);
+    public static ToHitData toHit(TWGame twGame, int attackerId,
+                                  Targetable target, int arm) {
+        final Entity ae = twGame.getEntity(attackerId);
         int targetId = Entity.NONE;
         Entity te = null;
         if (ae == null) {
@@ -231,7 +231,7 @@ public class BrushOffAttackAction extends AbstractAttackAction {
             }
         }
 
-        Compute.modifyPhysicalBTHForAdvantages(ae, te, toHit, game);
+        Compute.modifyPhysicalBTHForAdvantages(ae, te, toHit, twGame);
 
         // If the target has assault claws, give a 1 modifier.
         // We can stop looking when we find our first match.

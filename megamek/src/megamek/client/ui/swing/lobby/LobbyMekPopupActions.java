@@ -32,12 +32,7 @@ import megamek.client.generator.TeamLoadOutGenerator;
 import megamek.client.ratgenerator.FactionRecord;
 import megamek.client.ui.Messages;
 import megamek.client.ui.swing.ClientGUI;
-import megamek.common.BombType;
-import megamek.common.Entity;
-import megamek.common.Game;
-import megamek.common.IBomber;
-import megamek.common.Player;
-import megamek.common.Team;
+import megamek.common.*;
 import megamek.common.containers.MunitionTree;
 import megamek.common.force.Force;
 import megamek.common.options.OptionsConstants;
@@ -419,7 +414,7 @@ public class LobbyMekPopupActions implements ActionListener {
         }
     }
 
-    public static void resetBombChoices(ClientGUI clientgui, Game game, ArrayList<Entity> el) {
+    public static void resetBombChoices(ClientGUI clientgui, IGame IGame, ArrayList<Entity> el) {
         ArrayList<Entity> resetBombers = new ArrayList<>();
         for (Entity entity: el) {
             if (entity.isBomber() && !entity.isVehicle()) {
@@ -431,7 +426,7 @@ public class LobbyMekPopupActions implements ActionListener {
             }
         }
         if (!resetBombers.isEmpty()) {
-            clientgui.chatlounge.sendProxyUpdates(resetBombers, game.getPlayer(el.get(0).getOwnerId()));
+            clientgui.chatlounge.sendProxyUpdates(resetBombers, IGame.getPlayer(el.get(0).getOwnerId()));
         }
     }
 

@@ -65,14 +65,14 @@ public abstract class PathRanker implements IPathRanker {
         owner = princess;
     }
 
-    protected abstract RankedPath rankPath(MovePath path, Game game, int maxRange,
-            double fallTolerance, List<Entity> enemies,
-            Coords friendsCoords);
+    protected abstract RankedPath rankPath(MovePath path, TWGame twGame, int maxRange,
+                                           double fallTolerance, List<Entity> enemies,
+                                           Coords friendsCoords);
 
     @Override
-    public ArrayList<RankedPath> rankPaths(List<MovePath> movePaths, Game game, int maxRange,
-            double fallTolerance, List<Entity> enemies,
-            List<Entity> friends) {
+    public ArrayList<RankedPath> rankPaths(List<MovePath> movePaths, TWGame twGame, int maxRange,
+                                           double fallTolerance, List<Entity> enemies,
+                                           List<Entity> friends) {
         // No point in ranking an empty list.
         if (movePaths.isEmpty()) {
             return new ArrayList<>();
@@ -83,7 +83,7 @@ public abstract class PathRanker implements IPathRanker {
         getPathRankerState().getPathSuccessProbabilities().clear();
 
         // Let's try to whittle down this list.
-        List<MovePath> validPaths = validatePaths(movePaths, game, maxRange, fallTolerance);
+        List<MovePath> validPaths = validatePaths(movePaths, twGame, maxRange, fallTolerance);
         logger.debug("Validated " + validPaths.size() + " out of " + movePaths.size() + " possible paths.");
 
         // If the heat map of friendly activity has sufficient data, use the nearest hot
@@ -91,7 +91,7 @@ public abstract class PathRanker implements IPathRanker {
         // the anchor point
         Coords allyCenter = owner.getFriendlyHotSpot(movePaths.get(0).getEntity().getPosition());
         if (allyCenter == null) {
-            allyCenter = calcAllyCenter(movePaths.get(0).getEntity().getId(), friends, game);
+            allyCenter = calcAllyCenter(movePaths.get(0).getEntity().getId(), friends, twGame);
         }
 
         ArrayList<RankedPath> returnPaths = new ArrayList<>(validPaths.size());
@@ -106,7 +106,7 @@ public abstract class PathRanker implements IPathRanker {
             for (MovePath path : validPaths) {
                 count = count.add(BigDecimal.ONE);
 
-                RankedPath rankedPath = rankPath(path, game, maxRange, fallTolerance, enemies, allyCenter);
+                RankedPath rankedPath = rankPath(path, twGame, maxRange, fallTolerance, enemies, allyCenter);
 
                 returnPaths.add(rankedPath);
 
@@ -136,7 +136,7 @@ public abstract class PathRanker implements IPathRanker {
                     && (behaviorTracker.getBehaviorType(mover, getOwner()) == BehaviorType.Engaged)) {
                 behaviorTracker.overrideBehaviorType(mover, BehaviorType.MoveToContact);
                 return rankPaths(getOwner().getMovePathsAndSetNecessaryTargets(mover, true),
-                        game, maxRange, fallTolerance, enemies, friends);
+                    twGame, maxRange, fallTolerance, enemies, friends);
             }
         } catch (Exception ignored) {
             logger.error(ignored, ignored.getMessage());
@@ -146,8 +146,8 @@ public abstract class PathRanker implements IPathRanker {
         return returnPaths;
     }
 
-    private List<MovePath> validatePaths(List<MovePath> startingPathList, Game game, int maxRange,
-            double fallTolerance) {
+    private List<MovePath> validatePaths(List<MovePath> startingPathList, TWGame twGame, int maxRange,
+                                         double fallTolerance) {
         if (startingPathList.isEmpty()) {
             // Nothing to validate here, might as well return the empty list
             // straight away.
@@ -156,7 +156,7 @@ public abstract class PathRanker implements IPathRanker {
 
         Entity mover = startingPathList.get(0).getEntity();
 
-        Targetable closestTarget = findClosestEnemy(mover, mover.getPosition(), game);
+        Targetable closestTarget = findClosestEnemy(mover, mover.getPosition(), twGame);
         int startingTargetDistance = (closestTarget == null) ? Integer.MAX_VALUE
                 : closestTarget.getPosition().distance(mover.getPosition());
 
@@ -195,7 +195,7 @@ public abstract class PathRanker implements IPathRanker {
                 // also skip this part if I'm attempting to retreat, as engagement is not the
                 // point here
                 if (!isAirborneAeroOnGroundMap && !getOwner().wantsToFallBack(mover)) {
-                    Targetable closestToEnd = findClosestEnemy(mover, finalCoords, game);
+                    Targetable closestToEnd = findClosestEnemy(mover, finalCoords, twGame);
                     String validation = validRange(finalCoords, closestToEnd, startingTargetDistance, maxRange,
                             inRange);
                     if (!StringUtility.isNullOrBlank(validation)) {
@@ -205,7 +205,7 @@ public abstract class PathRanker implements IPathRanker {
                 }
 
                 // Don't move on/through buildings that will not support our weight.
-                if (willBuildingCollapse(path, game)) {
+                if (willBuildingCollapse(path, twGame)) {
                     msg.append("\n\tINVALID: Building in path will collapse.");
                     continue;
                 }
@@ -257,19 +257,19 @@ public abstract class PathRanker implements IPathRanker {
      * Rankers that extend this class should override this function
      */
     @Override
-    public void initUnitTurn(Entity unit, Game game) {
+    public void initUnitTurn(Entity unit, IGame IGame) {
     }
 
     @Override
-    public Targetable findClosestEnemy(Entity me, Coords position, Game game) {
-        return findClosestEnemy(me, position, game, true);
+    public Targetable findClosestEnemy(Entity me, Coords position, IGame IGame) {
+        return findClosestEnemy(me, position, IGame, true);
     }
 
     /**
      * Find the closest enemy to a unit with a path
      */
     @Override
-    public Targetable findClosestEnemy(Entity me, Coords position, Game game,
+    public Targetable findClosestEnemy(Entity me, Coords position, IGame IGame,
             boolean includeStrategicTargets) {
         int range = 9999;
         Targetable closest = null;
@@ -382,13 +382,13 @@ public abstract class PathRanker implements IPathRanker {
      *
      * @param position Final coordinates of the proposed move.
      * @param homeEdge Unit's home edge.
-     * @param game     The current {@link Game}
+     * @param IGame     The current {@link TWGame}
      * @return The distance to the unit's home edge.
      */
     @Override
-    public int distanceToHomeEdge(Coords position, CardinalEdge homeEdge, Game game) {
-        int width = game.getBoard().getWidth();
-        int height = game.getBoard().getHeight();
+    public int distanceToHomeEdge(Coords position, CardinalEdge homeEdge, IGame IGame) {
+        int width = IGame.getBoard().getWidth();
+        int height = IGame.getBoard().getHeight();
 
         int distance;
         switch (homeEdge) {
@@ -451,10 +451,10 @@ public abstract class PathRanker implements IPathRanker {
      * TODO : incorporate test for building damage just from moving through building
      *
      * @param path The {@link MovePath} being traversed.
-     * @param game The current {@link Game}
+     * @param twGame The current {@link TWGame}
      * @return True if there is a building in our path that might collapse.
      */
-    private boolean willBuildingCollapse(MovePath path, Game game) {
+    private boolean willBuildingCollapse(MovePath path, TWGame twGame) {
         // airborne aircraft cannot collapse buildings
         if (path.getEntity().isAero() || path.getEntity().hasETypeFlag(Entity.ETYPE_VTOL)) {
             return false;
@@ -463,7 +463,7 @@ public abstract class PathRanker implements IPathRanker {
         // If we're jumping onto a building, make sure it can support our weight.
         if (path.isJumping()) {
             final Coords finalCoords = path.getFinalCoords();
-            final Building building = game.getBoard().getBuildingAt(finalCoords);
+            final Building building = twGame.getBoard().getBuildingAt(finalCoords);
             if (building == null) {
                 return false;
             }
@@ -473,7 +473,7 @@ public abstract class PathRanker implements IPathRanker {
             double mass = path.getEntity().getWeight() + 10;
 
             // Add the mass of anyone else standing in/on this building.
-            mass += owner.getMassOfAllInBuilding(game, finalCoords);
+            mass += owner.getMassOfAllInBuilding(twGame, finalCoords);
 
             return (mass > building.getCurrentCF(finalCoords));
         }
@@ -484,13 +484,13 @@ public abstract class PathRanker implements IPathRanker {
         final Enumeration<MoveStep> steps = path.getSteps();
         while (steps.hasMoreElements()) {
             final MoveStep step = steps.nextElement();
-            final Building building = game.getBoard().getBuildingAt(step.getPosition());
+            final Building building = twGame.getBoard().getBuildingAt(step.getPosition());
             if (building == null) {
                 continue;
             }
 
             // Add the mass of anyone else standing in/on this building.
-            double fullMass = mass + owner.getMassOfAllInBuilding(game, step.getPosition());
+            double fullMass = mass + owner.getMassOfAllInBuilding(twGame, step.getPosition());
 
             if (fullMass > building.getCurrentCF(step.getPosition())) {
                 return true;
@@ -499,7 +499,7 @@ public abstract class PathRanker implements IPathRanker {
         return false;
     }
 
-    public static @Nullable Coords calcAllyCenter(int myId, @Nullable List<Entity> friends, Game game) {
+    public static @Nullable Coords calcAllyCenter(int myId, @Nullable List<Entity> friends, IGame IGame) {
         if ((friends == null) || friends.isEmpty()) {
             return null;
         } else if (friends.size() == 1) {
@@ -521,7 +521,7 @@ public abstract class PathRanker implements IPathRanker {
                 continue;
             }
             Coords friendPosition = friend.getPosition();
-            if ((friendPosition == null) || !game.getBoard().contains(friendPosition)) {
+            if ((friendPosition == null) || !IGame.getBoard().contains(friendPosition)) {
                 continue;
             }
 
@@ -538,7 +538,7 @@ public abstract class PathRanker implements IPathRanker {
         int yCenter = Math.round(yTotal / friendOnBoardCount);
         Coords center = new Coords(xCenter, yCenter);
 
-        if (!game.getBoard().contains(center)) {
+        if (!IGame.getBoard().contains(center)) {
             logger.error("Center of ally group " + center.toFriendlyString()
                     + " not within board boundaries.");
             return null;

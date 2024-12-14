@@ -27,7 +27,7 @@ hexes must be consecutive.
 
 -When you're ready to fly off the map and make a go-around for another strike, simply fly the aircraft to the border hex
 and click on "Fly off" (you will find it when you click "More" a couple times).  If you fly off the same turn you fly
-onto the map, you will not be able to attack.  To be able to fly off the map, the "(Unofficial) Allow return flyovers" in the Advanced Aerospace Rules tab in the game options must be selected.
+onto the map, you will not be able to attack.  To be able to fly off the map, the "(Unofficial) Allow return flyovers" in the Advanced Aerospace Rules tab in the TWGame options must be selected.
 
 -Aerospace units can take off and land.  To use grounded aerospace units on a map, set their starting altitude to zero in the MegaMek lobby.
 

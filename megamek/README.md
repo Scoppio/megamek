@@ -15,7 +15,7 @@ If you would like information about how to play the game, see the "PLAYING THE G
 below. If you're having trouble getting MegaMek started, see the next section, "RUNNING
 MEGAMEK".
 
-For complete game rules, consult the Classic BattleTech rule books published by Catalyst Game
+For complete TWGame rules, consult the Classic BattleTech rule books published by Catalyst Game
 Labs. These books include [Total Warfare](https://store.catalystgamelabs.com/collections/battletech/products/battletech-total-warfare-pdf),
 [Tactical Operations: Advanced Rules](https://store.catalystgamelabs.com/collections/battletech/products/battletech-tactical-operations-advanced-rules),
 [Tactical Operations: Advanced Units & Equipment](https://store.catalystgamelabs.com/collections/battletech/products/battletech-tactical-operations-advanced-units-equipement),
@@ -64,16 +64,16 @@ For Linux, your distribution should have a version of Java available via your pa
 
 ## CONNECTING
 
-MegaMek is a network game. One player hosts a game and the rest of the players connect. The
+MegaMek is a network twGame. One player hosts a game and the rest of the players connect. The
 connecting players can connect from anywhere with a TCP/IP connection to the host, including
 the same computer (see hot seat, below.)
 
-To host a game, press the "Host a New Game..." button in the main menu. Fill in your name and
+To host a games, press the "Host a New Game..." button in the main menu. Fill in your name and
 click "Okay". The password field allows you to specify a password for certain server commands
 (Type /help in the chat line to get a list of server commands.) If you don't specify a
 password, anybody is allowed to reset the server or kick players, so be careful.
 
-Once the lobby screen comes up, other players can connect and the game can begin. The other
+Once the lobby screen comes up, other players can connect and the TWGame can begin. The other
 players will need to know the IP address of the host computer. There are several ways to
 determine your IP address. If you are on Windows 9x/ME, you can use the Run command on the
 start menu and enter `winipcfg`. On Windows 2000/NT/XP/Vista/7/8/10, you will need to open a
@@ -85,13 +85,13 @@ To connect to a game, press the connect button on the main menu and fill in your
 and the host's IP address.
 
 To play in a hot seat fashion, you can run the host and any number of other players on the
-same computer. First, launch and host a game. Then, launch another copy of the game for each
+same computer. First, launch and host a twGame. Then, launch another copy of the TWGame for each
 connecting player, and in the "Server Address" field of the connect dialog, type `localhost`.
-Each player will need to switch to his/her copy of the game to play their turn.
+Each player will need to switch to his/her copy of the TWGame to play their turn.
 
 To start a dedicated server, use the `-dedicated` command line switch. A dedicated server just
-runs the server, in the console, without a "host" player in the game. People, including
-yourself, can join it like a game with a host. The dedicated server reads the password and
+runs the server, in the console, without a "host" player in the twGame. People, including
+yourself, can join it like a TWGame with a host. The dedicated server reads the password and
 port options from the `clientsettings.xml` file, or uses the default (no password and port
 2346.) If you want the dedicated server to load a saved game, supply the filename at the end of
 `-dedicated` args, like this: `-dedicated savedgame.sav` or
@@ -100,11 +100,11 @@ machine to halt execution, which is `CTRL + C` on most platforms.
 
 ## PLAYING THE GAME
 
-### Pre-game Lobby
+### Pre-TWGame Lobby
 
 Here you can chat, specify what units you wish to use, select map settings, declare starting
 positions, and change your player's color. When everybody has at least one unit, you may all
-hit "ready" to start the game. Most changes to the game parameters will cancel your ready
+hit "ready" to start the twGame. Most changes to the TWGame parameters will cancel your ready
 status, so you should wait for everybody to finish choosing their units and positions. Note:
 If you wish to use custom unit designs, please see the section below entitled "CUSTOM UNITS".
 
@@ -122,7 +122,7 @@ also select a map by clicking on its number in the map layout grid. When you sel
 becomes South, East becomes West, and vice versa) by clicking on the "Rotate Board" checkbox;
 the fact that the map is rotated will be shown in the middle column.
 
-- **[SURPRISE]** means that the Server will pick a random map and not tell you what it has picked until the game starts.
+- **[SURPRISE]** means that the Server will pick a random map and not tell you what it has picked until the TWGame starts.
 - **[RANDOM]** means that the Server will pick a map as soon as you hit "Okay".
 - **[GENERATED]** means that the server will create random terrain for you to play on. You need to use the "generated map settings" button to select what kind of terrain you want.
 
@@ -225,7 +225,7 @@ won't support its weight.
 Infantry can move up and down inside buildings using the stairs. This is accomplished by using
 the "go up" and "go down" buttons. Also, infantry that jump into a building can use the "go up"
 and "go down" buttons to choose which floor to jump through the window of. Click the building
-hex you want to jump into first, and the game will pick the highest floor you can reach (or the
+hex you want to jump into first, and the TWGame will pick the highest floor you can reach (or the
 roof). Then use the "go down" button to select a lower floor if you want to.
 
 The `Esc` key clears all current movement.
@@ -364,7 +364,7 @@ the values from the basic settings._
   - **Probability for craters:** - % chance that craters are present Number of craters: as for number of woods, the number that would be present on a 16x17 map, scaled up for larger maps.
   - **Crater radius** - size range for each crater.
 - **Special effects settings:** Each probability is a % chance. FX modifier changes the amount of effect each one has. Values should be small, e.g -3 to +3
-  - **Fires** - woods hexes will be set on fire or already burned down to rough at the start of the game. + modifier increases number of burned down hexes, - modifier increases number of unscathed woods.
+  - **Fires** - woods hexes will be set on fire or already burned down to rough at the start of the twGame. + modifier increases number of burned down hexes, - modifier increases number of unscathed woods.
   - **Frozen water** - water hexes are ice-covered. +modifier decreases the water depth, so for example with a modifier of 1, shallow water hexes are frozen solid and deep water hexes are converted to ice covered shallow water.
   - **Flooded map:** - hexes with negative elevations are converted to water hexes, while level 0 hexes are converted to swamps. Ideal for hovercraft and naval units. modifier changes the "sea level"
   - **Drought** - water hexes are dried up, to shallower water, swamp or rough. Modifier changes the severity of the drought.
@@ -377,11 +377,11 @@ the values from the basic settings._
 
 ## DIFFERENCES BETWEEN THE BOARD GAME AND MEGAMEK
 
-Although MegaMek tries to be faithful to the original board game rules, in some cases, due to
+Although MegaMek tries to be faithful to the original board TWGame rules, in some cases, due to
 technical or design limitations, this is not possible. These differences are not considered
 "bugs." If you spot any more discrepancies, please contact the author (see "CONTACT" below.)
 
-- If the line of fire lies along the edge of two hexes, in the board game, the defender chooses which hex to use. Instead, MegaMek chooses the hex that most favors the defender.
+- If the line of fire lies along the edge of two hexes, in the board tame, the defender chooses which hex to use. Instead, MegaMek chooses the hex that most favors the defender.
 - When punching, you automatically punch with both arms, if possible. This means you can not punch two different targets in the same round.
 - When kicking, you automatically use the leg with the better chance to hit.
 - There are several situations, notably death from above, where a unit is displaced out of a hex, and that unit's owner may pick the hex to move to. MegaMek currently picks the hex for you, choosing high elevations over low ones, to avoid falling damage.

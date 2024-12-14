@@ -127,12 +127,12 @@ class CrewTest {
         int piloting = 5;
 
         // Test the default case.
-        Game mockGame = null;
+        IGame mockGame = null;
         double expected = 1.0;
         double actual = BVCalculator.bvSkillMultiplier(gunnery, piloting);
         assertEquals(expected, actual, 0.001);
 
-        mockGame = mock(Game.class);
+        mockGame = mock(twGame.class);
         GameOptions mockOptions = mock(GameOptions.class);
         when(mockGame.getOptions()).thenReturn(mockOptions);
         expected = 1.0;

@@ -226,7 +226,7 @@ public class BasicPathRanker extends PathRanker {
     }
 
     double calculateDamagePotential(Entity enemy, EntityState shooterState, MovePath path, EntityState targetState,
-            int distance, Game game) {
+            int distance, TWGame twGame) {
 
         // If they don't have the range, they can't do damage.
         int maxRange = getOwner().getMaxWeaponRange(enemy, path.getEntity().isAirborne());
@@ -235,7 +235,7 @@ public class BasicPathRanker extends PathRanker {
         }
 
         // If they don't have LoS, they can't do damage.
-        final LosEffects losEffects = LosEffects.calculateLOS(game, enemy, path.getEntity(), shooterState.getPosition(),
+        final LosEffects losEffects = LosEffects.calculateLOS(twGame, enemy, path.getEntity(), shooterState.getPosition(),
                 targetState.getPosition(), false);
 
         if (!losEffects.canSee()) {
@@ -247,7 +247,7 @@ public class BasicPathRanker extends PathRanker {
         // if the target is infantry protected by a building, we have to fire at the
         // building instead.
         if (losEffects.infantryProtected()) {
-            actualTarget = new BuildingTarget(targetState.getPosition(), game.getBoard(), false);
+            actualTarget = new BuildingTarget(targetState.getPosition(), twGame.getBoard(), false);
             targetState = new EntityState(actualTarget);
         }
 
@@ -262,7 +262,7 @@ public class BasicPathRanker extends PathRanker {
         return getFireControl(path.getEntity()).determineBestFiringPlan(guess).getUtility();
     }
 
-    double calculateKickDamagePotential(Entity enemy, MovePath path, Game game) {
+    double calculateKickDamagePotential(Entity enemy, MovePath path, TWGame twGame) {
         if (!(enemy instanceof Mek)) {
             return 0.0;
         }
@@ -270,7 +270,7 @@ public class BasicPathRanker extends PathRanker {
         // if they can kick me, and probably hit, they probably will.
         PhysicalInfo theirKick = new PhysicalInfo(enemy, null,
                 path.getEntity(), new EntityState(path),
-                PhysicalAttackType.RIGHT_KICK, game, getOwner(), true);
+                PhysicalAttackType.RIGHT_KICK, twGame, getOwner(), true);
 
         if (theirKick.getProbabilityToHit() <= 0.5) {
             return 0.0;
@@ -279,13 +279,13 @@ public class BasicPathRanker extends PathRanker {
         return theirKick.getExpectedDamageOnHit() * theirKick.getProbabilityToHit();
     }
 
-    double calculateMyDamagePotential(MovePath path, Entity enemy, int distance, Game game) {
+    double calculateMyDamagePotential(MovePath path, Entity enemy, int distance, TWGame twGame) {
         Entity me = path.getEntity();
 
         // If I don't have range, I can't do damage.
         // exception: I might, if I'm an aero on a ground map attacking a ground unit
         // because aero unit ranges are a "special case"
-        boolean aeroAttackingGroundUnitOnGroundMap = me.isAirborne() && !enemy.isAero() && game.getBoard().onGround();
+        boolean aeroAttackingGroundUnitOnGroundMap = me.isAirborne() && !enemy.isAero() && twGame.getBoard().onGround();
 
         int maxRange = getOwner().getMaxWeaponRange(me, enemy.isAirborne());
         if (distance > maxRange && !aeroAttackingGroundUnitOnGroundMap) {
@@ -293,7 +293,7 @@ public class BasicPathRanker extends PathRanker {
         }
 
         // If I don't have LoS, I can't do damage. ToDo: Account for indirect fire.
-        LosEffects losEffects = LosEffects.calculateLOS(game, me, enemy, path.getFinalCoords(),
+        LosEffects losEffects = LosEffects.calculateLOS(twGame, me, enemy, path.getFinalCoords(),
                 enemy.getPosition(), false);
         if (!losEffects.canSee()) {
             return 0;
@@ -311,7 +311,7 @@ public class BasicPathRanker extends PathRanker {
         // attacking a ground unit
         if (aeroAttackingGroundUnitOnGroundMap) {
             myFiringPlan = getFireControl(path.getEntity()).guessFullAirToGroundPlan(me, enemy,
-                    new EntityState(enemy), path, game, false);
+                    new EntityState(enemy), path, twGame, false);
         } else {
             FiringPlanCalculationParameters guess = new FiringPlanCalculationParameters.Builder()
                     .buildGuess(path.getEntity(),
@@ -325,14 +325,14 @@ public class BasicPathRanker extends PathRanker {
         return myFiringPlan.getUtility();
     }
 
-    double calculateMyKickDamagePotential(MovePath path, Entity enemy, Game game) {
+    double calculateMyKickDamagePotential(MovePath path, Entity enemy, TWGame twGame) {
         if (!(path.getEntity() instanceof Mek)) {
             return 0.0;
         }
 
         PhysicalInfo myKick = new PhysicalInfo(path.getEntity(),
                 new EntityState(path), enemy, null,
-                PhysicalAttackType.RIGHT_KICK, game, getOwner(), true);
+                PhysicalAttackType.RIGHT_KICK, twGame, getOwner(), true);
 
         if (myKick.getProbabilityToHit() <= 0.5) {
             return 0;
@@ -341,28 +341,28 @@ public class BasicPathRanker extends PathRanker {
         return myKick.getExpectedDamageOnHit() * myKick.getProbabilityToHit();
     }
 
-    EntityEvaluationResponse evaluateMovedEnemy(Entity enemy, MovePath path, Game game) {
+    EntityEvaluationResponse evaluateMovedEnemy(Entity enemy, MovePath path, TWGame twGame) {
         EntityEvaluationResponse returnResponse = new EntityEvaluationResponse();
 
         int distance = enemy.getPosition().distance(path.getFinalCoords());
 
         // How much damage can they do to me?
         double theirDamagePotential = calculateDamagePotential(enemy,
-                new EntityState(enemy), path, new EntityState(path), distance, game);
+                new EntityState(enemy), path, new EntityState(path), distance, twGame);
 
         // if they can kick me, and probably hit, they probably will.
         if (distance <= 1) {
-            theirDamagePotential += calculateKickDamagePotential(enemy, path, game);
+            theirDamagePotential += calculateKickDamagePotential(enemy, path, twGame);
         }
 
         returnResponse.setEstimatedEnemyDamage(theirDamagePotential);
 
         // How much damage can I do to them?
-        returnResponse.setMyEstimatedDamage(calculateMyDamagePotential(path, enemy, distance, game));
+        returnResponse.setMyEstimatedDamage(calculateMyDamagePotential(path, enemy, distance, twGame));
 
         // How much physical damage can I do to them?
         if (distance <= 1) {
-            returnResponse.setMyEstimatedPhysicalDamage(calculateMyKickDamagePotential(path, enemy, game));
+            returnResponse.setMyEstimatedPhysicalDamage(calculateMyKickDamagePotential(path, enemy, twGame));
         }
 
         return returnResponse;
@@ -370,8 +370,8 @@ public class BasicPathRanker extends PathRanker {
 
     // The further I am from a target, the lower this path ranks (weighted by
     // Hyper Aggression.
-    protected double calculateAggressionMod(Entity movingUnit, MovePath path, Game game, StringBuilder formula) {
-        double distToEnemy = distanceToClosestEnemy(movingUnit, path.getFinalCoords(), game);
+    protected double calculateAggressionMod(Entity movingUnit, MovePath path, IGame IGame, StringBuilder formula) {
+        double distToEnemy = distanceToClosestEnemy(movingUnit, path.getFinalCoords(), IGame);
 
         if ((distToEnemy == 0) && !(movingUnit instanceof Infantry)) {
             distToEnemy = 2;
@@ -408,11 +408,11 @@ public class BasicPathRanker extends PathRanker {
     }
 
     // todo account for damaged locations and face those away from enemy.
-    private double calculateFacingMod(Entity movingUnit, Game game, final MovePath path,
-            StringBuilder formula) {
+    private double calculateFacingMod(Entity movingUnit, IGame IGame, final MovePath path,
+                                      StringBuilder formula) {
 
-        Targetable closest = findClosestEnemy(movingUnit, movingUnit.getPosition(), game, false);
-        Coords toFace = closest == null ? game.getBoard().getCenter() : closest.getPosition();
+        Targetable closest = findClosestEnemy(movingUnit, movingUnit.getPosition(), IGame, false);
+        Coords toFace = closest == null ? IGame.getBoard().getCenter() : closest.getPosition();
         int desiredFacing = (toFace.direction(movingUnit.getPosition()) + 3) % 6;
         int currentFacing = path.getFinalFacing();
         int facingDiff;
@@ -443,11 +443,11 @@ public class BasicPathRanker extends PathRanker {
      * If intentionally attempting to reach some board edge, favor paths that take
      * me closer to it.
      */
-    protected double calculateSelfPreservationMod(Entity movingUnit, MovePath path, Game game, StringBuilder formula) {
+    protected double calculateSelfPreservationMod(Entity movingUnit, MovePath path, IGame IGame, StringBuilder formula) {
         BehaviorType behaviorType = getOwner().getUnitBehaviorTracker().getBehaviorType(movingUnit, getOwner());
 
         if (behaviorType == BehaviorType.ForcedWithdrawal || behaviorType == BehaviorType.MoveToDestination) {
-            int newDistanceToHome = distanceToHomeEdge(path.getFinalCoords(), getOwner().getHomeEdge(movingUnit), game);
+            int newDistanceToHome = distanceToHomeEdge(path.getFinalCoords(), getOwner().getHomeEdge(movingUnit), IGame);
             double selfPreservation = getOwner().getBehaviorSettings().getSelfPreservationValue();
             double selfPreservationMod = 0;
 
@@ -485,15 +485,15 @@ public class BasicPathRanker extends PathRanker {
      * A path ranking
      */
     @Override
-    protected RankedPath rankPath(MovePath path, Game game, int maxRange, double fallTolerance, List<Entity> enemies,
-            Coords friendsCoords) {
+    protected RankedPath rankPath(MovePath path, TWGame twGame, int maxRange, double fallTolerance, List<Entity> enemies,
+                                  Coords friendsCoords) {
         Entity movingUnit = path.getEntity();
         StringBuilder formula = new StringBuilder("Calculation: {");
 
         if (blackIce == -1) {
-            blackIce = ((game.getOptions().booleanOption(OptionsConstants.ADVANCED_BLACK_ICE)
-                    && game.getPlanetaryConditions().getTemperature() <= PlanetaryConditions.BLACK_ICE_TEMP)
-                    || game.getPlanetaryConditions().getWeather().isIceStorm()) ? 1 : 0;
+            blackIce = ((twGame.getOptions().booleanOption(OptionsConstants.ADVANCED_BLACK_ICE)
+                    && twGame.getPlanetaryConditions().getTemperature() <= PlanetaryConditions.BLACK_ICE_TEMP)
+                    || twGame.getPlanetaryConditions().getWeather().isIceStorm()) ? 1 : 0;
         }
 
         // Copy the path to avoid inadvertent changes.
@@ -506,12 +506,12 @@ public class BasicPathRanker extends PathRanker {
         // look at all of my enemies
         FiringPhysicalDamage damageEstimate = new FiringPhysicalDamage();
 
-        double expectedDamageTaken = checkPathForHazards(pathCopy, movingUnit, game);
+        double expectedDamageTaken = checkPathForHazards(pathCopy, movingUnit, twGame);
 
         expectedDamageTaken += MinefieldUtil.checkPathForMinefieldHazards(pathCopy);
 
-        boolean extremeRange = game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE);
-        boolean losRange = game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS_RANGE);
+        boolean extremeRange = twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE);
+        boolean losRange = twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS_RANGE);
         for (Entity enemy : enemies) {
             // Skip ejected pilots.
             if (enemy instanceof MekWarrior) {
@@ -520,7 +520,7 @@ public class BasicPathRanker extends PathRanker {
 
             // Skip units not actually on the board.
             if (enemy.isOffBoard() || (enemy.getPosition() == null)
-                    || !game.getBoard().contains(enemy.getPosition())) {
+                    || !twGame.getBoard().contains(enemy.getPosition())) {
                 continue;
             }
 
@@ -534,7 +534,7 @@ public class BasicPathRanker extends PathRanker {
 
             if (evaluateAsMoved(enemy)) {
                 // For units that have already moved
-                eval = evaluateMovedEnemy(enemy, pathCopy, game);
+                eval = evaluateMovedEnemy(enemy, pathCopy, twGame);
             } else {
                 // For units that have not moved this round
                 eval = evaluateUnmovedEnemy(enemy, path, extremeRange, losRange);
@@ -571,12 +571,12 @@ public class BasicPathRanker extends PathRanker {
             expectedDamageTaken += friendlyArtilleryDamage;
         }
 
-        calcDamageToStrategicTargets(pathCopy, game, getOwner().getFireControlState(), damageEstimate);
+        calcDamageToStrategicTargets(pathCopy, twGame, getOwner().getFireControlState(), damageEstimate);
 
         // If I cannot kick because I am a clan unit and "No physical attacks for the
         // clans"
         // is enabled, set maximum physical damage for this path to zero.
-        if (game.getOptions().booleanOption(OptionsConstants.ALLOWED_NO_CLAN_PHYSICAL)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ALLOWED_NO_CLAN_PHYSICAL)
                 && path.getEntity().getCrew().isClanPilot()) {
             damageEstimate.physicalDamage = 0;
         }
@@ -604,7 +604,7 @@ public class BasicPathRanker extends PathRanker {
         if (!path.getEntity().isAirborneAeroOnGroundMap()) {
             // The further I am from a target, the lower this path ranks
             // (weighted by Aggression slider).
-            utility -= calculateAggressionMod(movingUnit, pathCopy, game, formula);
+            utility -= calculateAggressionMod(movingUnit, pathCopy, twGame, formula);
 
             // The further I am from my teammates, the lower this path
             // ranks (weighted by Herd Mentality).
@@ -612,14 +612,14 @@ public class BasicPathRanker extends PathRanker {
         }
 
         // Try to face the enemy.
-        double facingMod = calculateFacingMod(movingUnit, game, pathCopy, formula);
+        double facingMod = calculateFacingMod(movingUnit, twGame, pathCopy, formula);
         if (facingMod == -10000) {
             return new RankedPath(facingMod, pathCopy, formula.toString());
         }
         utility -= facingMod;
 
         // If I need to flee the board, I want to get closer to my home edge.
-        utility -= calculateSelfPreservationMod(movingUnit, pathCopy, game, formula);
+        utility -= calculateSelfPreservationMod(movingUnit, pathCopy, twGame, formula);
 
         // if we're an aircraft, we want to de-value paths that will force us off the
         // board
@@ -645,7 +645,7 @@ public class BasicPathRanker extends PathRanker {
      * Calculate who all other units would shoot at if I weren't around
      */
     @Override
-    public void initUnitTurn(Entity unit, Game game) {
+    public void initUnitTurn(Entity unit, IGame IGame) {
         bestDamageByEnemies.clear();
         List<Entity> enemies = getOwner().getEnemyEntities();
         List<Entity> friends = getOwner().getFriendEntities();
@@ -673,14 +673,14 @@ public class BasicPathRanker extends PathRanker {
         }
     }
 
-    protected void calcDamageToStrategicTargets(MovePath path, Game game,
+    protected void calcDamageToStrategicTargets(MovePath path, TWGame twGame,
             FireControlState fireControlState, FiringPhysicalDamage damageStructure) {
 
         for (int i = 0; i < fireControlState.getAdditionalTargets().size(); i++) {
             Targetable target = fireControlState.getAdditionalTargets().get(i);
 
             if (target.isOffBoard() || (target.getPosition() == null)
-                    || !game.getBoard().contains(target.getPosition())) {
+                    || !twGame.getBoard().contains(target.getPosition())) {
                 continue; // Skip targets not actually on the board.
             }
 
@@ -702,7 +702,7 @@ public class BasicPathRanker extends PathRanker {
                 PhysicalInfo myKick = new PhysicalInfo(
                         path.getEntity(), new EntityState(path), target,
                         null,
-                        PhysicalAttackType.RIGHT_KICK, game, getOwner(),
+                        PhysicalAttackType.RIGHT_KICK, twGame, getOwner(),
                         true);
                 double expectedKickDamage = myKick.getExpectedDamageOnHit() *
                         myKick.getProbabilityToHit();
@@ -719,11 +719,11 @@ public class BasicPathRanker extends PathRanker {
      *
      * @param me       {@link Entity} who has enemies
      * @param position {@link Coords} from which the closest enemy is found
-     * @param game     The current {@link Game}
+     * @param IGame     The current {@link TWGame}
      */
     @Override
-    public double distanceToClosestEnemy(Entity me, Coords position, Game game) {
-        Targetable closest = findClosestEnemy(me, position, game);
+    public double distanceToClosestEnemy(Entity me, Coords position, IGame IGame) {
+        Targetable closest = findClosestEnemy(me, position, IGame);
         if (closest == null) {
             return -1;
         }
@@ -733,9 +733,9 @@ public class BasicPathRanker extends PathRanker {
     /**
      * Gives the distance to the closest edge
      */
-    int distanceToClosestEdge(Coords position, Game game) {
-        int width = game.getBoard().getWidth();
-        int height = game.getBoard().getHeight();
+    int distanceToClosestEdge(Coords position, IGame IGame) {
+        int width = IGame.getBoard().getWidth();
+        int height = IGame.getBoard().getHeight();
         int minimum = position.getX();
         if ((width - position.getX()) < minimum) {
             minimum = position.getX();
@@ -749,7 +749,7 @@ public class BasicPathRanker extends PathRanker {
         return minimum;
     }
 
-    public double checkPathForHazards(MovePath path, Entity movingUnit, Game game) {
+    public double checkPathForHazards(MovePath path, Entity movingUnit, IGame IGame) {
         StringBuilder logMsg = new StringBuilder("Checking Path (")
                 .append(path.toString()).append(") for hazards.");
 
@@ -773,10 +773,10 @@ public class BasicPathRanker extends PathRanker {
             if (path.isJumping()) {
                 logMsg.append("\n\tJumping");
                 Coords endCoords = path.getFinalCoords();
-                Hex endHex = game.getBoard().getHex(endCoords);
+                Hex endHex = IGame.getBoard().getHex(endCoords);
                 return checkHexForHazards(endHex, movingUnit, true,
                         path.getLastStep(), true,
-                        path, game.getBoard(), logMsg);
+                        path, IGame.getBoard(), logMsg);
             }
 
             double totalHazard = 0;
@@ -787,11 +787,11 @@ public class BasicPathRanker extends PathRanker {
                 if ((coords == null) || coords.equals(previousCoords)) {
                     continue;
                 }
-                Hex hex = game.getBoard().getHex(coords);
+                Hex hex = IGame.getBoard().getHex(coords);
                 totalHazard += checkHexForHazards(hex, movingUnit,
                         lastStep.equals(step), step,
                         false, path,
-                        game.getBoard(), logMsg);
+                        IGame.getBoard(), logMsg);
                 previousCoords = coords;
             }
             logMsg.append("\nCompiled Hazard for Path (")

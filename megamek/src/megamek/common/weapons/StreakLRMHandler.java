@@ -20,7 +20,7 @@ import java.util.Vector;
 import megamek.common.Compute;
 import megamek.common.Coords;
 import megamek.common.Entity;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Infantry;
 import megamek.common.Minefield;
 import megamek.common.Report;
@@ -38,13 +38,13 @@ public class StreakLRMHandler extends StreakHandler {
      * @param g
      * @param m
      */
-    public StreakLRMHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public StreakLRMHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#calcDamagePerHit()
      */
     @Override
@@ -61,7 +61,7 @@ public class StreakLRMHandler extends StreakHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#calcnCluster()
      */
     @Override
@@ -71,7 +71,7 @@ public class StreakLRMHandler extends StreakHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * megamek.common.weapons.WeaponHandler#specialResolution(java.util.Vector,
      * megamek.common.Entity, boolean)
@@ -84,7 +84,7 @@ public class StreakLRMHandler extends StreakHandler {
             r.subject = subjectId;
             vPhaseReport.addElement(r);
             Coords coords = target.getPosition();
-            Enumeration<Minefield> minefields = game.getMinefields(coords)
+            Enumeration<Minefield> minefields = twGame.getMinefields(coords)
                     .elements();
             ArrayList<Minefield> mfRemoved = new ArrayList<>();
             while (minefields.hasMoreElements()) {

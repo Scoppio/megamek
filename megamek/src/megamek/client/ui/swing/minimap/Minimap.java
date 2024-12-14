@@ -136,7 +136,7 @@ public final class Minimap extends JPanel implements IPreferenceChangeListener {
 
     private BufferedImage mapImage;
     private final BoardView bv;
-    private final Game game;
+    private final TWGame twGame;
     private Board board;
     private final JDialog dialog;
     private Client client;
@@ -181,11 +181,11 @@ public final class Minimap extends JPanel implements IPreferenceChangeListener {
      *
      * @param parent The frame to use as parent frame for the dialog
      * @param bv     Optional: A boardview showing the map
-     * @param game   A game containing at least the board, but not necessarily
+     * @param IGame   A game containing at least the board, but not necessarily
      *               anything else
      * @param cg     Optional: A ClientGUI object housing this minimap
      */
-    public static JDialog createMinimap(JFrame parent, @Nullable BoardView bv, Game game, @Nullable ClientGUI cg) {
+    public static JDialog createMinimap(JFrame parent, @Nullable BoardView bv, IGame IGame, @Nullable ClientGUI cg) {
         var result = new JDialog(parent, Messages.getString("ClientGUI.Minimap"), false);
 
         result.setLocation(GUIP.getMinimapPosX(), GUIP.getMinimapPosY());
@@ -197,7 +197,7 @@ public final class Minimap extends JPanel implements IPreferenceChangeListener {
             }
         });
 
-        result.add(new Minimap(result, game, bv, cg));
+        result.add(new Minimap(result, IGame, bv, cg));
         result.pack();
         return result;
     }
@@ -209,22 +209,22 @@ public final class Minimap extends JPanel implements IPreferenceChangeListener {
 
     /** Returns a minimap image of the given board at the given zoom index. */
     public static BufferedImage getMinimapImage(Board board, int zoom) {
-        Game game = new Game();
-        game.setBoard(board);
-        return getMinimapImage(game, null, zoom);
+        TWGame twGame = new TWGame();
+        twGame.setBoard(board);
+        return getMinimapImage(twGame, null, zoom);
     }
 
     /**
      * Returns a minimap image of the given board at the given zoom index. The
      * game and boardview object will be used to display additional information.
      */
-    public static BufferedImage getMinimapImage(Game game, BoardView bv, int zoom) {
+    public static BufferedImage getMinimapImage(IGame IGame, BoardView bv, int zoom) {
         try {
             // Send the fail image when the zoom index is wrong to make this noticeable
             if ((zoom < MIM_ZOOM) || (zoom > MAX_ZOOM)) {
                 throw new Exception("The given zoom index is out of bounds.");
             }
-            Minimap tempMM = new Minimap(null, game, bv, null);
+            Minimap tempMM = new Minimap(null, IGame, bv, null);
             tempMM.zoom = zoom;
             tempMM.initializeMap();
             tempMM.drawMap(true);
@@ -245,9 +245,9 @@ public final class Minimap extends JPanel implements IPreferenceChangeListener {
      * used to create a snapshot image. When a boardview is given, the visible area
      * is shown.
      */
-    private Minimap(@Nullable JDialog dlg, Game g, @Nullable BoardView bview, @Nullable ClientGUI cg) {
-        game = Objects.requireNonNull(g);
-        board = Objects.requireNonNull(game.getBoard());
+    private Minimap(@Nullable JDialog dlg, IGame g, @Nullable BoardView bview, @Nullable ClientGUI cg) {
+        TWGame = Objects.requireNonNull(g);
+        board = Objects.requireNonNull(twGame.getBoard());
         bv = bview;
         dialog = dlg;
         clientGui = cg;
@@ -268,7 +268,7 @@ public final class Minimap extends JPanel implements IPreferenceChangeListener {
      * are not null).
      */
     private void initializeListeners() {
-        game.addGameListener(gameListener);
+        twGame.addGameListener(gameListener);
         board.addBoardListener(boardListener);
         if (bv != null) {
             bv.addBoardViewListener(boardViewListener);
@@ -551,7 +551,7 @@ public final class Minimap extends JPanel implements IPreferenceChangeListener {
                     }
                     addRoadElements(h, j, k);
                     // Color invalid hexes red when in the Map Editor
-                    if ((game != null) && game.getPhase().isUnknown() && !h.isValid(null)) {
+                    if ((TWGame != null) && twGame.getPhase().isUnknown() && !h.isValid(null)) {
                         gg.setColor(GUIP.getWarningColor());
                         paintCoord(gg, j, k, true);
                     }
@@ -581,16 +581,16 @@ public final class Minimap extends JPanel implements IPreferenceChangeListener {
             drawDeploymentZone(g);
 
             if (symbolsDisplayMode == SHOW_SYMBOLS) {
-                if (null != game) {
+                if (null != TWGame) {
                     // draw declared fire
-                    for (EntityAction action : game.getActionsVector()) {
+                    for (EntityAction action : twGame.getActionsVector()) {
                         if (action instanceof AttackAction) {
                             paintAttack(g, (AttackAction) action);
                         }
                     }
 
                     multiUnits.clear();
-                    for (Entity e : game.getEntitiesVector()) {
+                    for (Entity e : twGame.getEntitiesVector()) {
                         if (e.getPosition() != null) {
                             paintUnit(g, e);
                         }
@@ -613,9 +613,9 @@ public final class Minimap extends JPanel implements IPreferenceChangeListener {
 
     /** Indicates the deployment hexes. */
     private void drawDeploymentZone(Graphics g) {
-        if ((null != client) && (null != game) && game.getPhase().isDeployment() && (dialog != null)
+        if ((null != client) && (null != TWGame) && twGame.getPhase().isDeployment() && (dialog != null)
                 && (bv.getDeployingEntity() != null)) {
-            GameTurn turn = game.getTurn();
+            GameTurn turn = twGame.getTurn();
             if ((turn != null) && (turn.playerId() == client.getLocalPlayer().getId())) {
                 Entity deployingUnit = bv.getDeployingEntity();
 
@@ -898,8 +898,8 @@ public final class Minimap extends JPanel implements IPreferenceChangeListener {
      * Draw a line to represent an attack
      */
     private void paintAttack(Graphics g, AttackAction attack) {
-        Entity source = game.getEntity(attack.getEntityId());
-        Targetable target = game.getTarget(attack.getTargetType(), attack.getTargetId());
+        Entity source = twGame.getEntity(attack.getEntityId());
+        Targetable target = twGame.getTarget(attack.getTargetType(), attack.getTargetId());
         // sanity check...
         if ((null == source) || (null == target)) {
             return;
@@ -912,7 +912,7 @@ public final class Minimap extends JPanel implements IPreferenceChangeListener {
         if (attack instanceof WeaponAttackAction) {
             WeaponAttackAction waa = (WeaponAttackAction) attack;
             if ((attack.getTargetType() == Targetable.TYPE_HEX_ARTILLERY)
-                    && (waa.getEntity(game).getOwner().getId() != client.getLocalPlayer().getId())) {
+                    && (waa.getEntity(twGame).getOwner().getId() != client.getLocalPlayer().getId())) {
                 return;
             }
         }
@@ -946,14 +946,14 @@ public final class Minimap extends JPanel implements IPreferenceChangeListener {
         g.drawPolygon(xPoints, yPoints, 4);
 
         // if this is mutual fire, draw a half-and-half line
-        for (EntityAction action : game.getActionsVector()) {
+        for (EntityAction action : twGame.getActionsVector()) {
             if (action instanceof AttackAction) {
                 AttackAction otherAttack = (AttackAction) action;
                 if ((attack.getEntityId() == otherAttack.getTargetId())
                         && (otherAttack.getEntityId() == attack.getTargetId())) {
                     // attackTarget _must_ be an entity since it's shooting back
                     // (?)
-                    Entity attackTarget = game.getEntity(otherAttack.getEntityId());
+                    Entity attackTarget = twGame.getEntity(otherAttack.getEntityId());
                     g.setColor(attackTarget.getOwner().getColour().getColour());
 
                     xPoints[0] = xPoints[3];
@@ -998,7 +998,7 @@ public final class Minimap extends JPanel implements IPreferenceChangeListener {
             g.setColor(Color.RED);
             g.drawString(sensorReturn, baseX - width, baseY + height);
             return;
-        } else if (!EntityVisibilityUtils.detectedOrHasVisual(bv.getLocalPlayer(), game, entity)) {
+        } else if (!EntityVisibilityUtils.detectedOrHasVisual(bv.getLocalPlayer(), twGame, entity)) {
             // This unit is not visible, don't draw it
             return;
         }
@@ -1468,14 +1468,14 @@ public final class Minimap extends JPanel implements IPreferenceChangeListener {
                             || e.getOldPhase().isPrefiring() || e.getOldPhase().isFiring()
                             || e.getOldPhase().isPhysical())) {
 
-                File dir = new File(Configuration.gameSummaryImagesMMDir(), game.getUUIDString());
+                File dir = new File(Configuration.gameSummaryImagesMMDir(), twGame.getUUIDString());
                 if (!dir.exists()) {
                     dir.mkdirs();
                 }
-                File imgFile = new File(dir, "round_" + game.getRoundCount() + "_" + e.getOldPhase().ordinal() + "_"
+                File imgFile = new File(dir, "round_" + twGame.getRoundCount() + "_" + e.getOldPhase().ordinal() + "_"
                         + e.getOldPhase() + ".png");
                 try {
-                    ImageIO.write(getMinimapImage(game, bv, GAME_SUMMARY_ZOOM), "png", imgFile);
+                    ImageIO.write(getMinimapImage(twGame, bv, GAME_SUMMARY_ZOOM), "png", imgFile);
                 } catch (Exception ex) {
                     logger.error(ex, "");
                 }

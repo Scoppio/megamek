@@ -60,11 +60,11 @@ public class PlanetaryConditionsOverlay extends AbstractBoardViewOverlay {
         Color colorHot = GUIP.getPlanetaryConditionsColorHot();
         Color colorCold = GUIP.getPlanetaryConditionsColorCold();
 
-        if (clientGui != null && !currentGame.getBoard().inSpace()) {
+        if (clientGui != null && !currenttwGame.getBoard().inSpace()) {
             // In a game, not the Board Editor
 
             String tempColor = "";
-            PlanetaryConditions conditions = currentGame.getPlanetaryConditions();
+            PlanetaryConditions conditions = currenttwGame.getPlanetaryConditions();
             int temp = conditions.getTemperature();
 
             if (conditions.isExtremeTemperatureHeat()) {

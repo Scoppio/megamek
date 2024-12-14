@@ -231,8 +231,8 @@ public class ShortestPathFinder extends MovePathFinder<MovePath> {
     }
 
     private ShortestPathFinder(EdgeRelaxer<MovePath, MovePath> costRelaxer,
-            Comparator<MovePath> comparator, final MoveStepType stepType, Game game) {
-        super(costRelaxer, new NextStepsAdjacencyMap(stepType), comparator, game);
+            Comparator<MovePath> comparator, final MoveStepType stepType, IGame IGame) {
+        super(costRelaxer, new NextStepsAdjacencyMap(stepType), comparator, IGame);
     }
 
     /**
@@ -243,17 +243,17 @@ public class ShortestPathFinder extends MovePathFinder<MovePath> {
      *
      * @param destination
      * @param stepType
-     * @param game        The current {@link Game}
+     * @param twGame        The current {@link TWGame}
      */
     public static ShortestPathFinder newInstanceOfAStar(final Coords destination,
-            final MoveStepType stepType, final Game game) {
+            final MoveStepType stepType, final TWGame twGame) {
         final ShortestPathFinder spf = new ShortestPathFinder(
                 new ShortestPathFinder.MovePathRelaxer(),
-                new ShortestPathFinder.MovePathAStarComparator(destination, stepType, game.getBoard()),
-                stepType, game);
+                new ShortestPathFinder.MovePathAStarComparator(destination, stepType, twGame.getBoard()),
+                stepType, twGame);
 
         spf.addStopCondition(new DestinationReachedStopCondition(destination));
-        spf.addFilter(new MovePathLegalityFilter(game));
+        spf.addFilter(new MovePathLegalityFilter(twGame));
         return spf;
     }
 
@@ -264,16 +264,16 @@ public class ShortestPathFinder extends MovePathFinder<MovePath> {
      *
      * @param maxMP    maximum MP that entity can use
      * @param stepType
-     * @param game     The current {@link Game}
+     * @param twGame     The current {@link TWGame}
      */
     public static ShortestPathFinder newInstanceOfOneToAll(final int maxMP, final MoveStepType stepType,
-            final Game game) {
+            final TWGame twGame) {
         final ShortestPathFinder spf = new ShortestPathFinder(
                 new ShortestPathFinder.MovePathRelaxer(),
                 new ShortestPathFinder.MovePathMPCostComparator(),
-                stepType, game);
+                stepType, twGame);
         spf.addFilter(new MovePathLengthFilter(maxMP));
-        spf.addFilter(new MovePathLegalityFilter(game));
+        spf.addFilter(new MovePathLegalityFilter(twGame));
         return spf;
     }
 
@@ -283,18 +283,18 @@ public class ShortestPathFinder extends MovePathFinder<MovePath> {
      *
      * @param maxMP    maximum MP that entity can use
      * @param stepType
-     * @param game     The current {@link Game}
+     * @param twGame     The current {@link TWGame}
      * @return - Customized ShortestPathFinder specifically for Aerodyne unit move
      *         envelope.
      */
     public static ShortestPathFinder newInstanceOfOneToAllAero(final int maxMP, final MoveStepType stepType,
-            final Game game) {
+            final TWGame twGame) {
         final ShortestPathFinder spf = new ShortestPathFinder(
                 new ShortestPathFinder.AeroMovePathRelaxer(),
                 new ShortestPathFinder.MovePathLengthComparator(),
-                stepType, game);
+                stepType, twGame);
         spf.addFilter(new MovePathLengthFilter(maxMP));
-        spf.addFilter(new MovePathLegalityFilter(game));
+        spf.addFilter(new MovePathLegalityFilter(twGame));
         return spf;
     }
 
@@ -304,11 +304,11 @@ public class ShortestPathFinder extends MovePathFinder<MovePath> {
      * destination.
      */
     public static ShortestPathFinder newInstanceOfGreedy(final Coords destination, final MoveStepType stepType,
-            final Game game) {
+            final IGame IGame) {
 
         final ShortestPathFinder spf = new ShortestPathFinder(new ShortestPathFinder.MovePathRelaxer(),
                 new MovePathGreedyComparator(destination),
-                stepType, game);
+                stepType, IGame);
 
         spf.addStopCondition(new DestinationReachedStopCondition(destination));
         spf.addFilter(new MovePathGreedyFilter(destination));

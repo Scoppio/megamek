@@ -34,7 +34,7 @@ public class LRMSmokeWarheadHandler extends LRMHandler {
     @Serial
     private static final long serialVersionUID = -30934685350251837L;
 
-    public LRMSmokeWarheadHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public LRMSmokeWarheadHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 
@@ -54,7 +54,7 @@ public class LRMSmokeWarheadHandler extends LRMHandler {
         } else {
             // scatterable LRMs scatter like dive bombing
             coords = Compute.scatter(coords, 1);
-            if (game.getBoard().contains(coords)) {
+            if (twGame.getBoard().contains(coords)) {
                 // misses and scatters to another hex
                 Report r = new Report(3195);
                 r.subject = subjectId;

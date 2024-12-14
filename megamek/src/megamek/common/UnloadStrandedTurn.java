@@ -115,11 +115,11 @@ public class UnloadStrandedTurn extends GameTurn {
      * Determine if the given entity is a valid one to use for this turn.
      *
      * @param entity the <code>Entity</code> being tested for the move.
-     * @param game   The {@link Game} the entity belongs to
+     * @param twGame   The {@link TWGame} the entity belongs to
      * @return <code>true</code> if the entity can be moved.
      */
     @Override
-    public boolean isValidEntity(final @Nullable Entity entity, final Game game) {
+    public boolean isValidEntity(final @Nullable Entity entity, final TWGame twGame) {
         // Null entities don't need to be checked.
         if (entity == null) {
             return false;
@@ -134,8 +134,8 @@ public class UnloadStrandedTurn extends GameTurn {
      * @return true if the player and entity are both valid.
      */
     @Override
-    public boolean isValid(final int playerId, final @Nullable Entity entity, final Game game) {
-        return isValidEntity(entity, game) && (entity.getOwnerId() == playerId);
+    public boolean isValid(final int playerId, final @Nullable Entity entity, final TWGame twGame) {
+        return isValidEntity(entity, twGame) && (entity.getOwnerId() == playerId);
     }
 
     /**
@@ -143,10 +143,10 @@ public class UnloadStrandedTurn extends GameTurn {
      */
     @Override
     public boolean isValid(int playerId, IGame game) {
-        Game actualGame = (Game) game;
+        TWGame actualTWGame = (TWGame) game;
         return IntStream.range(0, entityIds.length)
-                .anyMatch(index -> (actualGame.getEntity(entityIds[index]) != null)
-                        && (playerId == actualGame.getEntity(entityIds[index]).getOwnerId()));
+                .anyMatch(index -> (actualtwGame.getEntity(entityIds[index]) != null)
+                        && (playerId == actualtwGame.getEntity(entityIds[index]).getOwnerId()));
     }
 
     @Override

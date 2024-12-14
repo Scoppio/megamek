@@ -162,7 +162,7 @@ public class Sensor implements Serializable {
         }
     }
 
-    public int adjustRange(int range, Game game, LosEffects los) {
+    public int adjustRange(int range, TWGame twGame, LosEffects los) {
 
         if (((type == TYPE_MEK_RADAR) || (type == TYPE_VEE_RADAR)
                 || (type == TYPE_VEE_MAGSCAN) || (type == TYPE_MEK_MAGSCAN))
@@ -173,16 +173,16 @@ public class Sensor implements Serializable {
         if (los.isBlockedByHill()
                 && (type != TYPE_MEK_SEISMIC)
                 && (type != TYPE_VEE_SEISMIC)
-                && ((type != TYPE_MEK_MAGSCAN) || game.getOptions()
+                && ((type != TYPE_MEK_MAGSCAN) || twGame.getOptions()
                         .booleanOption(OptionsConstants.ADVANCED_MAGSCAN_NOHILLS))
-                && ((type != TYPE_VEE_MAGSCAN) || game.getOptions()
+                && ((type != TYPE_VEE_MAGSCAN) || twGame.getOptions()
                         .booleanOption(OptionsConstants.ADVANCED_MAGSCAN_NOHILLS)) && !isBAP()) {
             return 0;
         }
 
         //TO:AR 6th ed. p 190
         if ((type != TYPE_MEK_SEISMIC) && (type != TYPE_VEE_SEISMIC)) {
-            PlanetaryConditions conditions = game.getPlanetaryConditions();
+            PlanetaryConditions conditions = twGame.getPlanetaryConditions();
             if (conditions.isEMI()) {
                 range -= 4;
             }
@@ -199,12 +199,12 @@ public class Sensor implements Serializable {
         }
 
         if ((type == TYPE_MEK_IR) || (type == TYPE_VEE_IR)) {
-            range -= game.getPlanetaryConditions().getTemperatureDifference(50,
+            range -= twGame.getPlanetaryConditions().getTemperatureDifference(50,
                     -30);
         }
 
         //Most spacecraft sensors only work in space...
-        if (!game.getBoard().inSpace() &&
+        if (!twGame.getBoard().inSpace() &&
                 (type == TYPE_SPACECRAFT_ESM
                 || type == TYPE_SPACECRAFT_THERMAL
                 || type == TYPE_AERO_THERMAL)) {
@@ -212,12 +212,12 @@ public class Sensor implements Serializable {
         }
 
         //Aero/Small Craft Active Sensors have longer range in space
-        if (game.getBoard().inSpace() && type == TYPE_AERO_SENSOR) {
+        if (twGame.getBoard().inSpace() && type == TYPE_AERO_SENSOR) {
             range = ASF_RADAR_MAX_RANGE;
         }
 
         //DropShip radar has reduced range when not in space
-        if (!game.getBoard().inSpace() && type == TYPE_SPACECRAFT_RADAR) {
+        if (!twGame.getBoard().inSpace() && type == TYPE_SPACECRAFT_RADAR) {
             range = LC_RADAR_GROUND_RANGE;
         }
 
@@ -500,7 +500,7 @@ public class Sensor implements Serializable {
         }
     }
 
-    public int entityAdjustments(int range, Entity target, Game game) {
+    public int entityAdjustments(int range, Entity target, IGame IGame) {
         // You need to have moved to be detected by seismic and be on the ground
         if (((type == TYPE_MEK_SEISMIC) || (type == TYPE_VEE_SEISMIC))
                 && ((target.mpUsed == 0) || (target.getElevation() > 0))) {
@@ -517,8 +517,8 @@ public class Sensor implements Serializable {
 
             range += target.heat / 5;
 
-            if ((null != game.getBoard().getHex(target.getPosition()))
-                    && game.getBoard().getHex(target.getPosition()).containsTerrain(Terrains.FIRE)) {
+            if ((null != IGame.getBoard().getHex(target.getPosition()))
+                    && IGame.getBoard().getHex(target.getPosition()).containsTerrain(Terrains.FIRE)) {
                 range += 1;
             }
         }
@@ -534,8 +534,8 @@ public class Sensor implements Serializable {
                 range = 0;
             }
 
-            if ((null != game.getBoard().getHex(target.getPosition()))
-                    && game.getBoard().getHex(target.getPosition()).containsTerrain(Terrains.INDUSTRIAL)) {
+            if ((null != IGame.getBoard().getHex(target.getPosition()))
+                    && IGame.getBoard().getHex(target.getPosition()).containsTerrain(Terrains.INDUSTRIAL)) {
                 return 0;
             }
         }

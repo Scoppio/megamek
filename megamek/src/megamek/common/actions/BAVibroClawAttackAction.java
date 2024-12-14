@@ -41,13 +41,13 @@ public class BAVibroClawAttackAction extends AbstractAttackAction {
         return Compute.missilesHit(((BattleArmor) entity).getShootingStrength()) * entity.getVibroClaws();
     }
 
-    public ToHitData toHit(Game game) {
-        return toHit(game, getEntityId(), game.getTarget(getTargetType(),
+    public ToHitData toHit(TWGame twGame) {
+        return toHit(twGame, getEntityId(), twGame.getTarget(getTargetType(),
                 getTargetId()));
     }
 
-    public static ToHitData toHit(Game game, int attackerId, Targetable target) {
-        final Entity ae = game.getEntity(attackerId);
+    public static ToHitData toHit(TWGame twGame, int attackerId, Targetable target) {
+        final Entity ae = twGame.getEntity(attackerId);
         int targetId = Entity.NONE;
         Entity te = null;
         // arguments legal?
@@ -65,7 +65,7 @@ public class BAVibroClawAttackAction extends AbstractAttackAction {
             targetId = target.getId();
         }
 
-        if (!game.getOptions().booleanOption(OptionsConstants.BASE_FRIENDLY_FIRE)) {
+        if (!twGame.getOptions().booleanOption(OptionsConstants.BASE_FRIENDLY_FIRE)) {
             // a friendly unit can never be the target of a direct attack.
             if ((target.getTargetType() == Targetable.TYPE_ENTITY)
                     && ((((Entity) target).getOwnerId() == ae.getOwnerId())
@@ -77,13 +77,13 @@ public class BAVibroClawAttackAction extends AbstractAttackAction {
             }
         }
 
-        final Hex attHex = game.getBoard().getHex(ae.getPosition());
-        final Hex targHex = game.getBoard().getHex(target.getPosition());
+        final Hex attHex = twGame.getBoard().getHex(ae.getPosition());
+        final Hex targHex = twGame.getBoard().getHex(target.getPosition());
         if ((attHex == null) || (targHex == null)) {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "off board");
         }
 
-        boolean inSameBuilding = Compute.isInSameBuilding(game, ae, te);
+        boolean inSameBuilding = Compute.isInSameBuilding(twGame, ae, te);
 
         ToHitData toHit;
 
@@ -152,16 +152,16 @@ public class BAVibroClawAttackAction extends AbstractAttackAction {
         toHit = new ToHitData(base, "base");
 
         // attacker movement
-        toHit.append(Compute.getAttackerMovementModifier(game, attackerId));
+        toHit.append(Compute.getAttackerMovementModifier(twGame, attackerId));
 
         // target movement
-        toHit.append(Compute.getTargetMovementModifier(game, targetId));
+        toHit.append(Compute.getTargetMovementModifier(twGame, targetId));
 
         // attacker terrain
-        toHit.append(Compute.getAttackerTerrainModifier(game, attackerId));
+        toHit.append(Compute.getAttackerTerrainModifier(twGame, attackerId));
 
         // target terrain
-        toHit.append(Compute.getTargetTerrainModifier(game, te, 0, inSameBuilding));
+        toHit.append(Compute.getTargetTerrainModifier(twGame, te, 0, inSameBuilding));
 
         // attacker is spotting
         if (ae.isSpotting()) {
@@ -176,9 +176,9 @@ public class BAVibroClawAttackAction extends AbstractAttackAction {
         // target immobile
         toHit.append(Compute.getImmobileMod(te));
 
-        toHit.append(nightModifiers(game, target, null, ae, false));
+        toHit.append(nightModifiers(twGame, target, null, ae, false));
 
-        Compute.modifyPhysicalBTHForAdvantages(ae, te, toHit, game);
+        Compute.modifyPhysicalBTHForAdvantages(ae, te, toHit, twGame);
 
         // factor in target side
         toHit.setSideTable(Compute.targetSideTable(ae, te));

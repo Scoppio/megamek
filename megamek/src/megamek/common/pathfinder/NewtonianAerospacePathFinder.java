@@ -24,8 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import megamek.common.Game;
 import megamek.common.IAero;
+import megamek.common.IGame;
 import megamek.common.MovePath;
 import megamek.common.MovePath.MoveStepType;
 import megamek.common.pathfinder.MovePathFinder.CoordsWithFacing;
@@ -41,7 +41,7 @@ import megamek.logging.MMLogger;
 public class NewtonianAerospacePathFinder {
     private static final MMLogger logger = MMLogger.create(NewtonianAerospacePathFinder.class);
 
-    private Game game;
+    private IGame IGame;
     protected List<MovePath> aerospacePaths;
     protected MovePath offBoardPath;
 
@@ -51,8 +51,8 @@ public class NewtonianAerospacePathFinder {
     // This is a list of all possible moves
     protected List<MoveStepType> moves;
 
-    protected NewtonianAerospacePathFinder(Game game) {
-        this.game = game;
+    protected NewtonianAerospacePathFinder(IGame IGame) {
+        this.IGame = IGame;
 
         initializeMoveList();
     }
@@ -115,8 +115,8 @@ public class NewtonianAerospacePathFinder {
         }
     }
 
-    public static NewtonianAerospacePathFinder getInstance(Game game) {
-        return new NewtonianAerospacePathFinder(game);
+    public static NewtonianAerospacePathFinder getInstance(IGame IGame) {
+        return new NewtonianAerospacePathFinder(IGame);
     }
 
     /**
@@ -181,7 +181,7 @@ public class NewtonianAerospacePathFinder {
 
             // keep track of a single path that takes us off board, if there is such a thing
             // this should always be the shortest one.
-            if (game.getBoard().getHex(pathDestination.getCoords()) == null &&
+            if (IGame.getBoard().getHex(pathDestination.getCoords()) == null &&
                     (offBoardPath == null || childPath.getMpUsed() < offBoardPath.getMpUsed())) {
                 offBoardPath = childPath;
             }

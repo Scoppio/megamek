@@ -21,7 +21,7 @@ package megamek.common.weapons;
 
 import java.util.Vector;
 
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Report;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
@@ -39,13 +39,13 @@ public class PrototypeGaussHandler extends GRHandler {
      * @param w
      * @param g
      */
-    public PrototypeGaussHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public PrototypeGaussHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#doChecks(java.util.Vector)
      */
     @Override

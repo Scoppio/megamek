@@ -19,7 +19,7 @@
  */
 package megamek.server.victory;
 
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Player;
 
 import java.io.Serializable;
@@ -32,13 +32,13 @@ import java.util.Map;
 public class PlayerAgreedVictory implements VictoryCondition, Serializable {
 
     @Override
-    public VictoryResult checkVictory(Game game, Map<String, Object> ctx) {
-        if (!game.isForceVictory()) {
+    public VictoryResult checkVictory(TWGame twGame, Map<String, Object> ctx) {
+        if (!twGame.isForceVictory()) {
             return VictoryResult.noResult();
         }
-        final int victoryPlayerId = game.getVictoryPlayerId();
-        final int victoryTeam = game.getVictoryTeam();
-        List<Player> activePlayers = game.getPlayersList();
+        final int victoryPlayerId = twGame.getVictoryPlayerId();
+        final int victoryTeam = twGame.getVictoryTeam();
+        List<Player> activePlayers = twGame.getPlayersList();
         activePlayers.removeIf(Player::isObserver);
         boolean forceVictory = true;
 

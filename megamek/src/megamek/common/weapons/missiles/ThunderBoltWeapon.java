@@ -19,7 +19,7 @@
  */
 package megamek.common.weapons.missiles;
 
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.SimpleTechLevel;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
@@ -61,15 +61,15 @@ public abstract class ThunderBoltWeapon extends MissileWeapon {
 
     @Override
     protected AttackHandler getCorrectHandler(ToHitData toHit,
-            WeaponAttackAction waa, Game game, TWGameManager manager) {
-        return new ThunderBoltWeaponHandler(toHit, waa, game, manager);
+                                              WeaponAttackAction waa, TWGame twGame, TWGameManager manager) {
+        return new ThunderBoltWeaponHandler(toHit, waa, twGame, manager);
     }
 
     @Override
     public boolean hasIndirectFire() {
         return true;
     }
-    
+
     @Override
     public void adaptToGameOptions(GameOptions gOp) {
         super.adaptToGameOptions(gOp);

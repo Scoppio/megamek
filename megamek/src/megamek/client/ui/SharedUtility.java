@@ -46,7 +46,7 @@ public class SharedUtility {
 
     /**
      * Function that carries out PSR checks specific only to airborne aero units
-     * 
+     *
      * @param md           The path to check
      * @param stringResult Whether to return the report as a string
      * @return Collection of PSRs that will be required for this activity
@@ -56,7 +56,7 @@ public class SharedUtility {
         List<TargetRoll> psrList = new ArrayList<>();
 
         final Entity entity = md.getEntity();
-        final Game game = entity.getGame();
+        final TWGame twGame = entity.getGame();
         // okay, proceed with movement calculations
         Coords curPos = entity.getPosition();
         int curFacing = entity.getFacing();
@@ -115,7 +115,7 @@ public class SharedUtility {
             // Check for Ejecting
             if (step.getType() == MoveStepType.EJECT
                     && (entity.isFighter())) {
-                rollTarget = TWGameManager.getEjectModifiers(game, entity, 0, false);
+                rollTarget = TWGameManager.getEjectModifiers(twGame, entity, 0, false);
                 checkNag(rollTarget, nagReport, psrList);
             }
         }
@@ -127,7 +127,7 @@ public class SharedUtility {
         checkNag(rollTarget, nagReport, psrList);
 
         // Atmospheric checks
-        if (!game.getBoard().inSpace() && !md.contains(MoveStepType.LAND)
+        if (!twGame.getBoard().inSpace() && !md.contains(MoveStepType.LAND)
                 && !md.contains(MoveStepType.VLAND)) {
             // check to see if velocity is 2x thrust
             rollTarget = a.checkVelocityDouble(md.getFinalVelocity(),
@@ -166,7 +166,7 @@ public class SharedUtility {
         List<TargetRoll> psrList = new ArrayList<>();
 
         final Entity entity = md.getEntity();
-        final Game game = entity.getGame();
+        final TWGame twGame = entity.getGame();
         // okay, proceed with movement calculations
         Coords lastPos = entity.getPosition();
         Coords curPos = entity.getPosition();
@@ -178,7 +178,7 @@ public class SharedUtility {
         EntityMovementType overallMoveType = EntityMovementType.MOVE_NONE;
         boolean firstStep;
         int prevFacing = curFacing;
-        Hex prevHex = game.getBoard().getHex(curPos);
+        Hex prevHex = twGame.getBoard().getHex(curPos);
         final boolean isInfantry = (entity instanceof Infantry);
 
         PilotingRollData rollTarget;
@@ -224,7 +224,7 @@ public class SharedUtility {
             curFacing = step.getFacing();
             curElevation = step.getElevation();
 
-            final Hex curHex = game.getBoard().getHex(curPos);
+            final Hex curHex = twGame.getBoard().getHex(curPos);
 
             // check for vertical takeoff
             if ((step.getType() == MoveStepType.VTAKEOFF)
@@ -250,8 +250,8 @@ public class SharedUtility {
             // check for leap
             if (!lastPos.equals(curPos) && (moveType != EntityMovementType.MOVE_JUMP) && (entity instanceof Mek)
                     && !entity.isAirborne() && (step.getClearance() <= 0) // Don't check airborne LAMs
-                    && game.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_LEAPING)) {
-                int leapDistance = (lastElevation + game.getBoard().getHex(lastPos).getLevel())
+                    && twGame.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_LEAPING)) {
+                int leapDistance = (lastElevation + twGame.getBoard().getHex(lastPos).getLevel())
                         - (curElevation + curHex.getLevel());
                 if (leapDistance > 2) {
                     rollTarget = entity.getBasePilotingRoll(moveType);
@@ -372,14 +372,14 @@ public class SharedUtility {
                         if (step.getMpUsed() > entity.getJumpMP(MPCalculationSetting.NO_GRAVITY)) {
                             rollTarget = entity.checkMovedTooFast(step, overallMoveType);
                             checkNag(rollTarget, nagReport, psrList);
-                        } else if ((game.getPlanetaryConditions().getGravity() > 1)
+                        } else if ((twGame.getPlanetaryConditions().getGravity() > 1)
                                 && ((origWalkMP - gravWalkMP) > 0)) {
                             rollTarget = entity.getBasePilotingRoll(md.getLastStepMovementType());
                             entity.addPilotingModifierForTerrain(rollTarget, step);
-                            int gravMod = game.getPlanetaryConditions()
+                            int gravMod = twGame.getPlanetaryConditions()
                                     .getGravityPilotPenalty();
-                            if ((gravMod != 0) && !game.getBoard().inSpace()) {
-                                rollTarget.addModifier(gravMod, game
+                            if ((gravMod != 0) && !twGame.getBoard().inSpace()) {
+                                rollTarget.addModifier(gravMod, TWGame
                                         .getPlanetaryConditions().getGravity()
                                         + "G gravity");
                             }
@@ -447,7 +447,7 @@ public class SharedUtility {
                 Building bldg = null;
                 String reason = "entering";
                 if ((buildingMove & 2) == 2) {
-                    bldg = game.getBoard().getBuildingAt(curPos);
+                    bldg = twGame.getBoard().getBuildingAt(curPos);
                 }
 
                 if (bldg != null) {
@@ -461,7 +461,7 @@ public class SharedUtility {
                 checkNag(rollTarget, nagReport, psrList);
             }
 
-            Hex lastHex = game.getBoard().getHex(lastPos);
+            Hex lastHex = twGame.getBoard().getHex(lastPos);
             if (((step.getType() == MoveStepType.BACKWARDS)
                     || (step.getType() == MoveStepType.LATERAL_LEFT_BACKWARDS)
                     || (step.getType() == MoveStepType.LATERAL_RIGHT_BACKWARDS))
@@ -484,19 +484,19 @@ public class SharedUtility {
 
             // Check for Ejecting
             if ((step.getType() == MoveStepType.EJECT) && (entity instanceof Mek)) {
-                rollTarget = TWGameManager.getEjectModifiers(game, entity, 0, false);
+                rollTarget = TWGameManager.getEjectModifiers(twGame, entity, 0, false);
                 checkNag(rollTarget, nagReport, psrList);
             }
 
             if (step.getType() == MoveStepType.UNLOAD) {
-                Targetable targ = step.getTarget(game);
-                if (game.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_ZIPLINES)
+                Targetable targ = step.getTarget(twGame);
+                if (twGame.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_ZIPLINES)
                         && (entity instanceof VTOL)
                         && (md.getFinalElevation() > 0)
                         && (targ instanceof Infantry)
                         && (((Entity) targ).getJumpMP() < 1)
                         && !((Infantry) targ).isMechanized()) {
-                    rollTarget = TWGameManager.getEjectModifiers(game, (Entity) targ, 0,
+                    rollTarget = TWGameManager.getEjectModifiers(twGame, (Entity) targ, 0,
                             false, entity.getPosition(), "zip lining");
                     // Factor in Elevation
                     if (entity.getElevation() > 0) {
@@ -557,9 +557,9 @@ public class SharedUtility {
             rollTarget = entity.checkLandingWithPrototypeJJ(overallMoveType);
             checkNag(rollTarget, nagReport, psrList);
             // jumped into water?
-            Hex hex = game.getBoard().getHex(curPos);
+            Hex hex = twGame.getBoard().getHex(curPos);
             // check for jumping into heavy woods
-            if (game.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_PSR_JUMP_HEAVY_WOODS)) {
+            if (twGame.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_PSR_JUMP_HEAVY_WOODS)) {
                 rollTarget = entity.checkLandingInHeavyWoods(overallMoveType,
                         hex);
                 checkNag(rollTarget, nagReport, psrList);
@@ -594,7 +594,7 @@ public class SharedUtility {
             checkNag(rollTarget, nagReport, psrList);
 
             // Atmospheric checks
-            if (!game.getBoard().inSpace() && !md.contains(MoveStepType.LAND)
+            if (!twGame.getBoard().inSpace() && !md.contains(MoveStepType.LAND)
                     && !md.contains(MoveStepType.VLAND)) {
                 // check to see if velocity is 2x thrust
                 rollTarget = a.checkVelocityDouble(md.getFinalVelocity(), overallMoveType);
@@ -692,7 +692,7 @@ public class SharedUtility {
 
     public static MovePath moveAero(MovePath md, Client client) {
         final Entity entity = md.getEntity();
-        final Game game = entity.getGame();
+        final TWGame twGame = entity.getGame();
         // Don't process further unless the entity belongs in space
         if (!entity.isAero() && !(entity instanceof EjectedCrew)) {
             return md;
@@ -710,7 +710,7 @@ public class SharedUtility {
 
         // if using advanced movement then I need to add on movement
         // steps to get the vessel from point a to point b
-        if (game.useVectorMove()) {
+        if (twGame.useVectorMove()) {
             // if the unit is ramming then this is already done
             if (!isRamming) {
                 md = addSteps(md, client);
@@ -718,23 +718,23 @@ public class SharedUtility {
         } else if (a.isOutControlTotal()) {
             // OOC units need a new movement path
             MovePath oldmd = md;
-            md = new MovePath(game, entity);
+            md = new MovePath(twGame, entity);
             int vel = a.getCurrentVelocity();
 
             while (vel > 0) {
                 int steps = 1;
                 // if moving on the ground map, then 16 hexes forward
-                if (game.getBoard().onGround()) {
+                if (twGame.getBoard().onGround()) {
                     steps = 16;
                 }
                 while (steps > 0 &&
-                        game.getBoard().contains(md.getFinalCoords())) {
+                        twGame.getBoard().contains(md.getFinalCoords())) {
                     md.addStep(MoveStepType.FORWARDS);
                     steps--;
                 }
-                if (!game.getBoard().contains(md.getFinalCoords())) {
+                if (!twGame.getBoard().contains(md.getFinalCoords())) {
                     md.removeLastStep();
-                    if (game.getOptions().booleanOption(OptionsConstants.ADVAERORULES_RETURN_FLYOVER)) {
+                    if (twGame.getOptions().booleanOption(OptionsConstants.ADVAERORULES_RETURN_FLYOVER)) {
                         // Telemissiles shouldn't get a return option
                         if (entity instanceof TeleMissile) {
                             md.addStep(MoveStepType.OFF);
@@ -793,7 +793,7 @@ public class SharedUtility {
      */
     private static MovePath addSteps(MovePath md, Client client) {
         Entity en = md.getEntity();
-        Game game = en.getGame();
+        TWGame twGame = en.getGame();
 
         // if the last step is a launch or recovery, then I want to keep that at the end
         MoveStep lastStep = md.getLastStep();
@@ -834,12 +834,12 @@ public class SharedUtility {
 
                 // get the total tonnage in each hex
                 double leftTonnage = 0;
-                for (Entity ent : game.getEntitiesVector(left)) {
+                for (Entity ent : twGame.getEntitiesVector(left)) {
                     leftTonnage += ent.getWeight();
                 }
 
                 double rightTonnage = 0;
-                for (Entity ent : game.getEntitiesVector(right)) {
+                for (Entity ent : twGame.getEntitiesVector(right)) {
                     rightTonnage += ent.getWeight();
                 }
 
@@ -853,15 +853,15 @@ public class SharedUtility {
                 }
 
                 // if the left is preferred, increment i so next one is skipped
-                if ((leftTonnage < rightTonnage) || !game.getBoard().contains(right)) {
+                if ((leftTonnage < rightTonnage) || !twGame.getBoard().contains(right)) {
                     i++;
                 } else {
                     continue;
                 }
             }
 
-            if (!game.getBoard().contains(c)) {
-                if (game.getOptions().booleanOption(OptionsConstants.ADVAERORULES_RETURN_FLYOVER)) {
+            if (!twGame.getBoard().contains(c)) {
+                if (twGame.getOptions().booleanOption(OptionsConstants.ADVAERORULES_RETURN_FLYOVER)) {
                     // Telemissiles shouldn't get a return option
                     if (en instanceof TeleMissile) {
                         md.addStep(MoveStepType.OFF);

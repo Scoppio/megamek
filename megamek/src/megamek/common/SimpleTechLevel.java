@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package megamek.common;
 
@@ -10,13 +10,13 @@ import java.util.Map;
 
 /**
  * An enum for the various rules levels
- * 
+ *
  * @author Neoancient
  *
  */
 public enum SimpleTechLevel {
     INTRO ("Introductory"),
-    STANDARD ("Standard"), 
+    STANDARD ("Standard"),
     ADVANCED ("Advanced"),
     EXPERIMENTAL ("Experimental"),
     UNOFFICIAL ("Unofficial");
@@ -85,7 +85,7 @@ public enum SimpleTechLevel {
 
     /**
      * Finds simple tech level equivalent of compound tech base/rules level constant
-     * 
+     *
      * @param level A TechConstants tech level constant
      * @return
      */
@@ -111,9 +111,9 @@ public enum SimpleTechLevel {
                 return SimpleTechLevel.STANDARD;
         }
     }
-    
-    public static SimpleTechLevel getGameTechLevel(Game game) {
-        return SimpleTechLevel.parse(game.getOptions().stringOption(OptionsConstants.ALLOWED_TECHLEVEL));
+
+    public static SimpleTechLevel getGameTechLevel(IGame IGame) {
+        return SimpleTechLevel.parse(IGame.getOptions().stringOption(OptionsConstants.ALLOWED_TECHLEVEL));
     }
 
     public static Map<Integer, String> getAllSimpleTechLevelCodeName() {

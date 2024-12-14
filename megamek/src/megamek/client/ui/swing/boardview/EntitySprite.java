@@ -92,7 +92,7 @@ class EntitySprite extends Sprite {
         this.entity = entity;
         this.radarBlipImage = radarBlipImage;
         this.secondaryPos = secondaryPos;
-        if (bv.game.getBoard().inSpace()) {
+        if (bv.twGame.getBoard().inSpace()) {
             LABEL_BACK = LABEL_SPACE_BACK;
         } else {
             LABEL_BACK = LABEL_GROUND_BACK;
@@ -102,7 +102,7 @@ class EntitySprite extends Sprite {
 
     private String getAdjShortName() {
         Coords position = entity.getPosition();
-        boolean multipleUnits = bv.game.getEntitiesVector(position, true).size() > 4;
+        boolean multipleUnits = bv.twGame.getEntitiesVector(position, true).size() > 4;
 
         if (onlyDetectedBySensors()) {
             return Messages.getString("BoardView1.sensorReturn");
@@ -254,18 +254,18 @@ class EntitySprite extends Sprite {
         Coords position = entity.getPosition();
 
         if (position != null) {
-            if (bv.game.getEntitiesVector(position.translated("SE"), true).isEmpty()) {
+            if (bv.twGame.getEntitiesVector(position.translated("SE"), true).isEmpty()) {
                 labelRect.setLocation((int) (bv.hex_size.width * 0.55), (int) (0.75 * bv.hex_size.height));
                 labelPos = Positioning.RIGHT;
-            } else if (bv.game.getEntitiesVector(position.translated("NW"), true).isEmpty()) {
+            } else if (bv.twGame.getEntitiesVector(position.translated("NW"), true).isEmpty()) {
                 labelRect.setLocation((int) (bv.hex_size.width * 0.45) - labelRect.width,
                         (int) (0.25 * bv.hex_size.height) - labelRect.height);
                 labelPos = Positioning.LEFT;
-            } else if (bv.game.getEntitiesVector(position.translated("NE"), true).isEmpty()) {
+            } else if (bv.twGame.getEntitiesVector(position.translated("NE"), true).isEmpty()) {
                 labelRect.setLocation((int) (bv.hex_size.width * 0.55),
                         (int) (0.25 * bv.hex_size.height) - labelRect.height);
                 labelPos = Positioning.RIGHT;
-            } else if (bv.game.getEntitiesVector(position.translated("SW"), true).isEmpty()) {
+            } else if (bv.twGame.getEntitiesVector(position.translated("SW"), true).isEmpty()) {
                 labelRect.setLocation((int) (bv.hex_size.width * 0.45) - labelRect.width,
                         (int) (0.75 * bv.hex_size.height));
                 labelPos = Positioning.LEFT;
@@ -278,8 +278,8 @@ class EntitySprite extends Sprite {
 
         // If multiple units are present in a hex, fan out the labels
         // In the deployment phase, indexOf returns -1 for the current unit
-        int indexEntity = bv.game.getEntitiesVector(position, true).indexOf(entity);
-        int numEntity = bv.game.getEntitiesVector(position, true).size();
+        int indexEntity = bv.twGame.getEntitiesVector(position, true).indexOf(entity);
+        int numEntity = bv.twGame.getEntitiesVector(position, true).size();
 
         if ((indexEntity != -1) && (numEntity <= 4)) {
             labelRect.y += (bv.getPanel().getFontMetrics(labelFont).getAscent() + 4) * indexEntity;
@@ -404,7 +404,7 @@ class EntitySprite extends Sprite {
      */
     @Override
     public void prepare() {
-        final Board board = bv.game.getBoard();
+        final Board board = bv.twGame.getBoard();
         // recalculate bounds & label
         getBounds();
 
@@ -734,7 +734,7 @@ class EntitySprite extends Sprite {
                             && !((Infantry) entity).isTakingCover())
                     && !(isAero && ((IAero) entity).isSpheroid() && !board.inSpace())) {
                 // Indicate a stacked unit with the same facing that can still move
-                if (shouldIndicateNotDone() && bv.game.getPhase().isMovement()) {
+                if (shouldIndicateNotDone() && bv.twGame.getPhase().isMovement()) {
                     var tr = graph.getTransform();
                     // rotate the arrow slightly
                     graph.scale(1 / bv.scale, 1 / bv.scale);
@@ -747,7 +747,7 @@ class EntitySprite extends Sprite {
                     graph.setTransform(tr);
                 }
 
-                if (!entity.isDone() && bv.game.getPhase().isMovement()) {
+                if (!entity.isDone() && bv.twGame.getPhase().isMovement()) {
                     graph.setColor(GUIP.getWarningColor());
                     graph.fill(bv.facingPolys[entity.getFacing()]);
                     graph.setColor(Color.WHITE);
@@ -773,7 +773,7 @@ class EntitySprite extends Sprite {
                 graph.setColor(Color.GREEN);
                 graph.draw(bv.facingPolys[secFacing]);
             }
-            if (entity.isAero() && this.bv.game.useVectorMove()) {
+            if (entity.isAero() && this.bv.twGame.useVectorMove()) {
                 for (int head : entity.getHeading()) {
                     graph.setColor(Color.GREEN);
                     graph.draw(bv.facingPolys[head]);
@@ -810,9 +810,9 @@ class EntitySprite extends Sprite {
             // TMM pips show if done in movement, or on all units during firing
             int pipOption = GUIP.getTMMPipMode();
             if ((pipOption != 0) && !isGunEmplacement && !entity.isAero()
-                    && ((entity.isDone() && bv.game.getPhase().isMovement())
-                            || bv.game.getPhase().isFiring())) {
-                int tmm = Compute.getTargetMovementModifier(bv.game, entity.getId()).getValue();
+                    && ((entity.isDone() && bv.twGame.getPhase().isMovement())
+                            || bv.twGame.getPhase().isFiring())) {
+                int tmm = Compute.getTargetMovementModifier(bv.twGame, entity.getId()).getValue();
                 Color tmmColor = (pipOption == 1) ? Color.WHITE : GUIP.getColorForMovement(entity.moved);
                 graph.setColor(Color.darkGray);
                 graph.fillRect(STATUS_BAR_X, 12 + TMM_PIP_SIZE, STATUS_BAR_LENGTH, TMM_PIP_SIZE);
@@ -845,7 +845,7 @@ class EntitySprite extends Sprite {
      * as this unit is stacked below it and can still move.
      */
     private boolean shouldIndicateNotDone() {
-        var hexEntities = bv.game.getEntitiesVector(entity.getPosition());
+        var hexEntities = bv.twGame.getEntitiesVector(entity.getPosition());
         return hexEntities.stream()
                 .filter(e -> hexEntities.indexOf(entity) > hexEntities.indexOf(e))
                 .filter(e -> e.getFacing() == entity.getFacing())

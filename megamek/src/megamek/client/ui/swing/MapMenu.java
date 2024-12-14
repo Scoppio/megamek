@@ -56,7 +56,7 @@ public class MapMenu extends JPopupMenu {
     private final static MMLogger logger = MMLogger.create(MapMenu.class);
 
     private Coords coords;
-    Game game;
+    TWGame twGame;
     Component currentPanel;
     private Board board;
     Client client;
@@ -68,7 +68,7 @@ public class MapMenu extends JPopupMenu {
 
     public MapMenu(Coords coords, Client client, Component panel, ClientGUI gui) {
         this.coords = coords;
-        game = client.getGame();
+        TWGame = client.getGame();
         currentPanel = panel;
         board = client.getBoard();
         this.client = client;
@@ -297,7 +297,7 @@ public class MapMenu extends JPopupMenu {
         item.setActionCommand(Integer.toString(en.getId()));
         item.addActionListener(evt -> {
             try {
-                selectedEntity = game.getEntity(Integer.parseInt(evt.getActionCommand()));
+                selectedEntity = twGame.getEntity(Integer.parseInt(evt.getActionCommand()));
                 if (currentPanel instanceof MovementDisplay) {
                     ((MovementDisplay) currentPanel).selectEntity(selectedEntity.getId());
                 } else if (currentPanel instanceof FiringDisplay) {
@@ -320,7 +320,7 @@ public class MapMenu extends JPopupMenu {
         item.setActionCommand(Integer.toString(en.getId()));
         item.addActionListener(evt -> {
             try {
-                selectedEntity = game.getEntity(Integer.parseInt(evt.getActionCommand()));
+                selectedEntity = twGame.getEntity(Integer.parseInt(evt.getActionCommand()));
                 GUIPreferences.getInstance().setUnitDisplayEnabled(true);
                 gui.getUnitDisplay().displayEntity(selectedEntity);
             } catch (Exception ex) {
@@ -338,7 +338,7 @@ public class MapMenu extends JPopupMenu {
         item.setActionCommand(Integer.toString(en.getId()));
         item.addActionListener(evt -> {
             try {
-                selectedEntity = game.getEntity(Integer.parseInt(evt.getActionCommand()));
+                selectedEntity = twGame.getEntity(Integer.parseInt(evt.getActionCommand()));
                 LobbyUtility.mekReadout(selectedEntity, 0, false, gui.getFrame());
             } catch (Exception ex) {
                 logger.error(ex, "");
@@ -372,7 +372,7 @@ public class MapMenu extends JPopupMenu {
     private JMenu createSpecialHexDisplayMenu() {
         JMenu menu = new JMenu("Special Hex Display");
 
-        final Collection<SpecialHexDisplay> shdList = game.getBoard().getSpecialHexDisplay(coords);
+        final Collection<SpecialHexDisplay> shdList = twGame.getBoard().getSpecialHexDisplay(coords);
 
         SpecialHexDisplay note = null;
         if (shdList != null) {
@@ -846,11 +846,11 @@ public class MapMenu extends JPopupMenu {
 
     private JMenu createViewMenu() {
         JMenu menu = new JMenu("View");
-        Game game = client.getGame();
+        TWGame twGame = client.getGame();
 
         Player localPlayer = client.getLocalPlayer();
 
-        for (Entity entity : game.getEntitiesVector(coords, true)) {
+        for (Entity entity : twGame.getEntitiesVector(coords, true)) {
             // Only add the unit if it's actually visible
             // With double blind on, the game may unseen units
             if (!entity.isSensorReturn(localPlayer) && entity.hasSeenEntity(localPlayer)) {
@@ -927,7 +927,7 @@ public class MapMenu extends JPopupMenu {
                 menu.add(item);
             }
 
-            if (game.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_EVADE)) {
+            if (twGame.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_EVADE)) {
                 item = new JMenuItem(Messages.getString("MovementDisplay.butEvade"));
                 item.setActionCommand(MovementDisplay.MoveCommand.MOVE_EVADE.getCmd());
                 item.addActionListener(evt -> {
@@ -940,7 +940,7 @@ public class MapMenu extends JPopupMenu {
                 menu.add(item);
             }
 
-            if (game.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_VEHICLE_ADVANCED_MANEUVERS)) {
+            if (twGame.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_VEHICLE_ADVANCED_MANEUVERS)) {
                 item = new JMenuItem(Messages.getString("MovementDisplay.butEvade"));
                 item.setActionCommand(MovementDisplay.MoveCommand.MOVE_BOOTLEGGER.getCmd());
                 item.addActionListener(evt -> {
@@ -953,9 +953,9 @@ public class MapMenu extends JPopupMenu {
                 menu.add(item);
             }
 
-            if (game.getPlanetaryConditions().isRecklessConditions()
-                    && !game.getBoard().inSpace()
-                    && !game.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_NO_NIGHT_MOVE_PEN)) {
+            if (twGame.getPlanetaryConditions().isRecklessConditions()
+                    && !twGame.getBoard().inSpace()
+                    && !twGame.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_NO_NIGHT_MOVE_PEN)) {
                 item = new JMenuItem(Messages.getString("MovementDisplay.butReckless"));
                 item.setActionCommand(MovementDisplay.MoveCommand.MOVE_RECKLESS.getCmd());
                 item.addActionListener(evt -> {
@@ -1030,7 +1030,7 @@ public class MapMenu extends JPopupMenu {
 
             menu.add(item);
 
-            if (game.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_EVADE)) {
+            if (twGame.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_EVADE)) {
                 item = new JMenuItem(Messages.getString("MovementDisplay.butEvade"));
                 item.setActionCommand(MovementDisplay.MoveCommand.MOVE_EVADE.getCmd());
                 item.addActionListener(evt -> {
@@ -1043,9 +1043,9 @@ public class MapMenu extends JPopupMenu {
                 menu.add(item);
             }
 
-            if (game.getPlanetaryConditions().isRecklessConditions()
-                    && !game.getBoard().inSpace()
-                    && !game.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_NO_NIGHT_MOVE_PEN)) {
+            if (twGame.getPlanetaryConditions().isRecklessConditions()
+                    && !twGame.getBoard().inSpace()
+                    && !twGame.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_NO_NIGHT_MOVE_PEN)) {
                 item = new JMenuItem(Messages.getString("MovementDisplay.butReckless"));
                 item.setActionCommand(MovementDisplay.MoveCommand.MOVE_RECKLESS.getCmd());
                 item.addActionListener(evt -> {
@@ -1162,7 +1162,7 @@ public class MapMenu extends JPopupMenu {
                     WeaponAttackAction waa = new WeaponAttackAction(myEntity.getId(),
                             target.getTargetType(), target.getId(), weaponNum);
                     // Only fire weapons that have a chance to hit
-                    int toHitVal = waa.toHit(game).getValue();
+                    int toHitVal = waa.toHit(twGame).getValue();
                     if (toHitVal <= 12) {
                         gui.getUnitDisplay().wPan.selectWeapon(weaponNum);
                         panel.fire();
@@ -1185,7 +1185,7 @@ public class MapMenu extends JPopupMenu {
                 FiringDisplay display = (FiringDisplay) currentPanel;
 
                 int id = Integer.parseInt(evt.getActionCommand());
-                display.updateFlipArms(!game.getEntity(id).getArmsFlipped());
+                display.updateFlipArms(!twGame.getEntity(id).getArmsFlipped());
             } catch (Exception ex) {
                 logger.error(ex, "");
             }
@@ -1287,13 +1287,13 @@ public class MapMenu extends JPopupMenu {
             menu.setText("Stand");
             menu.add(createStandJMenuItem(false));
 
-            if (game.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_CAREFUL_STAND)
+            if (twGame.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_CAREFUL_STAND)
                     && (myEntity.getWalkMP() > 2)
                     && (myEntity.moved == EntityMovementType.MOVE_NONE)) {
                 menu.add(createStandJMenuItem(true));
             }
 
-            if (game.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_HULL_DOWN)) {
+            if (twGame.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_HULL_DOWN)) {
                 menu.add(createHullDownJMenuItem());
             }
 
@@ -1301,7 +1301,7 @@ public class MapMenu extends JPopupMenu {
             menu.setText("Stand");
             menu.add(createStandJMenuItem(false));
 
-            if (game.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_CAREFUL_STAND)) {
+            if (twGame.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_CAREFUL_STAND)) {
                 menu.add(createStandJMenuItem(true));
             }
 
@@ -1310,7 +1310,7 @@ public class MapMenu extends JPopupMenu {
             menu.setText("Prone");
             menu.add(createProneJMenuItem());
 
-            if (game.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_HULL_DOWN)) {
+            if (twGame.getOptions().booleanOption(OptionsConstants.ADVGRNDMOV_TACOPS_HULL_DOWN)) {
                 menu.add(createHullDownJMenuItem());
             }
         }
@@ -1581,7 +1581,7 @@ public class MapMenu extends JPopupMenu {
         String type = target.nextToken();
 
         if (type.equalsIgnoreCase("E")) {
-            return game.getEntity(Integer.parseInt(target.nextToken()));
+            return twGame.getEntity(Integer.parseInt(target.nextToken()));
         }
 
         Coords targetCoords = new Coords(Integer.parseInt(target.nextToken()),
@@ -1764,9 +1764,9 @@ public class MapMenu extends JPopupMenu {
         Vector<Entity> list = new Vector<>();
 
         Player localPlayer = client.getLocalPlayer();
-        boolean friendlyFire = (game.getOptions().booleanOption(OptionsConstants.BASE_FRIENDLY_FIRE));
+        boolean friendlyFire = (twGame.getOptions().booleanOption(OptionsConstants.BASE_FRIENDLY_FIRE));
 
-        for (Entity en : game.getEntitiesVector(coords)) {
+        for (Entity en : twGame.getEntitiesVector(coords)) {
             // Only add the unit if it's actually visible
             // With double blind on, the game may have unseen units
             if ((en.isEnemyOf(myEntity) || friendlyFire) && !en.equals(myEntity)

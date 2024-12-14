@@ -14,7 +14,7 @@
 package megamek.common.event;
 
 import megamek.common.Entity;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.IEntityRemovalConditions;
 
 import java.util.Enumeration;
@@ -26,7 +26,7 @@ import java.util.Vector;
  * is reset. It can be used to retrieve information from the game before the
  * state is reset and the lounge phase begins.
  *
- * @see Game#end(int, int)
+ * @see TWGame#end(int, int)
  * @see GameListener
  */
 public class GameVictoryEvent extends GameEvent implements PostGameResolution {
@@ -47,14 +47,14 @@ public class GameVictoryEvent extends GameEvent implements PostGameResolution {
      * @param source event source
      */
     @SuppressWarnings("unchecked")
-    public GameVictoryEvent(Object source, Game game) {
+    public GameVictoryEvent(Object source, TWGame twGame) {
         super(source);
-        for (Entity entity : game.getEntitiesVector()) {
+        for (Entity entity : twGame.getEntitiesVector()) {
             entities.add(entity);
             entityIds.put(entity.getId(), entity);
         }
 
-        vOutOfGame = (Vector<Entity>) game.getOutOfGameEntitiesVector().clone();
+        vOutOfGame = (Vector<Entity>) twGame.getOutOfGameEntitiesVector().clone();
         for (Entity entity : vOutOfGame) {
             entityIds.put(entity.getId(), entity);
         }

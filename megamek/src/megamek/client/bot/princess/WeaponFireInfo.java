@@ -65,7 +65,7 @@ public class WeaponFireInfo {
     private ToHitData toHit = null;
     private double expectedCriticals;
     private double killProbability; // probability to destroy CT or HEAD (ignores criticals)
-    private Game game;
+    private TWGame twGame;
     private EntityState shooterState = null;
     private EntityState targetState = null;
     private Integer updatedFiringMode = null;
@@ -86,7 +86,7 @@ public class WeaponFireInfo {
      * @param weapon  The {@link megamek.common.Mounted} weapon used for the attack.
      * @param ammo    The {@link megamek.common.Mounted} ammo to use for the attack;
      *                may be null.
-     * @param game    The current {@link Game}
+     * @param twGame    The current {@link TWGame}
      * @param guess   Set TRUE to estimate the chance to hit rather than doing the
      *                full calculation.
      */
@@ -94,10 +94,10 @@ public class WeaponFireInfo {
             final Targetable target,
             final WeaponMounted weapon,
             final AmmoMounted ammo,
-            final Game game,
+            final TWGame twGame,
             final boolean guess,
             final Princess owner) {
-        this(shooter, null, null, target, null, weapon, ammo, game, false, guess, owner, null);
+        this(shooter, null, null, target, null, weapon, ammo, twGame, false, guess, owner, null);
     }
 
     /**
@@ -113,7 +113,7 @@ public class WeaponFireInfo {
      *                     target.
      * @param weapon       The {@link megamek.common.Mounted} weapon used for the
      *                     attack.
-     * @param game         The current {@link Game}
+     * @param twGame         The current {@link TWGame}
      * @param guess        Set TRUE to estimate the chance to hit rather than doing
      *                     the full calculation.
      */
@@ -123,10 +123,10 @@ public class WeaponFireInfo {
             final EntityState targetState,
             final WeaponMounted weapon,
             final AmmoMounted ammo,
-            final Game game,
+            final TWGame twGame,
             final boolean guess,
             final Princess owner) {
-        this(shooter, shooterState, null, target, targetState, weapon, ammo, game, false, guess, owner, null);
+        this(shooter, shooterState, null, target, targetState, weapon, ammo, twGame, false, guess, owner, null);
     }
 
     /**
@@ -143,7 +143,7 @@ public class WeaponFireInfo {
      *                              of the target.
      * @param weapon                The {@link megamek.common.Mounted} weapon used
      *                              for the attack.
-     * @param game                  The current {@link Game}
+     * @param twGame                  The current {@link TWGame}
      * @param assumeUnderFlightPath Set TRUE for aerial units performing
      *                              air-to-ground attacks.
      * @param guess                 Set TRUE to estimate the chance to hit rather
@@ -158,12 +158,12 @@ public class WeaponFireInfo {
             final EntityState targetState,
             final WeaponMounted weapon,
             final AmmoMounted ammo,
-            final Game game,
+            final TWGame twGame,
             final boolean assumeUnderFlightPath,
             final boolean guess,
             final Princess owner,
             final HashMap<String, int[]> bombPayloads) {
-        this(shooter, null, shooterPath, target, targetState, weapon, ammo, game, assumeUnderFlightPath, guess, owner,
+        this(shooter, null, shooterPath, target, targetState, weapon, ammo, twGame, assumeUnderFlightPath, guess, owner,
                 bombPayloads);
     }
 
@@ -186,7 +186,7 @@ public class WeaponFireInfo {
      *                              of the target.
      * @param weapon                The {@link megamek.common.Mounted} weapon used
      *                              for the attack.
-     * @param game                  The current {@link Game}
+     * @param twGame                  The current {@link TWGame}
      * @param assumeUnderFlightPath Set TRUE for aerial units performing
      *                              air-to-ground attacks.
      * @param guess                 Set TRUE to estimate the chance to hit rather
@@ -203,7 +203,7 @@ public class WeaponFireInfo {
             final EntityState targetState,
             final WeaponMounted weapon,
             final AmmoMounted ammo,
-            final Game game,
+            final TWGame twGame,
             final boolean assumeUnderFlightPath,
             final boolean guess,
             final Princess owner,
@@ -216,7 +216,7 @@ public class WeaponFireInfo {
         setTargetState(targetState);
         setWeapon(weapon);
         setAmmo(ammo);
-        setGame(game);
+        setGame(twGame);
         initDamage(shooterPath, assumeUnderFlightPath, guess, bombPayloads);
     }
 
@@ -331,12 +331,12 @@ public class WeaponFireInfo {
                 owner.getPrecognition().getECMInfo());
     }
 
-    public Game getGame() {
-        return game;
+    public TWGame getGame() {
+        return twGame;
     }
 
-    protected void setGame(final Game game) {
-        this.game = game;
+    protected void setGame(final TWGame twGame) {
+        this.twGame = twGame;
     }
 
     private EntityState getShooterState() {
@@ -427,7 +427,7 @@ public class WeaponFireInfo {
             int bayDamage = 0;
             for (WeaponMounted bayWeapon : weapon.getBayWeapons()) {
                 WeaponType weaponType = bayWeapon.getType();
-                int maxRange = game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE)
+                int maxRange = twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE)
                         ? weaponType.getExtremeRange()
                         : weaponType.getLongRange();
                 int targetDistance = getShooter().getPosition().distance(getTarget().getPosition());
@@ -615,7 +615,7 @@ public class WeaponFireInfo {
 
                 // now we go through all affected hexes and add up the damage done
                 for (final Coords coords : affectedHexes) {
-                    for (final Entity currentVictim : game.getEntitiesVector(coords)) {
+                    for (final Entity currentVictim : twGame.getEntitiesVector(coords)) {
                         if (currentVictim.getOwner().getTeam() != shooter.getOwner().getTeam()) {
                             damage += damagePerShot;
                         } else { // we prefer not to blow up friendlies if we can help it
@@ -743,7 +743,7 @@ public class WeaponFireInfo {
             targetMek = potentialTargetMek;
         } else if (potentialTarget instanceof HexTarget || potentialTarget instanceof BuildingTarget) {
             Coords c = potentialTarget.getPosition();
-            Iterator<Entity> targetEnemies = game.getEnemyEntities(c, this.shooter);
+            Iterator<Entity> targetEnemies = twGame.getEnemyEntities(c, this.shooter);
             while (targetEnemies.hasNext()) {
                 Entity next = targetEnemies.next();
                 if (next instanceof Mek potentialTargetMek) {

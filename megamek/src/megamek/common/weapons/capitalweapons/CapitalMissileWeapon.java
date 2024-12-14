@@ -13,12 +13,8 @@
  */
 package megamek.common.weapons.capitalweapons;
 
-import megamek.common.Compute;
-import megamek.common.Entity;
-import megamek.common.Game;
-import megamek.common.Mounted;
-import megamek.common.RangeType;
-import megamek.common.ToHitData;
+import megamek.common.*;
+import megamek.common.TWGame;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.weapons.AmmoWeapon;
 import megamek.common.weapons.ArtilleryWeaponIndirectFireHandler;
@@ -48,20 +44,20 @@ public abstract class CapitalMissileWeapon extends AmmoWeapon {
      * megamek.common.actions.WeaponAttackAction, megamek.common.Game)
      */
     @Override
-    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, Game game,
+    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, TWGame twGame,
             TWGameManager manager) {
-        Mounted<?> weapon = game.getEntity(waa.getEntityId()).getEquipment(waa.getWeaponId());
-        Entity attacker = game.getEntity(waa.getEntityId());
-        int rangeToTarget = attacker.getPosition().distance(waa.getTarget(game).getPosition());
+        Mounted<?> weapon = twGame.getEntity(waa.getEntityId()).getEquipment(waa.getWeaponId());
+        Entity attacker = twGame.getEntity(waa.getEntityId());
+        int rangeToTarget = attacker.getPosition().distance(waa.getTarget(twGame).getPosition());
         // Capital missiles work like artillery for surface to surface fire
-        if (Compute.isGroundToGround(attacker, waa.getTarget(game))) {
-            return new ArtilleryWeaponIndirectFireHandler(toHit, waa, game, manager);
+        if (Compute.isGroundToGround(attacker, waa.getTarget(twGame))) {
+            return new ArtilleryWeaponIndirectFireHandler(toHit, waa, twGame, manager);
         }
         if (weapon.isInBearingsOnlyMode()
                 && (rangeToTarget >= RangeType.RANGE_BEARINGS_ONLY_MINIMUM)) {
-            return new CapitalMissileBearingsOnlyHandler(toHit, waa, game, manager);
+            return new CapitalMissileBearingsOnlyHandler(toHit, waa, twGame, manager);
         }
-        return new CapitalMissileHandler(toHit, waa, game, manager);
+        return new CapitalMissileHandler(toHit, waa, twGame, manager);
     }
 
     @Override

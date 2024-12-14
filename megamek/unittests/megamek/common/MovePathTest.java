@@ -39,10 +39,10 @@ class MovePathTest {
 
     @Test
     void testGetLastStep() {
-        Game mockGame = mock(Game.class);
+        TWGame mockTWGame = mock(twGame.class);
         PlanetaryConditions mockPC = new PlanetaryConditions();
         mockPC.setGravity(1.0f);
-        when(mockGame.getPlanetaryConditions()).thenReturn(mockPC);
+        when(mocktwGame.getPlanetaryConditions()).thenReturn(mockPC);
 
         Entity mockMek = mock(BipedMek.class);
 
@@ -60,7 +60,7 @@ class MovePathTest {
         MoveStep mockStep4 = mock(MoveStep.class);
         stepVector.add(mockStep4);
 
-        MovePath testPath = spy(new MovePath(mockGame, mockMek));
+        MovePath testPath = spy(new MovePath(mockTWGame, mockMek));
         doReturn(stepVector).when(testPath).getStepVector();
 
         assertEquals(mockStep4, testPath.getLastStep());

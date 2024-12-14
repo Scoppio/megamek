@@ -20,7 +20,7 @@
 package megamek.common.weapons.prototypes;
 
 import megamek.common.AmmoType;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.weapons.AttackHandler;
@@ -48,7 +48,7 @@ public abstract class CLPrototypeStreakSRMWeapon extends SRMWeapon {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * megamek.common.weapons.Weapon#getCorrectHandler(megamek.common.ToHitData,
      * megamek.common.actions.WeaponAttackAction, megamek.common.Game,
@@ -56,8 +56,8 @@ public abstract class CLPrototypeStreakSRMWeapon extends SRMWeapon {
      */
     @Override
     protected AttackHandler getCorrectHandler(ToHitData toHit,
-            WeaponAttackAction waa, Game game, TWGameManager manager) {
-        return new PrototypeStreakHandler(toHit, waa, game, manager);
+                                              WeaponAttackAction waa, TWGame twGame, TWGameManager manager) {
+        return new PrototypeStreakHandler(toHit, waa, twGame, manager);
     }
 
 }

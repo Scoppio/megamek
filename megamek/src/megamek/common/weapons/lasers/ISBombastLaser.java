@@ -14,7 +14,7 @@
 package megamek.common.weapons.lasers;
 
 import megamek.common.*;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.SimpleTechLevel;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
@@ -75,9 +75,9 @@ public class ISBombastLaser extends LaserWeapon {
      * megamek.server.Server)
      */
     @Override
-    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, Game game,
+    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, TWGame twGame,
             TWGameManager manager) {
-        return new BombastLaserWeaponHandler(toHit, waa, game, manager);
+        return new BombastLaserWeaponHandler(toHit, waa, twGame, manager);
     }
 
     @Override

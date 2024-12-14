@@ -13,15 +13,8 @@
  */
 package megamek.common.weapons.mortars;
 
-import megamek.common.AmmoType;
-import megamek.common.Coords;
-import megamek.common.Entity;
-import megamek.common.Game;
-import megamek.common.HexTarget;
-import megamek.common.Mounted;
-import megamek.common.SimpleTechLevel;
-import megamek.common.Targetable;
-import megamek.common.ToHitData;
+import megamek.common.*;
+import megamek.common.TWGame;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.weapons.AmmoWeapon;
 import megamek.common.weapons.AttackHandler;
@@ -76,9 +69,9 @@ public abstract class VehicularGrenadeLauncherWeapon extends AmmoWeapon {
      * megamek.common.actions.WeaponAttackAction, megamek.common.Game)
      */
     @Override
-    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, Game game,
+    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, TWGame twGame,
             TWGameManager manager) {
-        return new VGLWeaponHandler(toHit, waa, game, manager);
+        return new VGLWeaponHandler(toHit, waa, twGame, manager);
     }
 
     public static Targetable getTargetHex(Mounted<?> weapon, int weaponID) {

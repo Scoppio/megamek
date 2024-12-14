@@ -22,18 +22,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import megamek.common.Entity;
-import megamek.common.Game;
+import megamek.common.TWGame;
 
 public class C3Util {
     /**
      * Adds C3 connections when new units are being added.
-     * 
-     * @param game   The Game the unit is being added to, the unit should already be
+     *
+     * @param twGame   The Game the unit is being added to, the unit should already be
      *               in the Game.
      * @param entity The entity being added.
      * @return A list of units affected
      */
-    public static List<Entity> wireC3(Game game, Entity entity) {
+    public static List<Entity> wireC3(TWGame twGame, Entity entity) {
         ArrayList<Entity> affectedUnits = new ArrayList<>();
         if (!entity.hasC3() && !entity.hasC3i() && !entity.hasNavalC3()) {
             return affectedUnits;
@@ -41,7 +41,7 @@ public class C3Util {
 
         boolean C3iSet = false;
 
-        for (Entity e : game.getEntitiesVector()) {
+        for (Entity e : twGame.getEntitiesVector()) {
 
             // C3 Checks
             if (entity.hasC3()) {

@@ -46,19 +46,19 @@ class DropShipMekLoadTest {
         Dropship leopard = (Dropship) instance.getMek("Leopard (2537)").loadEntity();
         leopard.setId(1);
 
-        Game game = new Game();
-        game.setPhase(GamePhase.LOUNGE);
-        game.addPlayer(0, new Player(0, "TestPlayer"));
-        game.addEntity(atlas);
-        game.addEntity(leopard);
+        TWGame twGame = new TWGame();
+        twGame.setPhase(GamePhase.LOUNGE);
+        twGame.addPlayer(0, new Player(0, "TestPlayer"));
+        twGame.addEntity(atlas);
+        twGame.addEntity(leopard);
 
         TWGameManager gm = mock(TWGameManager.class);
         doNothing().when(gm).entityUpdate(anyInt());
-        when(gm.getGame()).thenReturn(game);
-        doCallRealMethod().when(gm).setGame(any(Game.class));
+        when(gm.getGame()).thenReturn(twGame);
+        doCallRealMethod().when(gm).setGame(any(twGame.class));
         doCallRealMethod().when(gm).handlePacket(anyInt(), any(Packet.class));
         doCallRealMethod().when(gm).loadUnit(any(Entity.class), any(Entity.class), anyInt());
-        gm.setGame(game);
+        gm.setGame(twGame);
 
         Packet packet = new Packet(PacketCommand.ENTITY_LOAD, atlas.getId(), leopard.getId(), -1);
         gm.handlePacket(0, packet);

@@ -26,7 +26,7 @@ import megamek.common.Board;
 import megamek.common.Building;
 import megamek.common.Coords;
 import megamek.common.Entity;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.enums.GamePhase;
 import megamek.logging.MMLogger;
 
@@ -75,14 +75,14 @@ public final class CollapseWarning {
      * buildings that would collapse if entered or landed upon. This is
      * used by the {@link MovementDisplay} class.
      *
-     * @param g {@link Game} provided by the phase display class
+     * @param g {@link TWGame} provided by the phase display class
      * @param e {@link Entity} currently selected in the movement phase.
      * @param b {@link Board} board object with building data.
      *
      * @return returns a list of {@link Coords} that where warning flags
      *         should be placed.
      */
-    public static List<Coords> findCFWarningsMovement(Game g, Entity e, Board b) {
+    public static List<Coords> findCFWarningsMovement(TWGame g, Entity e, Board b) {
         List<Coords> warnList = new ArrayList<Coords>();
 
         try {
@@ -139,14 +139,14 @@ public final class CollapseWarning {
      * if the currently selected entity would deploy there. This is used by
      * {@link DeploymentDisplay} to render a warning sprite on danger hexes.
      *
-     * @param g {@link Game} provided by the phase display class
+     * @param g {@link TWGame} provided by the phase display class
      * @param e {@link Entity} currently selected in the movement phase.
      * @param b {@link Board} board object with building data.
      *
      * @return returns a list of {@link Coords} that where warning flags
      *         should be placed.
      */
-    public static List<Coords> findCFWarningsDeployment(Game g, Entity e, Board b) {
+    public static List<Coords> findCFWarningsDeployment(TWGame g, Entity e, Board b) {
         List<Coords> warnList = new ArrayList<Coords>();
 
         try {
@@ -187,7 +187,7 @@ public final class CollapseWarning {
      * This includes the entity current weight summed with any unit weights
      * at the hex location that could cause a building to collapse.
      */
-    protected static double calculateTotalTonnage(Game g, Entity selected, Coords c) {
+    protected static double calculateTotalTonnage(TWGame g, Entity selected, Coords c) {
         // Calculate total weight of entity and all entities at the location.
         double totalWeight = selected.getWeight();
         List<Entity> units = g.getEntitiesVector(c, true);

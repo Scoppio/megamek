@@ -200,16 +200,16 @@ public enum GamePhase {
     }
 
     /**
-     * @param game The current {@link Game}
+     * @param IGame The current {@link TWGame}
      * @return true if this phase is simultaneous
      */
-    public boolean isSimultaneous(final Game game) {
+    public boolean isSimultaneous(final IGame IGame) {
         return switch (this) {
-            case DEPLOYMENT -> game.getOptions().booleanOption(OptionsConstants.INIT_SIMULTANEOUS_DEPLOYMENT);
-            case MOVEMENT -> game.getOptions().booleanOption(OptionsConstants.INIT_SIMULTANEOUS_MOVEMENT);
-            case FIRING -> game.getOptions().booleanOption(OptionsConstants.INIT_SIMULTANEOUS_FIRING);
-            case PHYSICAL -> game.getOptions().booleanOption(OptionsConstants.INIT_SIMULTANEOUS_PHYSICAL);
-            case TARGETING, OFFBOARD -> game.getOptions().booleanOption(OptionsConstants.INIT_SIMULTANEOUS_TARGETING);
+            case DEPLOYMENT -> IGame.getOptions().booleanOption(OptionsConstants.INIT_SIMULTANEOUS_DEPLOYMENT);
+            case MOVEMENT -> IGame.getOptions().booleanOption(OptionsConstants.INIT_SIMULTANEOUS_MOVEMENT);
+            case FIRING -> IGame.getOptions().booleanOption(OptionsConstants.INIT_SIMULTANEOUS_FIRING);
+            case PHYSICAL -> IGame.getOptions().booleanOption(OptionsConstants.INIT_SIMULTANEOUS_PHYSICAL);
+            case TARGETING, OFFBOARD -> IGame.getOptions().booleanOption(OptionsConstants.INIT_SIMULTANEOUS_TARGETING);
             case PREMOVEMENT, PREFIRING -> true;
             default -> false;
         };

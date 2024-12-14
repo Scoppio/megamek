@@ -50,16 +50,16 @@ public abstract class RACWeapon extends UACWeapon {
      */
     @Override
     protected AttackHandler getCorrectHandler(ToHitData toHit,
-            WeaponAttackAction waa, Game game, TWGameManager manager) {
-        Mounted<?> weapon = game.getEntity(waa.getEntityId()).getEquipment(
+                                              WeaponAttackAction waa, TWGame twGame, TWGameManager manager) {
+        Mounted<?> weapon = twGame.getEntity(waa.getEntityId()).getEquipment(
                 waa.getWeaponId());
         if (weapon.curMode().equals(MODE_RAC_SIX_SHOT)
                 || weapon.curMode().equals(MODE_RAC_FIVE_SHOT)
                 || weapon.curMode().equals(MODE_RAC_FOUR_SHOT)
                 || weapon.curMode().equals(MODE_RAC_THREE_SHOT)) {
-            return new RACHandler(toHit, waa, game, manager);
+            return new RACHandler(toHit, waa, twGame, manager);
         } else {
-            return new UltraWeaponHandler(toHit, waa, game, manager);
+            return new UltraWeaponHandler(toHit, waa, twGame, manager);
         }
     }
 

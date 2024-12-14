@@ -19,7 +19,7 @@
  */
 package megamek.server.victory;
 
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Player;
 import megamek.common.Report;
 
@@ -33,14 +33,14 @@ import java.util.Map;
 public class EnemyCmdrDestroyedVictory implements VictoryCondition, Serializable {
 
     @Override
-    public VictoryResult checkVictory(Game game, Map<String, Object> ctx) {
+    public VictoryResult checkVictory(TWGame twGame, Map<String, Object> ctx) {
         VictoryResult victoryResult = new VictoryResult(true);
         // check all players/teams for killing enemy commanders
         // score is 1.0 when enemy commanders are dead
         boolean isVictory = false;
         HashSet<Integer> doneTeams = new HashSet<>();
 
-        for (Player player : game.getPlayersList()) {
+        for (Player player : twGame.getPlayersList()) {
             int team = player.getTeam();
             if (team != Player.TEAM_NONE) {
                 if (doneTeams.contains(team)) {
@@ -50,9 +50,9 @@ public class EnemyCmdrDestroyedVictory implements VictoryCondition, Serializable
                 doneTeams.add(team);
             }
 
-            boolean killedAllCommanders = game.getPlayersList().stream()
+            boolean killedAllCommanders = twGame.getPlayersList().stream()
                     .filter(p -> p.isEnemyOf(player))
-                    .mapToInt(game::getLiveCommandersOwnedBy).sum() == 0;
+                    .mapToInt(twGame::getLiveCommandersOwnedBy).sum() == 0;
 
             if (killedAllCommanders) {
                 Report r = new Report(7110, Report.PUBLIC);

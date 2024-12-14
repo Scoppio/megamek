@@ -27,7 +27,7 @@ import java.util.Vector;
 public class FlamerHandler extends WeaponHandler {
     private static final long serialVersionUID = -7348456582587703751L;
 
-    public FlamerHandler(ToHitData toHit, WeaponAttackAction waa, Game g, TWGameManager m) {
+    public FlamerHandler(ToHitData toHit, WeaponAttackAction waa, TWGame g, TWGameManager m) {
         super(toHit, waa, g, m);
         generalDamageType = HitData.DAMAGE_ENERGY;
     }
@@ -35,15 +35,15 @@ public class FlamerHandler extends WeaponHandler {
     @Override
     protected void handleEntityDamage(Entity entityTarget, Vector<Report> vPhaseReport,
                                       Building bldg, int hits, int nCluster, int bldgAbsorbs) {
-        boolean bmmFlamerDamage = game.getOptions().booleanOption(OptionsConstants.BASE_FLAMER_HEAT);
-        EquipmentMode currentWeaponMode = game.getEntity(waa.getEntityId()).getEquipment(waa.getWeaponId()).curMode();
-        
+        boolean bmmFlamerDamage = twGame.getOptions().booleanOption(OptionsConstants.BASE_FLAMER_HEAT);
+        EquipmentMode currentWeaponMode = twGame.getEntity(waa.getEntityId()).getEquipment(waa.getWeaponId()).curMode();
+
         boolean flamerDoesHeatOnlyDamage = currentWeaponMode != null && currentWeaponMode.equals(Weapon.MODE_FLAMER_HEAT);
         boolean flamerDoesOnlyDamage = currentWeaponMode != null && currentWeaponMode.equals(Weapon.MODE_FLAMER_DAMAGE);
-        
+
         if (bmmFlamerDamage || flamerDoesOnlyDamage || (flamerDoesHeatOnlyDamage && !entityTarget.tracksHeat())) {
             super.handleEntityDamage(entityTarget, vPhaseReport, bldg, hits, nCluster, bldgAbsorbs);
-            
+
             if (bmmFlamerDamage && entityTarget.tracksHeat() &&
                     !entityTarget.removePartialCoverHits(hit.getLocation(), toHit.getCover(),
                             Compute.targetSideTable(ae, entityTarget, weapon.getCalledShot().getCall()))) {
@@ -66,7 +66,7 @@ public class FlamerHandler extends WeaponHandler {
             r.add(toHit.getTableDesc());
             r.add(entityTarget.getLocationAbbr(hit));
             vPhaseReport.addElement(r);
-            
+
             FlamerHandlerHelper.doHeatDamage(entityTarget, vPhaseReport, wtype, subjectId, hit);
         }
     }

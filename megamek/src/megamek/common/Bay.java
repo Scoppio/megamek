@@ -46,7 +46,7 @@ public class Bay implements Transporter, ITechnology {
     protected int loadedThisTurn = 0;
     List<Integer> recoverySlots = new ArrayList<>();
     int bayNumber = 0;
-    transient Game game = null;
+    transient TWGame twGame = null;
     private double damage;
 
     /** The troops being carried. */
@@ -204,7 +204,7 @@ public class Bay implements Transporter, ITechnology {
     @Override
     public Vector<Entity> getLoadedUnits() {
         return troops.stream()
-                .map(unit -> game.getEntity(unit))
+                .map(unit -> twGame.getEntity(unit))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toCollection(Vector::new));
     }
@@ -222,19 +222,19 @@ public class Bay implements Transporter, ITechnology {
 
     /** @return A (possibly empty) list of units from this bay that can be launched. Units in recovery cannot launch. */
     public List<Entity> getLaunchableUnits() {
-        return troops.stream().map(game::getEntity).filter(Objects::nonNull).filter(e -> e.getRecoveryTurn() == 0).collect(toList());
+        return troops.stream().map(twGame::getEntity).filter(Objects::nonNull).filter(e -> e.getRecoveryTurn() == 0).collect(toList());
     }
 
     /** @return A (possibly empty) list of units from this bay that can be assault-dropped. */
     public List<Entity> getDroppableUnits() {
-        return troops.stream().map(game::getEntity).filter(Objects::nonNull).filter(Entity::canAssaultDrop).collect(toList());
+        return troops.stream().map(twGame::getEntity).filter(Objects::nonNull).filter(Entity::canAssaultDrop).collect(toList());
     }
 
     /** @return A (possibly empty) list of units from this bay that can be unloaded on the ground. */
     public List<Entity> getUnloadableUnits() {
         // TODO: we need to handle aeros and VTOLs differently
         // TODO: shouldn't this check the entity state like wasLoadedThisTurn()? It is equal to getLoadedUnits()
-        return troops.stream().map(game::getEntity).filter(Objects::nonNull).collect(toList());
+        return troops.stream().map(twGame::getEntity).filter(Objects::nonNull).collect(toList());
     }
 
     @Override
@@ -415,8 +415,8 @@ public class Bay implements Transporter, ITechnology {
     }
 
     @Override
-    public void setGame(Game game) {
-        this.game = game;
+    public void setGame(TWGame twGame) {
+        this.twGame = twGame;
     }
 
     // Use cargo/infantry for default tech advancement

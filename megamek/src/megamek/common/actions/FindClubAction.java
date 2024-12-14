@@ -16,7 +16,7 @@ package megamek.common.actions;
 import megamek.common.BipedMek;
 import megamek.common.Building;
 import megamek.common.Entity;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Hex;
 import megamek.common.Mek;
 import megamek.common.Terrains;
@@ -40,15 +40,15 @@ public class FindClubAction extends AbstractEntityAction {
     }
 
     /**
-     * @param game The current {@link Game}
+     * @param twGame The current {@link TWGame}
      * @return whether an entity can find a club in its current location
      */
-    public static boolean canMekFindClub(Game game, int entityId) {
-        final Entity entity = game.getEntity(entityId);
+    public static boolean canMekFindClub(TWGame twGame, int entityId) {
+        final Entity entity = twGame.getEntity(entityId);
         if ((null == entity) || null == (entity.getPosition())) {
             return false;
         }
-        final Hex hex = game.getBoard().getHex(entity.getPosition());
+        final Hex hex = twGame.getBoard().getHex(entity.getPosition());
 
         // Only biped and tripod 'Meks qualify at all.
         if (!(entity instanceof BipedMek || entity instanceof TripodMek)) {
@@ -61,7 +61,7 @@ public class FindClubAction extends AbstractEntityAction {
         }
 
         // Check game options
-        if (game.getOptions().booleanOption(OptionsConstants.ALLOWED_NO_CLAN_PHYSICAL)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ALLOWED_NO_CLAN_PHYSICAL)
                 && entity.getCrew().isClanPilot()) {
             return false;
         }

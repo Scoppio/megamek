@@ -120,10 +120,10 @@ public final class UnitToolTip {
         }
 
         String result = "";
-        Game game = entity.getGame();
+        IGame IGame = entity.getGame();
 
         // unit name, player name
-        result += getDisplayNames(entity, game, showName);
+        result += getDisplayNames(entity, IGame, showName);
 
         // Force
         result += forceEntry(entity, localPlayer);
@@ -176,7 +176,7 @@ public final class UnitToolTip {
         result += c3Info(entity, details);
 
         // StratOps quirks, chassis and weapon
-        result += getQuirks(entity, game, details);
+        result += getQuirks(entity, IGame, details);
 
         String col = UIUtil.tag("TD", "", result);
         String row = UIUtil.tag("TR", "", col);
@@ -264,7 +264,7 @@ public final class UnitToolTip {
         return ownerName;
     }
 
-    private static String getDisplayNames(Entity entity, @Nullable Game game, boolean showName) {
+    private static String getDisplayNames(Entity entity, @Nullable IGame IGame, boolean showName) {
         String result = "";
 
         if (showName) {
@@ -272,7 +272,7 @@ public final class UnitToolTip {
             String row = "";
             String rows = "";
             String fontSizeAttr = String.format("class=%s", GUIP.getUnitToolTipFontSizeMod());
-            Player owner = (game != null) ? game.getPlayer(entity.getOwnerId()) : null;
+            Player owner = (IGame != null) ? IGame.getPlayer(entity.getOwnerId()) : null;
 
             col = getChassisInfo(entity);
             Color ownerColor = (owner != null) ? owner.getColour().getColour() : GUIP.getUnitToolTipFGColor();
@@ -311,8 +311,8 @@ public final class UnitToolTip {
         }
     }
 
-    private static String getQuirks(Entity entity, Game game, boolean details) {
-        if (game.getOptions().booleanOption(OptionsConstants.ADVANCED_STRATOPS_QUIRKS)) {
+    private static String getQuirks(Entity entity, IGame IGame, boolean details) {
+        if (IGame.getOptions().booleanOption(OptionsConstants.ADVANCED_STRATOPS_QUIRKS)) {
             String sQuirks = "";
             String quirksList = getOptionList(entity.getQuirks().getGroups(), entity::countQuirks, details);
             if (!quirksList.isEmpty()) {
@@ -1512,21 +1512,21 @@ public final class UnitToolTip {
         return result;
     }
 
-    private static String getMovementInfo(Game game, Entity entity) {
+    private static String getMovementInfo(TWGame twGame, Entity entity) {
         String result = "";
         // "Has not yet moved" only during movement phase
-        if (!entity.isDone() && game.getPhase().isMovement()) {
+        if (!entity.isDone() && twGame.getPhase().isMovement()) {
             String sNotYetMoved = addToTT("NotYetMoved", NOBR).toString();
             String attr = String.format("FACE=Dialog COLOR=%s", UIUtil.toColorHexString(GUIP.getColorForMovement(entity.moved)));
             sNotYetMoved = UIUtil.tag("FONT", attr, sNotYetMoved);
             result += UIUtil.tag("I", "", sNotYetMoved);
-        } else if ((entity.isDone() && game.getPhase().isMovement())
-            || (game.getPhase().isMovementReport())
-            || (game.getPhase().isFiring())
-            || (game.getPhase().isFiringReport())
-            || (game.getPhase().isPhysical())
-            || (game.getPhase().isPhysicalReport())) {
-            int tmm = Compute.getTargetMovementModifier(game, entity.getId()).getValue();
+        } else if ((entity.isDone() && twGame.getPhase().isMovement())
+            || (twGame.getPhase().isMovementReport())
+            || (twGame.getPhase().isFiring())
+            || (twGame.getPhase().isFiringReport())
+            || (twGame.getPhase().isPhysical())
+            || (twGame.getPhase().isPhysicalReport())) {
+            int tmm = Compute.getTargetMovementModifier(twGame, entity.getId()).getValue();
             String sMove = "";
 
             if (entity.moved == EntityMovementType.MOVE_NONE) {
@@ -1659,7 +1659,7 @@ public final class UnitToolTip {
         return result;
     }
 
-    private static String getUnitStatus(Game game, Entity entity, boolean isGunEmplacement) {
+    private static String getUnitStatus(TWGame twGame, Entity entity, boolean isGunEmplacement) {
         String attr = "";
         String result = "";
 
@@ -1696,7 +1696,7 @@ public final class UnitToolTip {
 
         // Swarmed
         if (entity.getSwarmAttackerId() != Entity.NONE) {
-            final Entity swarmAttacker = game.getEntity(entity.getSwarmAttackerId());
+            final Entity swarmAttacker = twGame.getEntity(entity.getSwarmAttackerId());
             if (swarmAttacker == null) {
                 logger.error(String.format(
                     "Entity %s is currently swarmed by an unknown attacker with id %s",
@@ -1710,8 +1710,8 @@ public final class UnitToolTip {
         }
 
         // Spotting
-        if (entity.isSpotting() && game.hasEntity(entity.getSpotTargetId())) {
-            String sSpotting = addToTT("Spotting", NOBR, game.getEntity(entity.getSpotTargetId()).getDisplayName())
+        if (entity.isSpotting() && twGame.hasEntity(entity.getSpotTargetId())) {
+            String sSpotting = addToTT("Spotting", NOBR, twGame.getEntity(entity.getSpotTargetId()).getDisplayName())
                 .toString() + " ";
             result += sSpotting;
         }
@@ -1735,7 +1735,7 @@ public final class UnitToolTip {
         return result;
     }
 
-    private static String getSeenByInfo(Game game, GameOptions gameOptions, Entity entity) {
+    private static String getSeenByInfo(IGame IGame, GameOptions gameOptions, Entity entity) {
         String result = "";
 
         // If Double Blind, add information about who sees this Entity
@@ -1754,7 +1754,7 @@ public final class UnitToolTip {
                             tempList.append(", ");
                             break dance;
                         case 1:
-                            Team team = game.getTeamForPlayer(player);
+                            Team team = IGame.getTeamForPlayer(player);
                             tmpStr = team != null ? team.toString() : "";
                             break;
                         case 2:
@@ -1815,9 +1815,9 @@ public final class UnitToolTip {
         String row = "";
         String rows = "";
         String attr = "";
-        Game game = entity.getGame();
-        GameOptions gameOptions = game.getOptions();
-        PlanetaryConditions conditions = game.getPlanetaryConditions();
+        TWGame twGame = entity.getGame();
+        GameOptions gameOptions = twGame.getOptions();
+        PlanetaryConditions conditions = twGame.getPlanetaryConditions();
         boolean isGunEmplacement = entity instanceof GunEmplacement;
         String fontSizeAttr = String.format("class=%s", GUIP.getUnitToolTipFontSizeMod());
 
@@ -1841,7 +1841,7 @@ public final class UnitToolTip {
 
         // Actual Movement
         if (!isGunEmplacement) {
-            String movementInfo = getMovementInfo(game, entity);
+            String movementInfo = getMovementInfo(twGame, entity);
             if (!movementInfo.isEmpty()) {
                 movementInfo = UIUtil.tag("span", fontSizeAttr,  movementInfo);
                 col = UIUtil.tag("TD", "", movementInfo);
@@ -1878,7 +1878,7 @@ public final class UnitToolTip {
         }
 
         // Unit status
-        String unitStatus = getUnitStatus(game, entity, isGunEmplacement);
+        String unitStatus = getUnitStatus(twGame, entity, isGunEmplacement);
         if (!unitStatus.isEmpty()) {
             unitStatus = UIUtil.tag("span", fontSizeAttr,  unitStatus);
             col = UIUtil.tag("TD", "", unitStatus);
@@ -1888,7 +1888,7 @@ public final class UnitToolTip {
 
         // Seen by
         if (showSeenBy) {
-            String seenByInfo = getSeenByInfo(game, gameOptions, entity);;
+            String seenByInfo = getSeenByInfo(twGame, gameOptions, entity);;
             if (!seenByInfo.isEmpty()) {
                 attr = String.format("FACE=Dialog COLOR=%s", UIUtil.toColorHexString((GUIP.getUnitToolTipHighlightColor())));
                 seenByInfo = UIUtil.tag("FONT", attr, seenByInfo);
@@ -2435,13 +2435,13 @@ public final class UnitToolTip {
     }
 
     /** Returns true when Hot-Loading LRMs is on. */
-    static boolean isHotLoadActive(Game game) {
-        return game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_HOTLOAD);
+    static boolean isHotLoadActive(IGame IGame) {
+        return IGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_HOTLOAD);
     }
 
     /** Returns true when Hot-Loading LRMs is on. */
-    static boolean isRapidFireActive(Game game) {
-        return game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_BURST);
+    static boolean isRapidFireActive(IGame IGame) {
+        return IGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_BURST);
     }
 
     private UnitToolTip() {

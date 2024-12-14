@@ -15,12 +15,8 @@ package megamek.common.weapons;
 
 import java.util.Vector;
 
-import megamek.common.BattleArmor;
-import megamek.common.Compute;
-import megamek.common.Game;
-import megamek.common.Infantry;
-import megamek.common.Report;
-import megamek.common.ToHitData;
+import megamek.common.*;
+import megamek.common.TWGame;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.server.totalwarfare.TWGameManager;
 
@@ -37,13 +33,13 @@ public class BPodHandler extends AmmoWeaponHandler {
      * @param g
      * @param m
      */
-    public BPodHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public BPodHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 
     /**
      * Calculate the clustering of the hits
-     * 
+     *
      * @return a <code>int</code> value saying how much hits are in each cluster
      *         of damage.
      */
@@ -54,7 +50,7 @@ public class BPodHandler extends AmmoWeaponHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#calcHits(java.util.Vector)
      */
     @Override
@@ -67,7 +63,7 @@ public class BPodHandler extends AmmoWeaponHandler {
 
     /**
      * Calculate the damage per hit.
-     * 
+     *
      * @return an <code>int</code> representing the damage dealt per hit.
      */
     @Override

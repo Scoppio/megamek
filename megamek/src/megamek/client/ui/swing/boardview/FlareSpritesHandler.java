@@ -19,18 +19,18 @@
 package megamek.client.ui.swing.boardview;
 
 import megamek.common.Flare;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.event.GameBoardChangeEvent;
 
 import java.util.Collection;
 
 public class FlareSpritesHandler extends BoardViewSpriteHandler {
 
-    private final Game game;
+    private final TWGame twGame;
 
-    public FlareSpritesHandler(BoardView boardView, Game game) {
+    public FlareSpritesHandler(BoardView boardView, TWGame twGame) {
         super(boardView);
-        this.game = game;
+        this.twGame = twGame;
     }
 
     public void renewSprites(Collection<Flare> flares) {
@@ -41,17 +41,17 @@ public class FlareSpritesHandler extends BoardViewSpriteHandler {
 
     @Override
     public void initialize() {
-        game.addGameListener(this);
+        twGame.addGameListener(this);
     }
 
     @Override
     public void dispose() {
         clear();
-        game.removeGameListener(this);
+        twGame.removeGameListener(this);
     }
 
     @Override
     public void gameBoardChanged(GameBoardChangeEvent e) {
-        renewSprites(game.getFlares());
+        renewSprites(twGame.getFlares());
     }
 }

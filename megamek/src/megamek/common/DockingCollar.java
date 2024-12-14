@@ -36,7 +36,7 @@ public class DockingCollar implements Transporter {
     private final Set<Integer> dockedUnits = new HashSet<>();
     private boolean damaged = false;
     private final int collarId;
-    transient Game game;
+    transient TWGame twGame;
 
     /**
      * Creates a JumpShip Docking Collar that can carry one dropship.
@@ -80,7 +80,7 @@ public class DockingCollar implements Transporter {
     public List<Entity> getLoadedUnits() {
         correctDockedUnitList();
         return dockedUnits.stream()
-                .map(id -> game.getEntity(id))
+                .map(id -> twGame.getEntity(id))
                 .collect(Collectors.toList());
     }
 
@@ -90,7 +90,7 @@ public class DockingCollar implements Transporter {
      * that ideally shouldn't be necessary.
      */
     private void correctDockedUnitList() {
-        if (dockedUnits.removeIf(id -> game.getEntity(id) == null)) {
+        if (dockedUnits.removeIf(id -> twGame.getEntity(id) == null)) {
             logger.warn("Unit IDs mapping to a null Entity found in this docking collar.");
         }
     }
@@ -110,7 +110,7 @@ public class DockingCollar implements Transporter {
         } else {
             correctDockedUnitList();
             return dockedUnits.stream()
-                    .map(id -> game.getEntity(id))
+                    .map(id -> twGame.getEntity(id))
                     .filter(entity -> entity.getRecoveryTurn() == 0)
                     .filter(entity -> entity instanceof Dropship)
                     .filter(entity -> !((Dropship) entity).isDockCollarDamaged())
@@ -167,8 +167,8 @@ public class DockingCollar implements Transporter {
     }
 
     @Override
-    public void setGame(Game game) {
-        this.game = game;
+    public void setGame(TWGame twGame) {
+        this.twGame = twGame;
     }
 
     @Override

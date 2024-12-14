@@ -31,7 +31,7 @@ public class ArtilleryCannonWeaponHandler extends AmmoWeaponHandler {
     private static final long serialVersionUID = 1L;
     boolean handledAmmoAndReport = false;
 
-    public ArtilleryCannonWeaponHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public ArtilleryCannonWeaponHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 
@@ -119,9 +119,9 @@ public class ArtilleryCannonWeaponHandler extends AmmoWeaponHandler {
             r.add(targetPos.getBoardNum());
             vPhaseReport.addElement(r);
         } else {
-            if (!game.getBoard().inSpace()) {
+            if (!twGame.getBoard().inSpace()) {
                 targetPos = Compute.scatter(targetPos, (Math.abs(toHit.getMoS()) + 1) / 2);
-                if (game.getBoard().contains(targetPos)) {
+                if (twGame.getBoard().contains(targetPos)) {
                     // misses and scatters to another hex
                     if (!isFlak) {
                         r = new Report(3195);
@@ -212,7 +212,7 @@ public class ArtilleryCannonWeaponHandler extends AmmoWeaponHandler {
             r.subject = subjectId;
             vPhaseReport.addElement(r);
 
-            AreaEffectHelper.clearMineFields(targetPos, Minefield.CLEAR_NUMBER_WEAPON, ae, vPhaseReport, game,
+            AreaEffectHelper.clearMineFields(targetPos, Minefield.CLEAR_NUMBER_WEAPON, ae, vPhaseReport, twGame,
                     gameManager);
         }
 
@@ -224,7 +224,7 @@ public class ArtilleryCannonWeaponHandler extends AmmoWeaponHandler {
         // to
         // TODO : Does this apply to arty cannons?
         if (!mineClear) {
-            AreaEffectHelper.clearMineFields(targetPos, Minefield.CLEAR_NUMBER_WEAPON_ACCIDENT, ae, vPhaseReport, game,
+            AreaEffectHelper.clearMineFields(targetPos, Minefield.CLEAR_NUMBER_WEAPON_ACCIDENT, ae, vPhaseReport, twGame,
                     gameManager);
         }
 

@@ -23,21 +23,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Vector;
 
+import megamek.common.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import megamek.common.AeroSpaceFighter;
-import megamek.common.EquipmentType;
-import megamek.common.Game;
-import megamek.common.LandAirMek;
-import megamek.common.PilotingRollData;
-import megamek.common.Player;
+import megamek.common.TWGame;
 
 class TWGameManagerTest {
     private Player player;
     private TWGameManager gameManager;
-    private Game game;
+    private TWGame twGame;
 
     @BeforeAll
     static void before() {
@@ -48,21 +44,21 @@ class TWGameManagerTest {
     void setUp() {
         player = new Player(0, "Test");
         gameManager = new TWGameManager();
-        game = gameManager.getGame();
-        game.addPlayer(0, player);
+        TWGame = gameManager.getGame();
+        twGame.addPlayer(0, player);
     }
 
     @Test
     void testAddControlWithAdvAtmosphericMergesIntoOneRollAero() {
         AeroSpaceFighter aero = new AeroSpaceFighter();
-        game.addEntity(aero);
+        twGame.addEntity(aero);
         Vector<PilotingRollData> rolls = new Vector<>();
         StringBuilder reasons = new StringBuilder();
 
-        game.addControlRoll(new PilotingRollData(aero.getId(), 0, "critical hit"));
-        game.addControlRoll(new PilotingRollData(aero.getId(), 0, "avionics hit"));
-        game.addControlRoll(new PilotingRollData(aero.getId(), 0, "threshold"));
-        game.addControlRoll(new PilotingRollData(aero.getId(), 0, "highest damage threshold exceeded"));
+        twGame.addControlRoll(new PilotingRollData(aero.getId(), 0, "critical hit"));
+        twGame.addControlRoll(new PilotingRollData(aero.getId(), 0, "avionics hit"));
+        twGame.addControlRoll(new PilotingRollData(aero.getId(), 0, "threshold"));
+        twGame.addControlRoll(new PilotingRollData(aero.getId(), 0, "highest damage threshold exceeded"));
         gameManager.addControlWithAdvAtmospheric(aero, rolls, reasons);
         assertEquals(1, rolls.size());
     }
@@ -70,14 +66,14 @@ class TWGameManagerTest {
     @Test
     void testAddControlWithAdvAtmosphericIncludesAllReasonsAero() {
         AeroSpaceFighter aero = new AeroSpaceFighter();
-        game.addEntity(aero);
+        twGame.addEntity(aero);
         Vector<PilotingRollData> rolls = new Vector<>();
         StringBuilder reasons = new StringBuilder();
 
-        game.addControlRoll(new PilotingRollData(aero.getId(), 0, "critical hit"));
-        game.addControlRoll(new PilotingRollData(aero.getId(), 0, "avionics hit"));
-        game.addControlRoll(new PilotingRollData(aero.getId(), 0, "threshold"));
-        game.addControlRoll(new PilotingRollData(aero.getId(), 0, "highest damage threshold exceeded"));
+        twGame.addControlRoll(new PilotingRollData(aero.getId(), 0, "critical hit"));
+        twGame.addControlRoll(new PilotingRollData(aero.getId(), 0, "avionics hit"));
+        twGame.addControlRoll(new PilotingRollData(aero.getId(), 0, "threshold"));
+        twGame.addControlRoll(new PilotingRollData(aero.getId(), 0, "highest damage threshold exceeded"));
         gameManager.addControlWithAdvAtmospheric(aero, rolls, reasons);
         assertTrue(reasons.toString().contains("critical hit"));
         assertTrue(reasons.toString().contains("avionics hit"));
@@ -89,13 +85,13 @@ class TWGameManagerTest {
     void testAddControlWithAdvAtmosphericMergesIntoOneRollLAM() {
         LandAirMek mek = new LandAirMek(LandAirMek.GYRO_STANDARD, LandAirMek.COCKPIT_STANDARD,
                 LandAirMek.LAM_STANDARD);
-        game.addEntity(mek);
+        twGame.addEntity(mek);
         Vector<PilotingRollData> rolls = new Vector<>();
         StringBuilder reasons = new StringBuilder();
 
-        game.addControlRoll(new PilotingRollData(mek.getId(), 0, "avionics hit"));
-        game.addControlRoll(new PilotingRollData(mek.getId(), 0, "threshold"));
-        game.addControlRoll(new PilotingRollData(mek.getId(), 0, "highest damage threshold exceeded"));
+        twGame.addControlRoll(new PilotingRollData(mek.getId(), 0, "avionics hit"));
+        twGame.addControlRoll(new PilotingRollData(mek.getId(), 0, "threshold"));
+        twGame.addControlRoll(new PilotingRollData(mek.getId(), 0, "highest damage threshold exceeded"));
         gameManager.addControlWithAdvAtmospheric(mek, rolls, reasons);
         assertEquals(1, rolls.size());
     }
@@ -104,13 +100,13 @@ class TWGameManagerTest {
     void testAddControlWithAdvAtmosphericIncludesAllReasonsLAM() {
         LandAirMek mek = new LandAirMek(LandAirMek.GYRO_STANDARD, LandAirMek.COCKPIT_STANDARD,
                 LandAirMek.LAM_STANDARD);
-        game.addEntity(mek);
+        twGame.addEntity(mek);
         Vector<PilotingRollData> rolls = new Vector<>();
         StringBuilder reasons = new StringBuilder();
 
-        game.addControlRoll(new PilotingRollData(mek.getId(), 0, "avionics hit"));
-        game.addControlRoll(new PilotingRollData(mek.getId(), 0, "threshold"));
-        game.addControlRoll(new PilotingRollData(mek.getId(), 0, "highest damage threshold exceeded"));
+        twGame.addControlRoll(new PilotingRollData(mek.getId(), 0, "avionics hit"));
+        twGame.addControlRoll(new PilotingRollData(mek.getId(), 0, "threshold"));
+        twGame.addControlRoll(new PilotingRollData(mek.getId(), 0, "highest damage threshold exceeded"));
         gameManager.addControlWithAdvAtmospheric(mek, rolls, reasons);
         assertTrue(reasons.toString().contains("avionics hit"));
         assertTrue(reasons.toString().contains("threshold"));

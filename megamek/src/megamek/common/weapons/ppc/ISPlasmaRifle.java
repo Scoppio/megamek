@@ -14,8 +14,8 @@
 package megamek.common.weapons.ppc;
 
 import megamek.common.AmmoType;
+import megamek.common.TWGame;
 import megamek.common.alphaStrike.AlphaStrikeElement;
-import megamek.common.Game;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.weapons.AmmoWeapon;
@@ -73,9 +73,9 @@ public class ISPlasmaRifle extends AmmoWeapon {
      * megamek.server.Server)
      */
     @Override
-    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, Game game,
+    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, TWGame twGame,
                                               TWGameManager manager) {
-        return new PlasmaRifleHandler(toHit, waa, game, manager);
+        return new PlasmaRifleHandler(toHit, waa, twGame, manager);
     }
 
     @Override

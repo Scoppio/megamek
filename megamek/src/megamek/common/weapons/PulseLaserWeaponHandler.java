@@ -30,7 +30,7 @@ import java.util.Vector;
 public class PulseLaserWeaponHandler extends EnergyWeaponHandler {
     private static final long serialVersionUID = -5701939682138221449L;
 
-    public PulseLaserWeaponHandler(ToHitData toHit, WeaponAttackAction waa, Game g, TWGameManager m) {
+    public PulseLaserWeaponHandler(ToHitData toHit, WeaponAttackAction waa, TWGame g, TWGameManager m) {
         super(toHit, waa, g, m);
     }
 
@@ -40,7 +40,7 @@ public class PulseLaserWeaponHandler extends EnergyWeaponHandler {
             return true;
         }
 
-        WeaponMounted laser = waa.getEntity(game).getWeapon(waa.getWeaponId());
+        WeaponMounted laser = waa.getEntity(twGame).getWeapon(waa.getWeaponId());
 
         if ((roll.getIntValue() == 2) && laser.curMode().equals("Pulse")) {
             vPhaseReport.addAll(gameManager.explodeEquipment(laser.getEntity(), laser.getLocation(), laser.getLinkedBy()));
@@ -52,7 +52,7 @@ public class PulseLaserWeaponHandler extends EnergyWeaponHandler {
     protected int calcDamagePerHit() {
         double toReturn = wtype.getDamage();
 
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_ENERGY_WEAPONS)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_ENERGY_WEAPONS)
             && weapon.hasModes()) {
             toReturn = Compute.dialDownDamage(weapon, wtype, nRange);
         }
@@ -65,7 +65,7 @@ public class PulseLaserWeaponHandler extends EnergyWeaponHandler {
             toReturn *= ((BattleArmor) ae).getShootingStrength();
         }
         // Check for Altered Damage from Energy Weapons (TacOp, pg.83)
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_ALTDMG)) {
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_ALTDMG)) {
             if (nRange <= 1) {
                 toReturn++;
             } else if (nRange <= wtype.getMediumRange()) {
@@ -75,11 +75,11 @@ public class PulseLaserWeaponHandler extends EnergyWeaponHandler {
             }
         }
 
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE)
             && (nRange > wtype.getRanges(weapon)[RangeType.RANGE_LONG])) {
             toReturn = (int) Math.floor(toReturn / 2.0);
         }
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS_RANGE)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS_RANGE)
                 && (nRange > wtype.getRanges(weapon)[RangeType.RANGE_EXTREME])) {
             toReturn = (int) Math.floor(toReturn / 3.0);
         }

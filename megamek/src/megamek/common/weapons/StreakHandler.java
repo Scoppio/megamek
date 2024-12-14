@@ -38,7 +38,7 @@ public class StreakHandler extends MissileWeaponHandler {
      * @param g
      * @param m
      */
-    public StreakHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public StreakHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 
@@ -79,7 +79,7 @@ public class StreakHandler extends MissileWeaponHandler {
         int missilesHit;
         int amsMod = getAMSHitsMod(vPhaseReport);
 
-        if (game.getOptions().booleanOption(OptionsConstants.ADVAERORULES_AERO_SANITY)) {
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVAERORULES_AERO_SANITY)) {
             Entity entityTarget = (target.getTargetType() == Targetable.TYPE_ENTITY) ? (Entity) target
                     : null;
             if (entityTarget != null && entityTarget.isLargeCraft()) {

@@ -36,25 +36,25 @@ public class ArtilleryAttackAction extends WeaponAttackAction implements Seriali
     private Coords oldTargetCoords;
 
     public ArtilleryAttackAction(int entityId, int targetType, int targetId,
-                                 int weaponId, Game game) {
+                                 int weaponId, TWGame twGame) {
         super(entityId, targetType, targetId, weaponId);
-        this.playerId = game.getEntity(entityId).getOwnerId();
-        this.firingCoords = game.getEntity(entityId).getPosition();
-        int distance = Compute.effectiveDistance(game, getEntity(game), getTarget(game));
+        this.playerId = twGame.getEntity(entityId).getOwnerId();
+        this.firingCoords = twGame.getEntity(entityId).getPosition();
+        int distance = Compute.effectiveDistance(twGame, getEntity(twGame), getTarget(twGame));
         // adjust distance for gravity
-        distance = (int) Math.floor((double) distance / game.getPlanetaryConditions().getGravity());
-        EquipmentType eType = getEntity(game).getEquipment(weaponId).getType();
+        distance = (int) Math.floor((double) distance / twGame.getPlanetaryConditions().getGravity());
+        EquipmentType eType = getEntity(twGame).getEquipment(weaponId).getType();
         WeaponType wType = (WeaponType) eType;
-        WeaponMounted mounted = (WeaponMounted) getEntity(game).getEquipment(weaponId);
-        if (getEntity(game).usesWeaponBays() && wType.getAtClass() == WeaponType.CLASS_ARTILLERY) {
+        WeaponMounted mounted = (WeaponMounted) getEntity(twGame).getEquipment(weaponId);
+        if (getEntity(twGame).usesWeaponBays() && wType.getAtClass() == WeaponType.CLASS_ARTILLERY) {
             for (WeaponMounted bayW : mounted.getBayWeapons()) {
                 WeaponType bayWType = bayW.getType();
                 if (bayWType.hasFlag(WeaponType.F_CRUISE_MISSILE)) {
                     // See TO p181. Cruise missile flight time is (1 + (Mapsheets / 5, round down)
                     turnsTilHit = 1 + (distance / Board.DEFAULT_BOARD_HEIGHT / 5);
                     break;
-                } else if (getEntity(game).isAirborne() && !getEntity(game).isSpaceborne()) {
-                    if (getEntity(game).getAltitude() < 9) {
+                } else if (getEntity(twGame).isAirborne() && !getEntity(twGame).isSpaceborne()) {
+                    if (getEntity(twGame).getAltitude() < 9) {
                         turnsTilHit = 1;
                     } else {
                         turnsTilHit = 2;
@@ -82,7 +82,7 @@ public class ArtilleryAttackAction extends WeaponAttackAction implements Seriali
         // An aaa will only be returned if the weapon is set to the correct mode
         if (mounted.isInBearingsOnlyMode()
                 && distance >= RangeType.RANGE_BEARINGS_ONLY_MINIMUM) {
-            this.launchVelocity = game.getOptions().intOption(OptionsConstants.ADVAERORULES_STRATOPS_BEARINGS_ONLY_VELOCITY);
+            this.launchVelocity = twGame.getOptions().intOption(OptionsConstants.ADVAERORULES_STRATOPS_BEARINGS_ONLY_VELOCITY);
             turnsTilHit = distance / launchVelocity;
             return;
         }
@@ -93,8 +93,8 @@ public class ArtilleryAttackAction extends WeaponAttackAction implements Seriali
         }
         // Currently, spaceborne entities also count as airborne, though the reverse is not true.
         // See TO p181. Flight time is 1 turn at altitude 1-8,  2 turns at alt 9.
-        if (getEntity(game).isAirborne() && !getEntity(game).isSpaceborne()) {
-            if (getEntity(game).getAltitude() < 9) {
+        if (getEntity(twGame).isAirborne() && !getEntity(twGame).isSpaceborne()) {
+            if (getEntity(twGame).getAltitude() < 9) {
                 turnsTilHit = 1;
             } else {
                 turnsTilHit = 2;
@@ -141,9 +141,9 @@ public class ArtilleryAttackAction extends WeaponAttackAction implements Seriali
      * Needed after aaa setup by bearings-only missiles, which have a variable velocity
      */
     @Override
-    public void updateTurnsTilHit(Game game) {
+    public void updateTurnsTilHit(TWGame twGame) {
         // adjust distance for gravity
-        this.turnsTilHit = Compute.turnsTilBOMHit(game, getEntity(game), getTarget(game), launchVelocity);
+        this.turnsTilHit = Compute.turnsTilBOMHit(twGame, getEntity(twGame), getTarget(twGame), launchVelocity);
     }
 
     public int getTurnsTilHit() {

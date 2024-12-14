@@ -62,7 +62,7 @@ public class ProtoMekClampMount extends BattleArmorHandles {
     public int getCargoMpReduction(Entity carrier) {
         double protoWeight = 0.0;
         if (carriedUnit != Entity.NONE) {
-            protoWeight = game.getEntity(carriedUnit).getWeight();
+            protoWeight = twGame.getEntity(carriedUnit).getWeight();
             if (carrier.isOmni()) {
                 protoWeight = Math.max(0, protoWeight - 3.0);
             }

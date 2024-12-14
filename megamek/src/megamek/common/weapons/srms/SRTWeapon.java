@@ -23,12 +23,9 @@ import static megamek.common.MountedHelper.isArtemisIV;
 import static megamek.common.MountedHelper.isArtemisProto;
 import static megamek.common.MountedHelper.isArtemisV;
 
-import megamek.common.AmmoType;
+import megamek.common.*;
 import megamek.common.alphaStrike.AlphaStrikeElement;
-import megamek.common.Entity;
-import megamek.common.Game;
-import megamek.common.Mounted;
-import megamek.common.ToHitData;
+import megamek.common.TWGame;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.weapons.AttackHandler;
 import megamek.common.weapons.SRMHandler;
@@ -58,8 +55,8 @@ public abstract class SRTWeapon extends MissileWeapon {
 
     @Override
     protected AttackHandler getCorrectHandler(ToHitData toHit,
-            WeaponAttackAction waa, Game game, TWGameManager manager) {
-        return new SRMHandler(toHit, waa, game, manager);
+                                              WeaponAttackAction waa, TWGame twGame, TWGameManager manager) {
+        return new SRMHandler(toHit, waa, twGame, manager);
     }
 
     @Override

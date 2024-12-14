@@ -14,7 +14,7 @@
  */
 package megamek.common.weapons;
 
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.HitData;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
@@ -23,7 +23,7 @@ import megamek.server.totalwarfare.TWGameManager;
 public class ReengineeredLaserWeaponHandler extends EnergyWeaponHandler {
     private static final long serialVersionUID = -7390162086880372388L;
 
-    public ReengineeredLaserWeaponHandler(ToHitData toHit, WeaponAttackAction waa, Game g,
+    public ReengineeredLaserWeaponHandler(ToHitData toHit, WeaponAttackAction waa, TWGame g,
                                           TWGameManager m) {
         super(toHit, waa, g, m);
         // so that reflective armor doesn't halve the damage

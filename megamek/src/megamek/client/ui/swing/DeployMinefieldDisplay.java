@@ -27,13 +27,8 @@ import javax.swing.JOptionPane;
 import megamek.client.event.BoardViewEvent;
 import megamek.client.ui.Messages;
 import megamek.client.ui.swing.widget.MegaMekButton;
-import megamek.common.Coords;
-import megamek.common.Game;
-import megamek.common.Hex;
-import megamek.common.ICarryable;
-import megamek.common.Minefield;
-import megamek.common.Player;
-import megamek.common.Terrains;
+import megamek.common.*;
+import megamek.common.TWGame;
 import megamek.common.event.GamePhaseChangeEvent;
 import megamek.common.event.GameTurnChangeEvent;
 
@@ -239,25 +234,25 @@ public class DeployMinefieldDisplay extends StatusBarPhaseDisplay {
     }
 
     private void deployMinefield(Coords coords) {
-    	Game game = clientgui.getClient().getGame();
+    	TWGame twGame = clientgui.getClient().getGame();
 
-        if (!game.getBoard().contains(coords)) {
+        if (!twGame.getBoard().contains(coords)) {
             return;
         }
 
         // check if this is a water hex
         boolean sea = false;
-        Hex hex = game.getBoard().getHex(coords);
+        Hex hex = twGame.getBoard().getHex(coords);
         if (hex.containsTerrain(Terrains.WATER)) {
             sea = true;
         }
 
         if (currentCommand == DeployMinefieldCommand.REMOVE_MINES) {
-            if (!game.containsMinefield(coords) &&
-            		game.getGroundObjects(coords).size() == 0) {
+            if (!twGame.containsMinefield(coords) &&
+            		twGame.getGroundObjects(coords).size() == 0) {
                 return;
             }
-            Enumeration<?> mfs = game.getMinefields(coords).elements();
+            Enumeration<?> mfs = twGame.getMinefields(coords).elements();
             ArrayList<Minefield> mfRemoved = new ArrayList<>();
             while (mfs.hasMoreElements()) {
                 Minefield mf = (Minefield) mfs.nextElement();
@@ -279,17 +274,17 @@ public class DeployMinefieldDisplay extends StatusBarPhaseDisplay {
             }
 
             for (Minefield mf : mfRemoved) {
-            	game.removeMinefield(mf);
+            	twGame.removeMinefield(mf);
             }
 
             // remove all carryables here as well and put them back to the player
-            for (ICarryable carryable : game.getGroundObjects(coords)) {
+            for (ICarryable carryable : twGame.getGroundObjects(coords)) {
             	p.getGroundObjectsToPlace().add(carryable);
             }
 
-            game.getGroundObjects().remove(coords);
+            twGame.getGroundObjects().remove(coords);
 
-            clientgui.showGroundObjects(game.getGroundObjects());
+            clientgui.showGroundObjects(twGame.getGroundObjects());
 
         } else if (currentCommand == DeployMinefieldCommand.DEPLOY_CARRYABLE) {
         	List<ICarryable> groundObjects = p.getGroundObjectsToPlace();
@@ -304,18 +299,18 @@ public class DeployMinefieldDisplay extends StatusBarPhaseDisplay {
                         groundObjects.toArray(), groundObjects.get(0));
         	}
 
-        	game.placeGroundObject(coords, toDeploy);
+        	twGame.placeGroundObject(coords, toDeploy);
         	groundObjects.remove(toDeploy);
 
         	if (groundObjects.size() <= 0) {
         		currentCommand = DeployMinefieldCommand.COMMAND_NONE;
         	}
 
-        	clientgui.showGroundObjects(game.getGroundObjects());
+        	clientgui.showGroundObjects(twGame.getGroundObjects());
         } else {
         	// first check that there is not already a mine of this type
             // deployed
-            Enumeration<?> mfs = game.getMinefields(coords).elements();
+            Enumeration<?> mfs = twGame.getMinefields(coords).elements();
             while (mfs.hasMoreElements()) {
                 Minefield mf = (Minefield) mfs.nextElement();
                 if ((deployingConventionalMinefields() && (mf.getType() == Minefield.TYPE_CONVENTIONAL))
@@ -421,7 +416,7 @@ public class DeployMinefieldDisplay extends StatusBarPhaseDisplay {
             }
             if (mf != null) {
                 mf.setWeaponDelivered(false);
-                game.addMinefield(mf);
+                twGame.addMinefield(mf);
                 deployedMinefields.addElement(mf);
             }
             clientgui.getBoardView().refreshDisplayables();

@@ -37,7 +37,7 @@ public final class PhysicalCalculator {
         // should never call this
     }
 
-    public static PhysicalOption getBestPhysical(Entity entity, Game game) {
+    public static PhysicalOption getBestPhysical(Entity entity, TWGame twGame) {
         // Infantry can't conduct physical attacks.
         if (entity instanceof Infantry) {
             return null;
@@ -73,7 +73,7 @@ public final class PhysicalCalculator {
 
                 // Check for left arm punch damage to self
 
-                odds = BrushOffAttackAction.toHit(game, entity.getId(), game
+                odds = BrushOffAttackAction.toHit(twGame, entity.getId(), twGame
                         .getEntity(entity.getSwarmAttackerId()), BrushOffAttackAction.LEFT);
                 if (odds.getValue() != TargetRoll.IMPOSSIBLE) {
 
@@ -89,7 +89,7 @@ public final class PhysicalCalculator {
                 }
 
                 // Check for right arm punch damage to self
-                odds = BrushOffAttackAction.toHit(game, entity.getId(), game
+                odds = BrushOffAttackAction.toHit(twGame, entity.getId(), twGame
                         .getEntity(entity.getSwarmAttackerId()), BrushOffAttackAction.RIGHT);
                 if (odds.getValue() != TargetRoll.IMPOSSIBLE) {
 
@@ -127,7 +127,7 @@ public final class PhysicalCalculator {
                 // Construct and return Physical option
                 if (best_brush != PhysicalOption.NONE) {
                     return new PhysicalOption(entity,
-                            game.getEntity(entity.getSwarmAttackerId()),
+                            twGame.getEntity(entity.getSwarmAttackerId()),
                             final_dmg,
                             best_brush,
                             null);
@@ -175,7 +175,7 @@ public final class PhysicalCalculator {
                 }
                 if (best_pod != null) {
                     // Check for left arm punch damage to self
-                    odds = BrushOffAttackAction.toHit(game, entity.getId(),
+                    odds = BrushOffAttackAction.toHit(twGame, entity.getId(),
                                                       best_pod, BrushOffAttackAction.LEFT);
                     if (odds.getValue() != TargetRoll.IMPOSSIBLE) {
 
@@ -193,7 +193,7 @@ public final class PhysicalCalculator {
                     }
 
                     // Check for right arm punch damage to self
-                    odds = BrushOffAttackAction.toHit(game, entity.getId(),
+                    odds = BrushOffAttackAction.toHit(twGame, entity.getId(),
                                                       best_pod, BrushOffAttackAction.RIGHT);
                     if (odds.getValue() != TargetRoll.IMPOSSIBLE) {
 
@@ -242,7 +242,7 @@ public final class PhysicalCalculator {
             }
         }
 
-        for (Entity target : game.getEntitiesVector()) {
+        for (Entity target : twGame.getEntitiesVector()) {
             // don't consider myself
             if (target.equals(entity)) {
                 continue;
@@ -259,7 +259,7 @@ public final class PhysicalCalculator {
             }
 
             // don't consider targets beyond melee range
-            if (Compute.effectiveDistance(game, entity, target) > 1) {
+            if (Compute.effectiveDistance(twGame, entity, target) > 1) {
                 continue;
             }
 
@@ -268,7 +268,7 @@ public final class PhysicalCalculator {
                 continue;
             }
 
-            PhysicalOption one = getBestPhysicalAttack(entity, target, game);
+            PhysicalOption one = getBestPhysicalAttack(entity, target, twGame);
             if (one != null) {
                 if ((best == null) || (one.expectedDmg > best.expectedDmg)) {
                     best = one;
@@ -282,12 +282,12 @@ public final class PhysicalCalculator {
     }
 
     static PhysicalOption getBestPhysicalAttack(Entity from, Entity to,
-                                                Game game) {
+                                                TWGame twGame) {
         Targetable target = to;
 
         // if the object of our affections is in a building, we have to target the building instead
-        if (Compute.isInBuilding(game, to) || (to instanceof GunEmplacement)) {
-            target = new BuildingTarget(to.getPosition(), game.getBoard(), false);
+        if (Compute.isInBuilding(twGame, to) || (to instanceof GunEmplacement)) {
+            target = new BuildingTarget(to.getPosition(), twGame.getBoard(), false);
         }
 
         double bestDmg = 0.0;
@@ -330,7 +330,7 @@ public final class PhysicalCalculator {
             location_table = ToHitData.HIT_NORMAL;
         }
 
-        ToHitData odds = PunchAttackAction.toHit(game, from.getId(), target,
+        ToHitData odds = PunchAttackAction.toHit(twGame, from.getId(), target,
                                                  PunchAttackAction.LEFT, false);
         if (odds.getValue() != TargetRoll.IMPOSSIBLE) {
             damage = PunchAttackAction.getDamageFor(from,
@@ -342,7 +342,7 @@ public final class PhysicalCalculator {
                                        bestDmg);
         }
 
-        odds = PunchAttackAction.toHit(game, from.getId(), target,
+        odds = PunchAttackAction.toHit(twGame, from.getId(), target,
                                        PunchAttackAction.RIGHT, false);
         if (odds.getValue() != TargetRoll.IMPOSSIBLE) {
             damage = PunchAttackAction.getDamageFor(from,
@@ -357,9 +357,9 @@ public final class PhysicalCalculator {
         }
 
         // Check for a double punch
-        odds = PunchAttackAction.toHit(game, from.getId(), target,
+        odds = PunchAttackAction.toHit(twGame, from.getId(), target,
                                        PunchAttackAction.LEFT, false);
-        ToHitData odds_a = PunchAttackAction.toHit(game, from.getId(), to,
+        ToHitData odds_a = PunchAttackAction.toHit(twGame, from.getId(), to,
                                                    PunchAttackAction.RIGHT, false);
         if ((odds.getValue() != TargetRoll.IMPOSSIBLE)
                 && (odds_a.getValue() != TargetRoll.IMPOSSIBLE)) {
@@ -393,14 +393,14 @@ public final class PhysicalCalculator {
             location_table = ToHitData.HIT_NORMAL;
         }
 
-        dmg = getExpectedKickDamage(from, to, game, location_table, target_arc,
+        dmg = getExpectedKickDamage(from, to, twGame, location_table, target_arc,
                                     KickAttackAction.LEFT);
         if (dmg > bestDmg) {
             bestType = PhysicalOption.KICK_LEFT;
             bestDmg = dmg;
         }
 
-        dmg = getExpectedKickDamage(from, to, game, location_table, target_arc,
+        dmg = getExpectedKickDamage(from, to, twGame, location_table, target_arc,
                                     KickAttackAction.RIGHT);
         if (dmg > bestDmg) {
             bestType = PhysicalOption.KICK_RIGHT;
@@ -424,7 +424,7 @@ public final class PhysicalCalculator {
             } else {
                 location_table = ToHitData.HIT_NORMAL;
             }
-            odds = ClubAttackAction.toHit(game, from.getId(), target, club,
+            odds = ClubAttackAction.toHit(twGame, from.getId(), target, club,
                                           ToHitData.HIT_NORMAL, false);
             if (odds.getValue() != TargetRoll.IMPOSSIBLE) {
                 damage = ClubAttackAction.getDamageFor(from, club, targetConvInfantry, false);
@@ -442,7 +442,7 @@ public final class PhysicalCalculator {
             }
         }
         // Check for a push attack
-        odds = PushAttackAction.toHit(game, from.getId(), target);
+        odds = PushAttackAction.toHit(twGame, from.getId(), target);
         if (odds.getValue() != TargetRoll.IMPOSSIBLE) {
             int elev_diff;
             double breach;
@@ -451,23 +451,23 @@ public final class PhysicalCalculator {
             int displayDirection = from.getPosition().direction(to.getPosition());
             Coords displayCoords = to.getPosition().translated(displayDirection);
             // If the displacement hex is a valid one
-            if (Compute.isValidDisplacement(game, to.getId(), to.getPosition(), displayCoords)) {
+            if (Compute.isValidDisplacement(twGame, to.getId(), to.getPosition(), displayCoords)) {
                 // If the displacement hex is not on the map, credit damage
                 // against full target armor
-                if (!game.getBoard().contains(displayCoords)) {
+                if (!twGame.getBoard().contains(displayCoords)) {
                     dmg = (to.getTotalArmor()
                            * Compute.oddsAbove(odds.getValue(), toAptPiloting)) / 100.0;
                 }
-                if (game.getBoard().contains(displayCoords)) {
+                if (twGame.getBoard().contains(displayCoords)) {
                     // Find the elevation difference
-                    elev_diff = game.getBoard().getHex(to.getPosition())
+                    elev_diff = twGame.getBoard().getHex(to.getPosition())
                                     .getLevel();
-                    elev_diff -= game.getBoard().getHex(displayCoords).getLevel();
+                    elev_diff -= twGame.getBoard().getHex(displayCoords).getLevel();
                     if (elev_diff < 0) {
                         elev_diff = 0;
                     }
                     // Set a flag if the displacement hex has water
-                    if (game.getBoard().getHex(displayCoords).containsTerrain(
+                    if (twGame.getBoard().getHex(displayCoords).containsTerrain(
                             Terrains.WATER)) {
                         water_landing = true;
                     }
@@ -496,9 +496,9 @@ public final class PhysicalCalculator {
                 }
             }
             // If the displacement hex is not valid
-            if (!Compute.isValidDisplacement(game, to.getId(), to.getPosition(), displayCoords)) {
+            if (!Compute.isValidDisplacement(twGame, to.getId(), to.getPosition(), displayCoords)) {
                 // Set a flag if the displacement hex has water
-                if (game.getBoard().getHex(to.getPosition()).containsTerrain(
+                if (twGame.getBoard().getHex(to.getPosition()).containsTerrain(
                         Terrains.WATER)) {
                     water_landing = true;
                 }
@@ -531,7 +531,7 @@ public final class PhysicalCalculator {
 
         // Conventional infantry in the open suffer double damage.
         if (to.isConventionalInfantry()) {
-            Hex e_hex = game.getBoard().getHex(to.getPosition());
+            Hex e_hex = twGame.getBoard().getHex(to.getPosition());
             if (!e_hex.containsTerrain(Terrains.WOODS)
                     && !e_hex.containsTerrain(Terrains.BUILDING)) {
                 bestDmg *= 2.0;
@@ -561,7 +561,7 @@ public final class PhysicalCalculator {
     }
 
     private static double getExpectedKickDamage(Entity from, Entity to,
-                                                Game game, int locTable, int arc, int action) {
+                                                TWGame twGame, int locTable, int arc, int action) {
         double self_damage;
         double dmg;
         double coll_damage = 0.0;
@@ -571,11 +571,11 @@ public final class PhysicalCalculator {
         Targetable target = to;
 
         // if the object of our affections is in a building, we have to target the building instead
-        if (Compute.isInBuilding(game, to) || (to instanceof GunEmplacement)) {
-            target = new BuildingTarget(to.getPosition(), game.getBoard(), false);
+        if (Compute.isInBuilding(twGame, to) || (to instanceof GunEmplacement)) {
+            target = new BuildingTarget(to.getPosition(), twGame.getBoard(), false);
         }
 
-        ToHitData odds = KickAttackAction.toHit(game, from.getId(), target, action);
+        ToHitData odds = KickAttackAction.toHit(twGame, from.getId(), target, action);
         if (odds.getValue() > 12) {
             return 0.0;
         }

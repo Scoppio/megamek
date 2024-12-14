@@ -49,8 +49,8 @@ import static java.util.stream.Collectors.toList;
  * to
  * keep it synched.
  */
-public final class Game extends AbstractGame implements Serializable, PlanetaryConditionsUsing {
-    private static final MMLogger logger = MMLogger.create(Game.class);
+public final class TWGame extends AbstractGame implements Serializable, PlanetaryConditionsUsing {
+    private static final MMLogger logger = MMLogger.create(TWGame.class);
 
     private static final long serialVersionUID = 8376320092671792532L;
 
@@ -145,7 +145,7 @@ public final class Game extends AbstractGame implements Serializable, PlanetaryC
     /**
      * Constructor
      */
-    public Game() {
+    public TWGame() {
         setBoard(0, new Board());
         // empty
     }

@@ -22,11 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import megamek.common.Entity;
-import megamek.common.Game;
-import megamek.common.IGame;
-import megamek.common.InGameObject;
-import megamek.common.Player;
+import megamek.common.*;
+import megamek.common.TWGame;
 import megamek.common.annotations.Nullable;
 import megamek.logging.MMLogger;
 
@@ -103,7 +100,7 @@ public class KilledUnitsTrigger implements Trigger {
 
     @Override
     public boolean isTriggered(IGame game, TriggerSituation event) {
-        if (game instanceof Game) {
+        if (game instanceof TWGame) {
             List<InGameObject> allUnits = game.getInGameObjects();
             allUnits.addAll(game.getGraveyard());
             long killedUnitCount = allUnits.stream()

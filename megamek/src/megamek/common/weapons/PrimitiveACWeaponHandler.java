@@ -22,7 +22,7 @@ package megamek.common.weapons;
 import java.io.Serial;
 import java.util.Vector;
 
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Report;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
@@ -35,7 +35,7 @@ public class PrimitiveACWeaponHandler extends ACWeaponHandler {
     @Serial
     private static final long serialVersionUID = -3686194077871525280L;
 
-    public PrimitiveACWeaponHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public PrimitiveACWeaponHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 

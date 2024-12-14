@@ -452,8 +452,8 @@ public class TilesetManager implements IPreferenceChangeListener {
     /**
      * Load all the images we'll need for the game and place them in the tracker
      */
-    public void loadNeededImages(Game game) {
-        Board board = game.getBoard();
+    public void loadNeededImages(TWGame twGame) {
+        Board board = twGame.getBoard();
         // pre-match all hexes with images, load hex images
         int width = board.getWidth();
         int height = board.getHeight();
@@ -478,7 +478,7 @@ public class TilesetManager implements IPreferenceChangeListener {
         }
 
         // load all mek images
-        for (Entity e : game.getEntitiesVector()) {
+        for (Entity e : twGame.getEntitiesVector()) {
             if (e.getSecondaryPositions().isEmpty()) {
                 loadImage(e, -1);
             } else {

@@ -32,9 +32,9 @@ Any line beginning with the "#" is a comment and is not read by MegaMek when loa
 MMSVersion=1
 
 2. Campaign Game Integration
-# This field allows you to assign an external number to the current game. This number will do
+# This field allows you to assign an external number to the current twGame. This number will do
 # nothing now but an addition after action report can be generated and that report can be
-# identify the game by this number.  NOTE: This is a number field.
+# identify the TWGame by this number.  NOTE: This is a number field.
 ExternalId=120934
 
 
@@ -153,7 +153,7 @@ Unit_WacosRangers_1_ExternalID=1
 
 
 15. Advantages:
-# Additional advantages to add to pilots. Most of these require the 'MaxTech Level3 Pilot Advantages' game
+# Additional advantages to add to pilots. Most of these require the 'MaxTech Level3 Pilot Advantages' TWGame
 # option to be turned on. The possible values are:
 # dodge_maneuver, maneuvering_ace, melee_specialist, pain_resistance
 # Multiple advantages for one pilot are separated by spaces
@@ -164,7 +164,7 @@ Unit_WacosRangers_2_Advantages=dodge_maneuver
 # There are multiple ways to initially damage units.  First you can specify a number of blocks of damage to a
 # unit.  The damage will be grouped into blocks of 5 points and distributed randomly using that standard damage
 # location charts.  Any internal and/or critical hits will be resolved normally. NOTE:  This can result in the
-# unit being destroyed before the game begins.
+# unit being destroyed before the TWGame begins.
 Unit_WacosRangers_1_Damage=5
 
 # Another way to apply damage to a unit is by specifying the armor/internal struction left for each location.

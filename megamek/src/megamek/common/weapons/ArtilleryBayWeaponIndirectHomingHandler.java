@@ -43,10 +43,10 @@ public class ArtilleryBayWeaponIndirectHomingHandler extends ArtilleryBayWeaponI
      * @param g
      */
     public ArtilleryBayWeaponIndirectHomingHandler(ToHitData t,
-            WeaponAttackAction w, Game g, TWGameManager m) {
+                                                   WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
         advancedPD = g.getOptions().booleanOption(OptionsConstants.ADVAERORULES_STRATOPS_ADV_POINTDEF);
-        advancedAMS = game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_AMS);
+        advancedAMS = twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_AMS);
         multiAMS = g.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_MULTI_USE_AMS);
     }
 
@@ -90,16 +90,16 @@ public class ArtilleryBayWeaponIndirectHomingHandler extends ArtilleryBayWeaponI
 
         convertHomingShotToEntityTarget();
         Entity entityTarget = (aaa.getTargetType() == Targetable.TYPE_ENTITY) ? (Entity) aaa
-                .getTarget(game) : null;
+                .getTarget(twGame) : null;
 
-        final boolean targetInBuilding = Compute.isInBuilding(game,
+        final boolean targetInBuilding = Compute.isInBuilding(twGame,
                 entityTarget);
         final boolean bldgDamagedOnMiss = targetInBuilding
                 && !(target instanceof Infantry)
                 && ae.getPosition().distance(target.getPosition()) <= 1;
 
         // Which building takes the damage?
-        Building bldg = game.getBoard().getBuildingAt(target.getPosition());
+        Building bldg = twGame.getBoard().getBuildingAt(target.getPosition());
 
         // Determine what ammo we're firing for reporting and (later) damage
         Mounted<?> ammoUsed = ae.getEquipment(aaa.getAmmoId());
@@ -162,7 +162,7 @@ public class ArtilleryBayWeaponIndirectHomingHandler extends ArtilleryBayWeaponI
 
         // Set Margin of Success/Failure.
         toHit.setMoS(roll.getIntValue() - Math.max(2, toHit.getValue()));
-        bDirect = game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_DIRECT_BLOW)
+        bDirect = twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_DIRECT_BLOW)
                 && ((toHit.getMoS() / 3) >= 1) && (entityTarget != null);
         if (bDirect) {
             r = new Report(3189);
@@ -288,7 +288,7 @@ public class ArtilleryBayWeaponIndirectHomingHandler extends ArtilleryBayWeaponI
             }
 
             bldg = null;
-            bldg = game.getBoard().getBuildingAt(coords);
+            bldg = twGame.getBoard().getBuildingAt(coords);
             bldgAbsorbs = (bldg != null) ? bldg.getAbsorbtion(coords) : 0;
             bldgAbsorbs = Math.min(bldgAbsorbs, ratedDamage);
             // assumption: homing artillery splash damage is area effect.
@@ -296,7 +296,7 @@ public class ArtilleryBayWeaponIndirectHomingHandler extends ArtilleryBayWeaponI
             handleClearDamage(vPhaseReport, bldg, ratedDamage * 2, false);
             ratedDamage -= bldgAbsorbs;
             if (ratedDamage > 0) {
-                for (Entity entity : game.getEntitiesVector(coords)) {
+                for (Entity entity : twGame.getEntitiesVector(coords)) {
                     if (!bMissed) {
                         if (entity == entityTarget) {
                             continue; // don't splash the target unless missile
@@ -341,7 +341,7 @@ public class ArtilleryBayWeaponIndirectHomingHandler extends ArtilleryBayWeaponI
         final Coords tc = target.getPosition();
         Targetable newTarget = null;
 
-        Vector<TagInfo> v = game.getTagInfo();
+        Vector<TagInfo> v = twGame.getTagInfo();
         Vector<TagInfo> allowed = new Vector<>();
         // get only TagInfo on the same side
         for (TagInfo ti : v) {
@@ -352,7 +352,7 @@ public class ArtilleryBayWeaponIndirectHomingHandler extends ArtilleryBayWeaponI
                     break;
                 case Targetable.TYPE_ENTITY:
                     if (ae.isEnemyOf((Entity) ti.target)
-                            || game.getOptions().booleanOption(OptionsConstants.BASE_FRIENDLY_FIRE)) {
+                            || twGame.getOptions().booleanOption(OptionsConstants.BASE_FRIENDLY_FIRE)) {
                         allowed.add(ti);
                     }
                     break;
@@ -437,7 +437,7 @@ public class ArtilleryBayWeaponIndirectHomingHandler extends ArtilleryBayWeaponI
      * against Arrow IV homing missiles
      * Artillery bays resolve each weapon individually and don't use Aero AV, so we
      * can safely do this
-     * 
+     *
      * @param vPhaseReport The report for this game phase, be it offboard (Indirect)
      *                     or firing (Direct)
      * @param ammoUsed     The ammoType used by this bay - as only homing shots can

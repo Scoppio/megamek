@@ -16,7 +16,7 @@ package megamek.common.weapons.lrms;
 import megamek.common.AmmoType;
 import megamek.common.alphaStrike.AlphaStrikeElement;
 import megamek.common.Entity;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.SimpleTechLevel;
 import megamek.common.Mounted;
 import megamek.common.ToHitData;
@@ -57,8 +57,8 @@ public abstract class StreakLRMWeapon extends LRMWeapon {
 
     @Override
     protected AttackHandler getCorrectHandler(ToHitData toHit,
-            WeaponAttackAction waa, Game game, TWGameManager manager) {
-        return new StreakLRMHandler(toHit, waa, game, manager);
+                                              WeaponAttackAction waa, TWGame twGame, TWGameManager manager) {
+        return new StreakLRMHandler(toHit, waa, twGame, manager);
     }
 
     @Override

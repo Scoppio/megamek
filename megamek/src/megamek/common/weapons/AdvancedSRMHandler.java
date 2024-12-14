@@ -19,7 +19,7 @@
  */
 package megamek.common.weapons;
 
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.server.totalwarfare.TWGameManager;
@@ -33,7 +33,7 @@ public class AdvancedSRMHandler extends SRMHandler {
     @Serial
     private static final long serialVersionUID = -1688593262282782251L;
 
-    public AdvancedSRMHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public AdvancedSRMHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
         nSalvoBonus = 1;
     }

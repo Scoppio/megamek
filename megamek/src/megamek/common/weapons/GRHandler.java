@@ -14,7 +14,7 @@
 package megamek.common.weapons;
 
 import megamek.common.Compute;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Infantry;
 import megamek.common.RangeType;
 import megamek.common.ToHitData;
@@ -35,24 +35,24 @@ public class GRHandler extends AmmoWeaponHandler {
      * @param g
      * @param m
      */
-    public GRHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public GRHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#calcDamagePerHit()
      */
     @Override
     protected int calcDamagePerHit() {
         double toReturn = wtype.getDamage(nRange);
 
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE)
                 && nRange > wtype.getRanges(weapon)[RangeType.RANGE_LONG]) {
             toReturn -= 1;
         }
-        if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS_RANGE)
+        if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS_RANGE)
                 && (nRange > wtype.getRanges(weapon)[RangeType.RANGE_EXTREME])) {
             toReturn = (int) Math.floor(toReturn * .75);
         }
@@ -66,7 +66,7 @@ public class GRHandler extends AmmoWeaponHandler {
         } else if (bDirect) {
             toReturn = Math.min(toReturn + (toHit.getMoS() / 3.0), toReturn * 2);
         }
-        
+
         toReturn = applyGlancingBlowModifier(toReturn, false);
         return (int) Math.ceil(toReturn);
     }

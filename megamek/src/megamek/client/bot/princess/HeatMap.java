@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 import megamek.common.Coords;
 import megamek.common.EjectedCrew;
 import megamek.common.Entity;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.GunEmplacement;
 import megamek.common.MovePath;
 import megamek.common.MoveStep;
@@ -469,13 +469,13 @@ public class HeatMap {
      * over time for positions that are not regularly updated. If enough entries are below the set
      * threshold, all entries which are at or below that threshold will be removed.
      */
-    public void ageMaps (Game game) {
+    public void ageMaps (TWGame twGame) {
 
         // Bring out your dead!
-        trimLastKnownPositions(game);
+        trimLastKnownPositions(twGame);
 
         if (enableDecay) {
-            ageTeamActivityMap(game);
+            ageTeamActivityMap(twGame);
             ageTeamMovementMap();
             ageEntityMap();
         }
@@ -491,15 +491,15 @@ public class HeatMap {
 
     /**
      * Manually update the last known positions of tracked entities
-     * @param game  current game
+     * @param twGame  current game
      */
-    public void refreshLastKnownCache (Game game) {
+    public void refreshLastKnownCache (TWGame twGame) {
 
         // Don't bother updating destroyed entities
-        trimLastKnownPositions(game);
+        trimLastKnownPositions(twGame);
 
         for (int curId : lastPositionCache.keySet()) {
-            Entity curEntity = game.getEntity(curId);
+            Entity curEntity = twGame.getEntity(curId);
             if (curEntity != null && isTrackable(curEntity)) {
                 lastPositionCache.put(curId, curEntity.getPosition());
             }
@@ -583,14 +583,14 @@ public class HeatMap {
      * Apply decay rate to team activity map. Positions that have a tracked entity use a slower,
      * linear decay rate, while those that do not have a tracked entity use a faster exponential
      * decay rate
-     * @param game   current game
+     * @param twGame   current game
      */
-    private void ageTeamActivityMap (Game game) {
+    private void ageTeamActivityMap (TWGame twGame) {
 
         // Get positions of tracked entities with known positions
         List<Coords> activePositions = new ArrayList<>();
         for (int curId : lastPositionCache.keySet()) {
-            Entity curEntity = game.getEntity(curId);
+            Entity curEntity = twGame.getEntity(curId);
             if (curEntity != null && isTrackable(curEntity)) {
                 activePositions.add(lastPositionCache.get(curId));
             }
@@ -758,10 +758,10 @@ public class HeatMap {
     /**
      * Remove destroyed entities from the last known position tracker
      *
-     * @param game  current game
+     * @param twGame  current game
      */
-    private void trimLastKnownPositions (Game game) {
-        for (Entity curCorpse : game.getOutOfGameEntitiesVector()) {
+    private void trimLastKnownPositions (TWGame twGame) {
+        for (Entity curCorpse : twGame.getOutOfGameEntitiesVector()) {
             if (curCorpse != null) {
                 lastPositionCache.remove(curCorpse.getId());
             }

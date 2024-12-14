@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import megamek.client.bot.princess.AeroPathUtil;
-import megamek.common.Game;
 import megamek.common.IAero;
+import megamek.common.IGame;
 import megamek.common.MovePath;
 import megamek.common.MovePath.MoveStepType;
 import megamek.common.pathfinder.MovePathFinder.CoordsWithFacing;
@@ -31,12 +31,12 @@ import megamek.common.pathfinder.MovePathFinder.CoordsWithFacing;
 /**
  * This class generates move paths suitable for use by an aerospace unit
  * operating on a space map, with 'advanced flight' turned off.
- * 
+ *
  * @author NickAragua
  */
 public class AeroSpacePathFinder extends NewtonianAerospacePathFinder {
-    protected AeroSpacePathFinder(Game game) {
-        super(game);
+    protected AeroSpacePathFinder(IGame IGame) {
+        super(IGame);
     }
 
     /**
@@ -50,8 +50,8 @@ public class AeroSpacePathFinder extends NewtonianAerospacePathFinder {
         moves.add(MoveStepType.FORWARDS);
     }
 
-    public static AeroSpacePathFinder getInstance(Game game) {
-        return new AeroSpacePathFinder(game);
+    public static AeroSpacePathFinder getInstance(IGame IGame) {
+        return new AeroSpacePathFinder(IGame);
     }
 
     /**
@@ -60,7 +60,7 @@ public class AeroSpacePathFinder extends NewtonianAerospacePathFinder {
      * This implementation generates exactly one path, which is either no moves or
      * one hex forward
      * when velocity &gt; 0
-     * 
+     *
      * @return "List" of all possible "starting" paths
      */
     @Override
@@ -91,7 +91,7 @@ public class AeroSpacePathFinder extends NewtonianAerospacePathFinder {
      * This means that the path, as is, is not a valid path, but its children may
      * be.
      * This mainly applies to aero paths that have not used all their velocity.
-     * 
+     *
      * @param path The move path to consider.
      * @return Whether it is an intermediate path or not.
      */
@@ -103,7 +103,7 @@ public class AeroSpacePathFinder extends NewtonianAerospacePathFinder {
     /**
      * Worker function to determine whether we should discard the current path
      * (due to it being illegal or redundant) or keep generating child nodes
-     * 
+     *
      * @param path The move path to consider
      * @return Whether to keep or dicsard.
      */

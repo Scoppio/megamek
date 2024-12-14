@@ -35,7 +35,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 
 import megamek.client.ui.Messages;
-import megamek.common.Game;
+import megamek.common.IGame;
 import megamek.common.ManeuverType;
 import megamek.common.MovePath;
 
@@ -268,10 +268,10 @@ public class ManeuverChoiceDialog extends JDialog implements ActionListener {
     }
 
     public void checkPerformability(int velocity, int altitude, int ceiling,
-            boolean isVTOL, int distance, Game game, MovePath mp) {
+                                    boolean isVTOL, int distance, IGame IGame, MovePath mp) {
         for (int type = 0; type < ManeuverType.MAN_SIZE; type++) {
             checkboxes[type].setEnabled(
-                    ManeuverType.canPerform(type, velocity, altitude, ceiling, isVTOL, distance, game, mp));
+                    ManeuverType.canPerform(type, velocity, altitude, ceiling, isVTOL, distance, IGame, mp));
         }
     }
 }

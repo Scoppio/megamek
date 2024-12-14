@@ -31,7 +31,7 @@ public class PlasmaBayWeaponHandler extends AmmoBayWeaponHandler {
      * @param waa
      * @param g
      */
-    public PlasmaBayWeaponHandler(ToHitData toHit, WeaponAttackAction waa, Game g, TWGameManager m) {
+    public PlasmaBayWeaponHandler(ToHitData toHit, WeaponAttackAction waa, TWGame g, TWGameManager m) {
         super(toHit, waa, g, m);
         generalDamageType = HitData.DAMAGE_ENERGY;
     }

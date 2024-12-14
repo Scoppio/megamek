@@ -164,11 +164,11 @@ public class TechConstants {
     }
 
     /**
-     * @param game The current {@link Game}
+     * @param IGame The current {@link TWGame}
      * @return  the Game's tech level as an integer.
      */
-    public static int getSimpleLevel(Game game) {
-        return getSimpleLevel(game.getOptions().stringOption(OptionsConstants.ALLOWED_TECHLEVEL));
+    public static int getSimpleLevel(IGame IGame) {
+        return getSimpleLevel(IGame.getOptions().stringOption(OptionsConstants.ALLOWED_TECHLEVEL));
     }
 
     /**
@@ -223,13 +223,13 @@ public class TechConstants {
      * Use the game's simple tech level and a flag to return the tech level +
      * tech type.
      *
-     * @param game The current {@link Game}
+     * @param IGame The current {@link TWGame}
      * @param isClan if the tech base is clan
-     * @return Tech Level and Type magic number to use for the current {@link Game}
+     * @return Tech Level and Type magic number to use for the current {@link TWGame}
      */
-    public static int getGameTechLevel(Game game, boolean isClan) {
+    public static int getGameTechLevel(IGame IGame, boolean isClan) {
         // Get the integer simple level based on the string game option
-        int simpleTechLvl = getSimpleLevel(game);
+        int simpleTechLvl = getSimpleLevel(IGame);
         // Arrays.binarySearch could return -1 if string isn't found
         simpleTechLvl = Math.max(0, simpleTechLvl);
         // Convert to TL+tech type

@@ -26,10 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import megamek.common.Entity;
-import megamek.common.ForceAssignable;
-import megamek.common.Game;
-import megamek.common.Player;
+import megamek.common.*;
 import megamek.common.force.Force;
 import megamek.common.force.Forces;
 import megamek.common.net.enums.PacketCommand;
@@ -49,8 +46,8 @@ public class ServerLobbyHelper {
      * if it has no entities and no subforces,
      * if the client sending it is the owner
      */
-    static boolean isNewForceValid(Game game, Force force) {
-        if ((!force.isTopLevel() && !game.getForces().contains(force.getParentId()))
+    static boolean isNewForceValid(IGame IGame, Force force) {
+        if ((!force.isTopLevel() && !IGame.getForces().contains(force.getParentId()))
                 || (force.getChildCount() != 0)) {
             return false;
         }
@@ -61,14 +58,14 @@ public class ServerLobbyHelper {
      * Writes a "Unit XX has been customized" message to the chat. The message
      * is adapted to blind drop conditions.
      */
-    public static String entityUpdateMessage(Entity entity, Game game) {
+    public static String entityUpdateMessage(Entity entity, IGame IGame) {
         StringBuilder result = new StringBuilder();
-        if (game.getOptions().booleanOption(OptionsConstants.BASE_REAL_BLIND_DROP)) {
+        if (IGame.getOptions().booleanOption(OptionsConstants.BASE_REAL_BLIND_DROP)) {
             result.append("A Unit of ");
             result.append(entity.getOwner().getName());
             result.append(" has been customized.");
 
-        } else if (game.getOptions().booleanOption(OptionsConstants.BASE_BLIND_DROP)) {
+        } else if (IGame.getOptions().booleanOption(OptionsConstants.BASE_BLIND_DROP)) {
             result.append("Unit ");
             if (!entity.getExternalIdAsString().equals("-1")) {
                 result.append('[').append(entity.getExternalIdAsString()).append("] ");
@@ -93,12 +90,12 @@ public class ServerLobbyHelper {
      * <P>
      * NOTE: This is a simplified unload that is only valid in the lobby!
      */
-    public static HashSet<Entity> lobbyUnload(Game game, Collection<Entity> entities) {
+    public static HashSet<Entity> lobbyUnload(TWGame twGame, Collection<Entity> entities) {
         HashSet<Entity> result = new HashSet<>();
         for (Entity entity : entities) {
-            result.addAll(lobbyDisembark(game, entity));
+            result.addAll(lobbyDisembark(twGame, entity));
             for (Entity carriedUnit : entity.getLoadedUnits()) {
-                result.addAll(lobbyDisembark(game, carriedUnit));
+                result.addAll(lobbyDisembark(twGame, carriedUnit));
             }
         }
         return result;
@@ -113,12 +110,12 @@ public class ServerLobbyHelper {
      * <P>
      * NOTE: This is a simplified unload that is only valid in the lobby!
      */
-    static HashSet<Entity> lobbyUnloadOthers(Game game, Collection<Entity> entities) {
+    static HashSet<Entity> lobbyUnloadOthers(TWGame twGame, Collection<Entity> entities) {
         HashSet<Entity> result = new HashSet<>();
         for (Entity entity : entities) {
-            result.addAll(lobbyDisembarkOthers(game, entity, entities));
+            result.addAll(lobbyDisembarkOthers(twGame, entity, entities));
             for (Entity carriedUnit : entity.getLoadedUnits()) {
-                result.addAll(lobbyDisembarkOthers(game, carriedUnit, entities));
+                result.addAll(lobbyDisembarkOthers(twGame, carriedUnit, entities));
             }
         }
         return result;
@@ -131,8 +128,8 @@ public class ServerLobbyHelper {
      * <P>
      * NOTE: This is a simplified disembark that is only valid in the lobby!
      */
-    private static HashSet<Entity> lobbyDisembark(Game game, Entity entity) {
-        return lobbyDisembarkOthers(game, entity, new ArrayList<>());
+    private static HashSet<Entity> lobbyDisembark(TWGame twGame, Entity entity) {
+        return lobbyDisembarkOthers(twGame, entity, new ArrayList<>());
     }
 
     /**
@@ -142,10 +139,10 @@ public class ServerLobbyHelper {
      * <P>
      * NOTE: This is a simplified disembark that is only valid in the lobby!
      */
-    private static HashSet<Entity> lobbyDisembarkOthers(Game game, Entity entity, Collection<Entity> entities) {
+    private static HashSet<Entity> lobbyDisembarkOthers(TWGame twGame, Entity entity, Collection<Entity> entities) {
         HashSet<Entity> result = new HashSet<>();
         if (entity.getTransportId() != Entity.NONE) {
-            Entity carrier = game.getEntity(entity.getTransportId());
+            Entity carrier = twGame.getEntity(entity.getTransportId());
             if (carrier != null && !entities.contains(carrier)) {
                 carrier.unload(entity);
                 result.add(entity);
@@ -161,9 +158,9 @@ public class ServerLobbyHelper {
      * <P>
      * NOTE: This is a simplified disembark that is only valid in the lobby!
      */
-    private static void lobbyDisembarkEnemy(Game game, Entity entity) {
+    private static void lobbyDisembarkEnemy(TWGame twGame, Entity entity) {
         if (entity.getTransportId() != Entity.NONE) {
-            Entity carrier = game.getEntity(entity.getTransportId());
+            Entity carrier = twGame.getEntity(entity.getTransportId());
             if (carrier == null) {
                 entity.setTransportId(Entity.NONE);
             } else if (carrier.getOwner().isEnemyOf(entity.getOwner())) {
@@ -178,7 +175,7 @@ public class ServerLobbyHelper {
      * This is a simplified version that is only valid in the lobby.
      * Returns a set of entities that received changes.
      */
-    public static HashSet<Entity> performC3Disconnect(Game game, Collection<Entity> entities) {
+    public static HashSet<Entity> performC3Disconnect(TWGame twGame, Collection<Entity> entities) {
         HashSet<Entity> result = new HashSet<>();
         // Disconnect the entity from networks
         for (Entity entity : entities) {
@@ -191,7 +188,7 @@ public class ServerLobbyHelper {
             }
         }
         // Also disconnect all units connected *to* that entity
-        for (Entity entity : game.getEntitiesVector()) {
+        for (Entity entity : twGame.getEntitiesVector()) {
             if (entities.contains(entity.getC3Master())) {
                 entity.setC3Master(null, true);
                 result.add(entity);
@@ -221,12 +218,12 @@ public class ServerLobbyHelper {
      * making the sent forces top-level.
      * This method is intended for use in the lobby!
      */
-    public static void receiveForceParent(Packet c, int connId, Game game, TWGameManager gameManager) {
+    public static void receiveForceParent(Packet c, int connId, IGame IGame, TWGameManager gameManager) {
         @SuppressWarnings("unchecked")
         var forceList = (Collection<Force>) c.getObject(0);
         int newParentId = (int) c.getObject(1);
 
-        var forces = game.getForces();
+        var forces = IGame.getForces();
         var changedForces = new HashSet<Force>();
 
         if (newParentId == Force.NO_FORCE) {
@@ -251,11 +248,11 @@ public class ServerLobbyHelper {
      * everything in them.
      * This method is intended for use in the lobby!
      */
-    public static void receiveEntitiesAssign(Packet c, int connId, Game game, TWGameManager gameManager) {
+    public static void receiveEntitiesAssign(Packet c, int connId, TWGame twGame, TWGameManager gameManager) {
         @SuppressWarnings("unchecked")
         var entityList = (Collection<Entity>) c.getObject(0);
         int newOwnerId = (int) c.getObject(1);
-        Player newOwner = game.getPlayer(newOwnerId);
+        Player newOwner = twGame.getPlayer(newOwnerId);
 
         if (entityList.isEmpty() || newOwner == null) {
             return;
@@ -263,13 +260,13 @@ public class ServerLobbyHelper {
 
         // Get the local (server) entities
         var serverEntities = new HashSet<Entity>();
-        entityList.stream().map(e -> game.getEntity(e.getId())).forEach(serverEntities::add);
+        entityList.stream().map(e -> twGame.getEntity(e.getId())).forEach(serverEntities::add);
         for (Entity entity : serverEntities) {
             entity.setOwner(newOwner);
         }
-        game.getForces().correct();
-        correctLoading(game);
-        correctC3Connections(game);
+        twGame.getForces().correct();
+        correctLoading(twGame);
+        correctC3Connections(twGame);
         gameManager.send(gameManager.createFullEntitiesPacket());
     }
 
@@ -278,17 +275,17 @@ public class ServerLobbyHelper {
      * everything in them.
      * This method is intended for use in the lobby!
      */
-    public static void receiveForceAssignFull(Packet c, int connId, Game game, TWGameManager gameManager) {
+    public static void receiveForceAssignFull(Packet c, int connId, TWGame twGame, TWGameManager gameManager) {
         @SuppressWarnings("unchecked")
         var forceList = (Collection<Force>) c.getObject(0);
         int newOwnerId = (int) c.getObject(1);
-        Player newOwner = game.getPlayer(newOwnerId);
+        Player newOwner = twGame.getPlayer(newOwnerId);
 
         if (forceList.isEmpty() || newOwner == null) {
             return;
         }
 
-        var forces = game.getForces();
+        var forces = twGame.getForces();
         // Get the local (server) forces
         var serverForces = new HashSet<Force>();
         forceList.stream().map(f -> forces.getForce(f.getId())).forEach(serverForces::add);
@@ -305,8 +302,8 @@ public class ServerLobbyHelper {
             }
         }
         forces.correct();
-        correctLoading(game);
-        correctC3Connections(game);
+        correctLoading(twGame);
+        correctC3Connections(twGame);
         gameManager.send(gameManager.createFullEntitiesPacket());
     }
 
@@ -319,17 +316,17 @@ public class ServerLobbyHelper {
      * - owner change of only the force (not the entities, only within a team)
      * This method is intended for use in the lobby!
      */
-    public static void receiveForceUpdate(Packet c, int connId, Game game, TWGameManager gameManager) {
+    public static void receiveForceUpdate(Packet c, int connId, IGame IGame, TWGameManager gameManager) {
         @SuppressWarnings("unchecked")
         var forceList = (Collection<Force>) c.getObject(0);
 
         // Check if the updated Forces are valid
-        Forces forcesClone = game.getForces().clone();
+        Forces forcesClone = IGame.getForces().clone();
         for (Force force : forceList) {
             forcesClone.replace(force.getId(), force);
         }
         if (forcesClone.isValid()) {
-            game.setForces(forcesClone);
+            IGame.setForces(forcesClone);
             gameManager.send(createForceUpdatePacket(forceList));
         } else {
             logger.warn("Invalid forces update received.");
@@ -341,14 +338,14 @@ public class ServerLobbyHelper {
      * Handles a team change, updating units and forces as necessary.
      * This method is intended for use in the lobby!
      */
-    public static void receiveLobbyTeamChange(Packet c, int connId, Game game, TWGameManager gameManager) {
+    public static void receiveLobbyTeamChange(Packet c, int connId, TWGame twGame, TWGameManager gameManager) {
         @SuppressWarnings("unchecked")
         var players = (Collection<Player>) c.getObject(0);
         var newTeam = (int) c.getObject(1);
 
         // Collect server-side player objects
         Set<Player> serverPlayers = new HashSet<>();
-        players.stream().map(p -> game.getPlayer(p.getId())).forEach(serverPlayers::add);
+        players.stream().map(p -> twGame.getPlayer(p.getId())).forEach(serverPlayers::add);
 
         // Check parameters and if there's an actual change to a player
         serverPlayers.removeIf(p -> p == null || p.getTeam() == newTeam);
@@ -360,10 +357,10 @@ public class ServerLobbyHelper {
         for (Player player : serverPlayers) {
             player.setTeam(newTeam);
         }
-        Forces forces = game.getForces();
+        Forces forces = twGame.getForces();
         forces.correct();
-        correctLoading(game);
-        correctC3Connections(game);
+        correctLoading(twGame);
+        correctC3Connections(twGame);
 
         gameManager.send(gameManager.createFullEntitiesPacket());
         for (Player player : serverPlayers) {
@@ -377,11 +374,11 @@ public class ServerLobbyHelper {
      * <P>
      * NOTE: This is a simplified unload that is only valid in the lobby!
      */
-    public static void correctLoading(Game game) {
-        for (Entity entity : game.getEntitiesVector()) {
-            lobbyDisembarkEnemy(game, entity);
+    public static void correctLoading(TWGame twGame) {
+        for (Entity entity : twGame.getEntitiesVector()) {
+            lobbyDisembarkEnemy(twGame, entity);
             for (Entity carriedUnit : entity.getLoadedUnits()) {
-                lobbyDisembarkEnemy(game, carriedUnit);
+                lobbyDisembarkEnemy(twGame, carriedUnit);
             }
         }
     }
@@ -391,14 +388,14 @@ public class ServerLobbyHelper {
      * <P>
      * NOTE: This is intended for use in the lobby phase!
      */
-    public static void correctC3Connections(Game game) {
-        for (Entity entity : game.getEntitiesVector()) {
+    public static void correctC3Connections(TWGame twGame) {
+        for (Entity entity : twGame.getEntitiesVector()) {
             if (entity.hasNhC3()) {
                 String net = entity.getC3NetId();
                 int id = Entity.NONE;
                 try {
                     id = Integer.parseInt(net.substring(net.indexOf(".") + 1));
-                    if (game.getEntity(id).getOwner().isEnemyOf(entity.getOwner())) {
+                    if (twGame.getEntity(id).getOwner().isEnemyOf(entity.getOwner())) {
                         entity.setC3NetIdSelf();
                     }
                 } catch (Exception ignored) {
@@ -417,13 +414,13 @@ public class ServerLobbyHelper {
      * sent entities to a force or removing them from any force.
      * This method is intended for use in the lobby!
      */
-    public static void receiveAddEntititesToForce(Packet c, int connId, Game game, TWGameManager gameManager) {
+    public static void receiveAddEntititesToForce(Packet c, int connId, TWGame twGame, TWGameManager gameManager) {
         @SuppressWarnings("unchecked")
         var entityList = (Collection<Entity>) c.getObject(0);
         var forceId = (int) c.getObject(1);
         // Get the local (server) entities
-        List<Entity> entities = entityList.stream().map(e -> game.getEntity(e.getId())).collect(toList());
-        var forces = game.getForces();
+        List<Entity> entities = entityList.stream().map(e -> twGame.getEntity(e.getId())).collect(toList());
+        var forces = twGame.getForces();
 
         var changedEntities = new HashSet<Entity>();
         var changedForces = new HashSet<Force>();
@@ -443,7 +440,7 @@ public class ServerLobbyHelper {
                 }
             }
         } else {
-            changedForces.addAll(game.getForces().removeEntityFromForces(entities));
+            changedForces.addAll(twGame.getForces().removeEntityFromForces(entities));
             changedEntities.addAll(entities);
         }
         gameManager.send(createForceUpdatePacket(changedForces, changedEntities));
@@ -453,20 +450,20 @@ public class ServerLobbyHelper {
      * Adds a force with the info from the client. Only valid during the lobby
      * phase.
      */
-    public static void receiveForceAdd(Packet c, int connId, Game game, TWGameManager gameManager) {
+    public static void receiveForceAdd(Packet c, int connId, TWGame twGame, TWGameManager gameManager) {
         var force = (Force) c.getObject(0);
         @SuppressWarnings("unchecked")
         var entities = (Collection<Entity>) c.getObject(1);
 
         int newId;
         if (force.isTopLevel()) {
-            newId = game.getForces().addTopLevelForce(force, game.getPlayer(force.getOwnerId()));
+            newId = twGame.getForces().addTopLevelForce(force, twGame.getPlayer(force.getOwnerId()));
         } else {
-            Force parent = game.getForces().getForce(force.getParentId());
-            newId = game.getForces().addSubForce(force, parent);
+            Force parent = twGame.getForces().getForce(force.getParentId());
+            newId = twGame.getForces().addSubForce(force, parent);
         }
         for (var entity : entities) {
-            game.getForces().addEntity(game.getEntity(entity.getId()), newId);
+            twGame.getForces().addEntity(twGame.getEntity(entity.getId()), newId);
         }
         gameManager.send(gameManager.createFullEntitiesPacket());
     }
@@ -496,8 +493,8 @@ public class ServerLobbyHelper {
      * forces of other players if they are a subforce of one's own force.
      * See also LobbyActions.isEditable(Force)
      */
-    static boolean isEditable(Force force, Game game, Player sender) {
-        List<Force> chain = game.getForces().forceChain(force);
-        return chain.stream().map(f -> game.getForces().getOwner(f)).anyMatch(p -> p.equals(sender));
+    static boolean isEditable(Force force, IGame IGame, Player sender) {
+        List<Force> chain = IGame.getForces().forceChain(force);
+        return chain.stream().map(f -> IGame.getForces().getOwner(f)).anyMatch(p -> p.equals(sender));
     }
 }

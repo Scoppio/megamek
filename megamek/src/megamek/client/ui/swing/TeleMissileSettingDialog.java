@@ -15,7 +15,7 @@
 package megamek.client.ui.swing;
 
 import megamek.client.ui.Messages;
-import megamek.common.Game;
+import megamek.common.IGame;
 import megamek.common.options.OptionsConstants;
 import megamek.common.weapons.bayweapons.CapitalMissileBayWeapon;
 
@@ -38,10 +38,10 @@ public class TeleMissileSettingDialog extends JDialog implements ActionListener 
     private int minimumVelocity = CapitalMissileBayWeapon.CAPITAL_MISSILE_MIN_VELOCITY;
     private int maxVelocity = CapitalMissileBayWeapon.CAPITAL_MISSILE_DEFAULT_VELOCITY;
 
-    public TeleMissileSettingDialog(JFrame p, Game game) {
+    public TeleMissileSettingDialog(JFrame p, IGame IGame) {
         super(p, Messages.getString("SetTeleMissileVolcityDialog.title"), true);
         super.setResizable(false);
-        maxVelocity = game.getOptions().intOption(OptionsConstants.ADVAERORULES_STRATOPS_BEARINGS_ONLY_VELOCITY);
+        maxVelocity = IGame.getOptions().intOption(OptionsConstants.ADVAERORULES_STRATOPS_BEARINGS_ONLY_VELOCITY);
         frame = p;
         butOk.addActionListener(this);
         JLabel labMessage = new JLabel(Messages.getString("SetTeleMissileVelocityDialog.labSetVelocity"));

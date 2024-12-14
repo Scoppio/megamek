@@ -18,7 +18,7 @@
  */
 package megamek.client.ui.swing.boardview;
 
-import megamek.common.Game;
+import megamek.common.IGame;
 import megamek.common.MovePath;
 import megamek.common.event.GamePhaseChangeEvent;
 
@@ -26,22 +26,22 @@ import java.util.Collection;
 
 public class MovementModifierSpriteHandler extends BoardViewSpriteHandler {
 
-    private final Game game;
+    private final IGame IGame;
 
-    public MovementModifierSpriteHandler(BoardView boardView, Game game) {
+    public MovementModifierSpriteHandler(BoardView boardView, IGame IGame) {
         super(boardView);
-        this.game = game;
+        this.IGame = IGame;
     }
 
     @Override
     public void initialize() {
-        game.addGameListener(this);
+        IGame.addGameListener(this);
     }
 
     @Override
     public void dispose() {
         clear();
-        game.removeGameListener(this);
+        IGame.removeGameListener(this);
     }
 
     public void renewSprites(Collection<MovePath> movePaths) {

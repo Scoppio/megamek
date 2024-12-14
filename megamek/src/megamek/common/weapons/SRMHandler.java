@@ -20,7 +20,7 @@
 package megamek.common.weapons;
 
 import megamek.common.Compute;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.Infantry;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
@@ -35,11 +35,11 @@ public class SRMHandler extends MissileWeaponHandler {
     @Serial
     private static final long serialVersionUID = -1618484541772117621L;
 
-    public SRMHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public SRMHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         this(t, w, g, m, 0);
     }
 
-    public SRMHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m, int salvoMod) {
+    public SRMHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m, int salvoMod) {
         super(t, w, g, m);
         nSalvoBonus = salvoMod;
     }

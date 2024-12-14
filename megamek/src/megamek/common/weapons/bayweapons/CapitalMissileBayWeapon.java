@@ -63,15 +63,15 @@ public class CapitalMissileBayWeapon extends AmmoBayWeapon {
      */
     @Override
     protected AttackHandler getCorrectHandler(ToHitData toHit,
-            WeaponAttackAction waa, Game game, TWGameManager manager) {
-        Mounted<?> weapon = game.getEntity(waa.getEntityId()).getEquipment(waa.getWeaponId());
-        Entity attacker = game.getEntity(waa.getEntityId());
-        int rangeToTarget = attacker.getPosition().distance(waa.getTarget(game).getPosition());
+                                              WeaponAttackAction waa, TWGame twGame, TWGameManager manager) {
+        Mounted<?> weapon = twGame.getEntity(waa.getEntityId()).getEquipment(waa.getWeaponId());
+        Entity attacker = twGame.getEntity(waa.getEntityId());
+        int rangeToTarget = attacker.getPosition().distance(waa.getTarget(twGame).getPosition());
         if (weapon.isInBearingsOnlyMode()
                 && rangeToTarget >= RangeType.RANGE_BEARINGS_ONLY_MINIMUM) {
-            return new CapitalMissileBearingsOnlyHandler(toHit, waa, game, manager);
+            return new CapitalMissileBearingsOnlyHandler(toHit, waa, twGame, manager);
         } else {
-            return new CapitalMissileBayHandler(toHit, waa, game, manager);
+            return new CapitalMissileBayHandler(toHit, waa, twGame, manager);
         }
     }
 

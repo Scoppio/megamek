@@ -34,14 +34,14 @@ public class CLLBXPrototypeHandler extends LBXHandler {
      * @param g
      * @param m
      */
-    public CLLBXPrototypeHandler(ToHitData t, WeaponAttackAction w, Game g,
+    public CLLBXPrototypeHandler(ToHitData t, WeaponAttackAction w, TWGame g,
                                  TWGameManager m) {
         super(t, w, g, m);
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.WeaponHandler#calcHits(Vector<Report>
      * vPhaseReport)
      */
@@ -58,18 +58,18 @@ public class CLLBXPrototypeHandler extends LBXHandler {
 
         if (allShotsHit()) {
             shotsHit = wtype.getRackSize();
-            if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE)
+            if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_RANGE)
                 && (nRange > wtype.getRanges(weapon)[RangeType.RANGE_LONG])) {
                 shotsHit = (int) Math.ceil(shotsHit * .75);
             }
-            if (game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS_RANGE)
+            if (twGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_LOS_RANGE)
                     && (nRange > wtype.getRanges(weapon)[RangeType.RANGE_EXTREME])) {
                 shotsHit = (int) Math.ceil(shotsHit * .5);
-            }            
+            }
         } else {
             // flat modifier of -1, because of prototype
             nHitsModifier -= 1;
-            PlanetaryConditions conditions = game.getPlanetaryConditions();
+            PlanetaryConditions conditions = twGame.getPlanetaryConditions();
             shotsHit = Compute.missilesHit(wtype.getRackSize(), nHitsModifier, conditions.getEMI().isEMI());
         }
 

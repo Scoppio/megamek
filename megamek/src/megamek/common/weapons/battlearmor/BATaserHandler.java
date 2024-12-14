@@ -31,7 +31,7 @@ public class BATaserHandler extends AmmoWeaponHandler {
     @Serial
     private static final long serialVersionUID = 1308895663099714573L;
 
-    public BATaserHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public BATaserHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
         generalDamageType = HitData.DAMAGE_ENERGY;
     }

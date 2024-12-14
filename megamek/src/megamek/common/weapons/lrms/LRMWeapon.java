@@ -21,7 +21,7 @@ package megamek.common.weapons.lrms;
 
 import megamek.common.AmmoType;
 import megamek.common.Entity;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.options.GameOptions;
@@ -72,8 +72,8 @@ public abstract class LRMWeapon extends MissileWeapon {
     }
 
     @Override
-    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, Game game, TWGameManager manager) {
-        return getLRMHandler(toHit, waa, game, manager);
+    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, TWGame twGame, TWGameManager manager) {
+        return getLRMHandler(toHit, waa, twGame, manager);
     }
 
     @Override
@@ -113,39 +113,39 @@ public abstract class LRMWeapon extends MissileWeapon {
         }
     }
 
-    public static AttackHandler getLRMHandler(ToHitData toHit, WeaponAttackAction waa, Game game, TWGameManager manager) {
-        AmmoType atype = (AmmoType) game.getEntity(waa.getEntityId()).getEquipment(waa.getWeaponId()).getLinked().getType();
+    public static AttackHandler getLRMHandler(ToHitData toHit, WeaponAttackAction waa, TWGame twGame, TWGameManager manager) {
+        AmmoType atype = (AmmoType) twGame.getEntity(waa.getEntityId()).getEquipment(waa.getWeaponId()).getLinked().getType();
         if (atype.getMunitionType().contains(AmmoType.Munitions.M_FRAGMENTATION)) {
-            return new LRMFragHandler(toHit, waa, game, manager);
+            return new LRMFragHandler(toHit, waa, twGame, manager);
         }
         if (atype.getMunitionType().contains(AmmoType.Munitions.M_ANTI_TSM)) {
-            return new LRMAntiTSMHandler(toHit, waa, game, manager);
+            return new LRMAntiTSMHandler(toHit, waa, twGame, manager);
         }
         if ((atype.getMunitionType().contains(AmmoType.Munitions.M_THUNDER))
             || (atype.getMunitionType().contains(AmmoType.Munitions.M_THUNDER_ACTIVE))
             || (atype.getMunitionType().contains(AmmoType.Munitions.M_THUNDER_AUGMENTED))
             || (atype.getMunitionType().contains(AmmoType.Munitions.M_THUNDER_INFERNO))
             || (atype.getMunitionType().contains(AmmoType.Munitions.M_THUNDER_VIBRABOMB))) {
-            return new LRMScatterableHandler(toHit, waa, game, manager);
+            return new LRMScatterableHandler(toHit, waa, twGame, manager);
         }
         if (atype.getMunitionType().contains(AmmoType.Munitions.M_SWARM)) {
-            return new LRMSwarmHandler(toHit, waa, game, manager);
+            return new LRMSwarmHandler(toHit, waa, twGame, manager);
         }
         if (atype.getMunitionType().contains(AmmoType.Munitions.M_SWARM_I)) {
-            return new LRMSwarmIHandler(toHit, waa, game, manager);
+            return new LRMSwarmIHandler(toHit, waa, twGame, manager);
         }
         if (atype.getMunitionType().contains(AmmoType.Munitions.M_DEAD_FIRE)) {
-            return new LRMDeadFireHandler(toHit, waa, game, manager);
+            return new LRMDeadFireHandler(toHit, waa, twGame, manager);
         }
         if (atype.getMunitionType().contains(AmmoType.Munitions.M_FOLLOW_THE_LEADER)) {
-            return new LRMFollowTheLeaderHandler(toHit, waa, game, manager);
+            return new LRMFollowTheLeaderHandler(toHit, waa, twGame, manager);
         }
         if (atype.getMunitionType().contains(AmmoType.Munitions.M_SMOKE_WARHEAD)) {
-            return new LRMSmokeWarheadHandler(toHit, waa, game, manager);
+            return new LRMSmokeWarheadHandler(toHit, waa, twGame, manager);
         }
         if (atype.getMunitionType().contains(AmmoType.Munitions.M_MINE_CLEARANCE)) {
-            return new MissileMineClearanceHandler(toHit, waa, game, manager);
+            return new MissileMineClearanceHandler(toHit, waa, twGame, manager);
         }
-        return new LRMHandler(toHit, waa, game, manager);
+        return new LRMHandler(toHit, waa, twGame, manager);
     }
 }

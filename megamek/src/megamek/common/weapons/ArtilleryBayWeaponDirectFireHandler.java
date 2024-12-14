@@ -13,7 +13,7 @@
  */
 package megamek.common.weapons;
 
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
 import megamek.common.enums.GamePhase;
@@ -31,13 +31,13 @@ public class ArtilleryBayWeaponDirectFireHandler extends ArtilleryBayWeaponIndir
      * @param w
      * @param g
      */
-    public ArtilleryBayWeaponDirectFireHandler(ToHitData t, WeaponAttackAction w, Game g, TWGameManager m) {
+    public ArtilleryBayWeaponDirectFireHandler(ToHitData t, WeaponAttackAction w, TWGame g, TWGameManager m) {
         super(t, w, g, m);
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see megamek.common.weapons.AttackHandler#cares(int)
      */
     @Override

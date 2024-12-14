@@ -38,16 +38,8 @@ import megamek.client.event.BoardViewEvent;
 import megamek.client.event.BoardViewListener;
 import megamek.client.ui.Messages;
 import megamek.client.ui.swing.boardview.BoardView;
-import megamek.client.ui.swing.util.UIUtil;
-import megamek.common.Coords;
-import megamek.common.Entity;
-import megamek.common.Game;
-import megamek.common.LosEffects;
-import megamek.common.Mek;
-import megamek.common.TargetRoll;
-import megamek.common.ToHitData;
-import megamek.common.preference.IPreferenceChangeListener;
-import megamek.common.preference.PreferenceChangeEvent;
+import megamek.common.*;
+import megamek.common.TWGame;
 import megamek.logging.MMLogger;
 
 /**
@@ -67,7 +59,7 @@ public class Ruler extends JDialog implements BoardViewListener {
     private int distance;
     private Client client;
     private BoardView bv;
-    private Game game;
+    private TWGame twGame;
     private boolean flip;
 
     private JPanel buttonPanel;
@@ -92,7 +84,7 @@ public class Ruler extends JDialog implements BoardViewListener {
     private JCheckBox cboIsMek1 = new JCheckBox(Messages.getString("Ruler.isMek"));
     private JCheckBox cboIsMek2 = new JCheckBox(Messages.getString("Ruler.isMek"));
 
-    public Ruler(JFrame f, Client c, BoardView b, Game g) {
+    public Ruler(JFrame f, Client c, BoardView b, TWGame g) {
         super(f, Messages.getString("Ruler.title"), false);
         enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 
@@ -104,7 +96,7 @@ public class Ruler extends JDialog implements BoardViewListener {
 
         bv = b;
         client = c;
-        game = g;
+        TWGame = g;
         b.addBoardViewListener(this);
 
         try {
@@ -293,7 +285,7 @@ public class Ruler extends JDialog implements BoardViewListener {
         int absHeight = Integer.MIN_VALUE;
         boolean isMek = false;
         boolean entFound = false;
-        for (Entity ent : game.getEntitiesVector(c)) {
+        for (Entity ent : twGame.getEntitiesVector(c)) {
             int trAbsheight = ent.relHeight();
             if (trAbsheight > absHeight) {
                 absHeight = trAbsheight;
@@ -336,22 +328,22 @@ public class Ruler extends JDialog implements BoardViewListener {
             // leave at default value
         }
 
-        if (!game.getBoard().contains(start) || !game.getBoard().contains(end)) {
+        if (!twGame.getBoard().contains(start) || !twGame.getBoard().contains(end)) {
             return;
         }
 
         String toHit1 = "", toHit2 = "";
         ToHitData thd;
         if (flip) {
-            thd = LosEffects.calculateLos(game,
+            thd = LosEffects.calculateLos(twGame,
                     buildAttackInfo(start, end, h1, h2, cboIsMek1.isSelected(),
                             cboIsMek2.isSelected()))
-                    .losModifiers(game);
+                    .losModifiers(twGame);
         } else {
-            thd = LosEffects.calculateLos(game,
+            thd = LosEffects.calculateLos(twGame,
                     buildAttackInfo(end, start, h2, h1, cboIsMek2.isSelected(),
                             cboIsMek1.isSelected()))
-                    .losModifiers(game);
+                    .losModifiers(twGame);
         }
         if (thd.getValue() != TargetRoll.IMPOSSIBLE) {
             toHit1 = thd.getValue() + " = ";
@@ -359,15 +351,15 @@ public class Ruler extends JDialog implements BoardViewListener {
         toHit1 += thd.getDesc();
 
         if (flip) {
-            thd = LosEffects.calculateLos(game,
+            thd = LosEffects.calculateLos(twGame,
                     buildAttackInfo(end, start, h2, h1, cboIsMek2.isSelected(),
                             cboIsMek1.isSelected()))
-                    .losModifiers(game);
+                    .losModifiers(twGame);
         } else {
-            thd = LosEffects.calculateLos(game,
+            thd = LosEffects.calculateLos(twGame,
                     buildAttackInfo(start, end, h1, h2, cboIsMek1.isSelected(),
                             cboIsMek2.isSelected()))
-                    .losModifiers(game);
+                    .losModifiers(twGame);
         }
         if (thd.getValue() != TargetRoll.IMPOSSIBLE) {
             toHit2 = thd.getValue() + " = ";
@@ -401,8 +393,8 @@ public class Ruler extends JDialog implements BoardViewListener {
         ai.targetHeight = h2;
         ai.attackerIsMek = attackerIsMek;
         ai.targetIsMek = targetIsMek;
-        ai.attackAbsHeight = game.getBoard().getHex(c1).floor() + h1;
-        ai.targetAbsHeight = game.getBoard().getHex(c2).floor() + h2;
+        ai.attackAbsHeight = twGame.getBoard().getHex(c1).floor() + h1;
+        ai.targetAbsHeight = twGame.getBoard().getHex(c2).floor() + h2;
         return ai;
     }
 

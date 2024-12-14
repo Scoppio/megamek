@@ -209,7 +209,7 @@ Mast mount					No
 Bridgelayer					No
 Bulldozer					No
 Minesweeper					No
-MASH						N/A			no game effect
+MASH						N/A			no TWGame effect
 Amphibious					No
 Dune buggy					No
 Snowmobile					No

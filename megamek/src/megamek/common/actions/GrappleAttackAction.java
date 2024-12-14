@@ -30,24 +30,24 @@ public class GrappleAttackAction extends PhysicalAttackAction {
         super(entityId, targetType, targetId);
     }
 
-    public ToHitData toHit(Game game) {
-        return toHit(game, getEntityId(), game.getTarget(getTargetType(), getTargetId()));
+    public ToHitData toHit(TWGame twGame) {
+        return toHit(twGame, getEntityId(), twGame.getTarget(getTargetType(), getTargetId()));
     }
 
     /**
-     * @param game       The current {@link Game}
+     * @param twGame       The current {@link TWGame}
      * @param attackerId the attacking entity id
      * @param target     the attack's target
      * @return the to hit number for the current grapple attack
      */
-    public static ToHitData toHit(Game game, int attackerId, Targetable target) {
-        return toHit(game, attackerId, target, Entity.GRAPPLE_BOTH, false);
+    public static ToHitData toHit(TWGame twGame, int attackerId, Targetable target) {
+        return toHit(twGame, attackerId, target, Entity.GRAPPLE_BOTH, false);
     }
 
     /**
      * Calculates ToHitData for a grapple attack.
      *
-     * @param game        The current {@link Game}
+     * @param twGame        The current {@link TWGame}
      * @param attackerId
      * @param target
      * @param grappleSide
@@ -59,11 +59,11 @@ public class GrappleAttackAction extends PhysicalAttackAction {
      *                    illegal. See TO pg 289.
      * @return
      */
-    public static ToHitData toHit(Game game, int attackerId, Targetable target, int grappleSide,
-            boolean isChainWhip) {
-        final Entity ae = game.getEntity(attackerId);
+    public static ToHitData toHit(TWGame twGame, int attackerId, Targetable target, int grappleSide,
+                                  boolean isChainWhip) {
+        final Entity ae = twGame.getEntity(attackerId);
 
-        ToHitData toHit = checkIllegal(game, ae, target, grappleSide);
+        ToHitData toHit = checkIllegal(twGame, ae, target, grappleSide);
 
         if ((toHit != null) && !isChainWhip) {
             return toHit;
@@ -77,7 +77,7 @@ public class GrappleAttackAction extends PhysicalAttackAction {
         // Start the To-Hit
         toHit = new ToHitData(base, "base");
 
-        setCommonModifiers(toHit, game, ae, target);
+        setCommonModifiers(toHit, twGame, ae, target);
 
         if ((ae instanceof Mek) && grappleSide == Entity.GRAPPLE_BOTH) {
             // damaged or missing actuators
@@ -178,18 +178,18 @@ public class GrappleAttackAction extends PhysicalAttackAction {
     /**
      * Various modifiers to check to see if the grapple attack is illegal.
      *
-     * @param game        The current {@link Game}
+     * @param IGame        The current {@link TWGame}
      * @param ae
      * @param target
      * @param grappleSide
      * @return
      */
-    public static ToHitData checkIllegal(Game game, Entity ae, Targetable target, int grappleSide) {
+    public static ToHitData checkIllegal(IGame IGame, Entity ae, Targetable target, int grappleSide) {
         if (ae == null) {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "You can't attack from a null entity!");
         }
 
-        if (!game.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_GRAPPLING)) {
+        if (!IGame.getOptions().booleanOption(OptionsConstants.ADVCOMBAT_TACOPS_GRAPPLING)) {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "grappling attack not allowed");
         }
 
@@ -198,12 +198,12 @@ public class GrappleAttackAction extends PhysicalAttackAction {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "Cannot grapple while airborne");
         }
 
-        String impossible = toHitIsImpossible(game, ae, target);
+        String impossible = toHitIsImpossible(IGame, ae, target);
         if (impossible != null && !impossible.equals("Locked in Grapple")) {
             return new ToHitData(TargetRoll.IMPOSSIBLE, "impossible");
         }
 
-        if (!game.getOptions().booleanOption(OptionsConstants.BASE_FRIENDLY_FIRE)) {
+        if (!IGame.getOptions().booleanOption(OptionsConstants.BASE_FRIENDLY_FIRE)) {
             // a friendly unit can never be the target of a direct attack.
             if ((target.getTargetType() == Targetable.TYPE_ENTITY)
                     && ((((Entity) target).getOwnerId() == ae.getOwnerId())
@@ -215,8 +215,8 @@ public class GrappleAttackAction extends PhysicalAttackAction {
             }
         }
 
-        Hex attHex = game.getBoard().getHex(ae.getPosition());
-        Hex targHex = game.getBoard().getHex(target.getPosition());
+        Hex attHex = IGame.getBoard().getHex(ae.getPosition());
+        Hex targHex = IGame.getBoard().getHex(target.getPosition());
         final int attackerElevation = ae.getElevation() + attHex.getLevel();
         // final int attackerHeight = attackerElevation + ae.getHeight();
         final int targetElevation = target.getElevation() + targHex.getLevel();

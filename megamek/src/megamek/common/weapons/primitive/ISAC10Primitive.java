@@ -15,7 +15,7 @@
 package megamek.common.weapons.primitive;
 
 import megamek.common.AmmoType;
-import megamek.common.Game;
+import megamek.common.TWGame;
 import megamek.common.SimpleTechLevel;
 import megamek.common.ToHitData;
 import megamek.common.actions.WeaponAttackAction;
@@ -75,8 +75,8 @@ public class ISAC10Primitive extends ACWeapon {
     }
 
     @Override
-    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, Game game,
+    protected AttackHandler getCorrectHandler(ToHitData toHit, WeaponAttackAction waa, TWGame twGame,
                                               TWGameManager manager) {
-        return new PrimitiveACWeaponHandler(toHit, waa, game, manager);
+        return new PrimitiveACWeaponHandler(toHit, waa, twGame, manager);
     }
 }

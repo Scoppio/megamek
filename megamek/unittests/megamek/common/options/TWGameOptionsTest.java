@@ -37,7 +37,7 @@ import org.junit.jupiter.api.io.TempDir;
 /**
  * @author nderwin
  */
-class GameOptionsTest {
+class TWGameOptionsTest {
 
     private GameOptions testMe;
 
