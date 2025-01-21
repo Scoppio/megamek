@@ -38,7 +38,7 @@ public class InfantryPathRanker extends BasicPathRanker {
 
     @Override
     protected RankedPath rankPath(MovePath path, Game game, int maxRange, double fallTolerance,
-            List<Entity> enemies, Coords friendsCoords) {
+            List<Entity> enemies, FriendsCluster friendsCluster) {
         Entity movingUnit = path.getEntity();
         StringBuilder formula = new StringBuilder("Calculation: {");
 
@@ -115,7 +115,7 @@ public class InfantryPathRanker extends BasicPathRanker {
 
         // The further I am from my teammates, the lower this path
         // ranks (weighted by Herd Mentality).
-        utility -= calculateHerdingMod(friendsCoords, pathCopy, formula);
+        utility -= calculateHerdingMod(friendsCluster, pathCopy, formula);
 
         // If I need to flee the board, I want to get closer to my home edge.
         utility -= calculateSelfPreservationMod(movingUnit, pathCopy, game,

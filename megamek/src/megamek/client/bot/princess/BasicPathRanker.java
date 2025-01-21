@@ -389,13 +389,13 @@ public class BasicPathRanker extends PathRanker {
 
     // The further I am from my teammates, the lower this path ranks (weighted by
     // Herd Mentality).
-    protected double calculateHerdingMod(Coords friendsCoords, MovePath path, StringBuilder formula) {
-        if (friendsCoords == null) {
+    protected double calculateHerdingMod(FriendsCluster friendsCluster, MovePath path, StringBuilder formula) {
+        if (friendsCluster == FriendsCluster.empty()) {
             formula.append(" - herdingMod [0 no friends]");
             return 0;
         }
 
-        double distanceToAllies = friendsCoords.distance(path.getFinalCoords());
+        double distanceToAllies = friendsCluster.finalUnitSeparation(path.getFinalCoords());
         double herding = getOwner().getBehaviorSettings().getHerdMentalityValue();
         double herdingMod = distanceToAllies * herding;
 
@@ -485,8 +485,8 @@ public class BasicPathRanker extends PathRanker {
      * A path ranking
      */
     @Override
-    protected RankedPath rankPath(MovePath path, Game game, int maxRange, double fallTolerance, List<Entity> enemies,
-            Coords friendsCoords) {
+    protected RankedPath rankPath(
+        MovePath path, Game game, int maxRange, double fallTolerance, List<Entity> enemies, FriendsCluster friendsCluster) {
         Entity movingUnit = path.getEntity();
         StringBuilder formula = new StringBuilder("Calculation: {");
 
@@ -609,7 +609,7 @@ public class BasicPathRanker extends PathRanker {
 
             // The further I am from my teammates, the lower this path
             // ranks (weighted by Herd Mentality).
-            utility -= calculateHerdingMod(friendsCoords, pathCopy, formula);
+            utility -= calculateHerdingMod(friendsCluster, pathCopy, formula);
         }
 
         // Try to face the enemy.

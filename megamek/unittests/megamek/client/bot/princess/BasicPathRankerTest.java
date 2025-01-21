@@ -512,7 +512,7 @@ class BasicPathRankerTest {
                         anyBoolean());
         testEnemies.add(mockEnemyMek2);
 
-        Coords friendsCoords = new Coords(10, 10);
+        var friendsCoords = new FriendsCluster(new Coords(10, 10), 1, 0, 0);
 
         final double baseRank = -51.25; // The rank I expect to get with the above settings.
 
@@ -739,7 +739,7 @@ class BasicPathRankerTest {
                 .distanceToClosestEnemy(any(Entity.class), any(Coords.class), any(Game.class));
 
         // Change the distance to my friends.
-        friendsCoords = new Coords(0, 10);
+        friendsCoords = new FriendsCluster(new Coords(0, 10), 1, 0, 0);
         expected = new RankedPath(-46.25, mockPath, "Calculation: {fall mod ["
                 + LOG_DECIMAL.format(0) + " = " + LOG_DECIMAL.format(0) + " * "
                 + LOG_DECIMAL.format(500) + "] + braveryMod [" + LOG_DECIMAL.format(-6.25)
@@ -757,7 +757,7 @@ class BasicPathRankerTest {
         if (baseRank > actual.getRank()) {
             fail("The closer I am to my friends, the higher the path rank should be.");
         }
-        friendsCoords = new Coords(20, 10);
+        friendsCoords = new FriendsCluster(new Coords(20, 10), 1, 0, 0);
         expected = new RankedPath(-56.25, mockPath, "Calculation: {fall mod ["
                 + LOG_DECIMAL.format(0) + " = " + LOG_DECIMAL.format(0) + " * "
                 + LOG_DECIMAL.format(500) + "] + braveryMod [" + LOG_DECIMAL.format(-6.25)
@@ -786,9 +786,9 @@ class BasicPathRankerTest {
                 + LOG_DECIMAL.format(0) + " = max(" + LOG_INT.format(0) + ", "
                 + LOG_INT.format(50) + " * {" + LOG_INT.format(0) + " - "
                 + LOG_INT.format(1) + "})]");
-        actual = testRanker.rankPath(mockPath, mockGame, 18, 0.5, testEnemies, null);
+        actual = testRanker.rankPath(mockPath, mockGame, 18, 0.5, testEnemies, FriendsCluster.empty());
         assertRankedPathEquals(expected, actual);
-        friendsCoords = new Coords(10, 10);
+        friendsCoords = new FriendsCluster(new Coords(10, 10), 1, 0, 0);
 
         // Set myself up to run away.
         final double baseFleeingRank = -51.25;

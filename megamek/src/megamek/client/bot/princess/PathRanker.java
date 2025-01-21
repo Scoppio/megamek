@@ -33,10 +33,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 
 import static megamek.client.ui.SharedUtility.predictLeapDamage;
 import static megamek.client.ui.SharedUtility.predictLeapFallDamage;
@@ -69,8 +66,8 @@ public abstract class PathRanker implements IPathRanker {
     }
 
     protected abstract RankedPath rankPath(MovePath path, Game game, int maxRange,
-            double fallTolerance, List<Entity> enemies,
-            Coords friendsCoords);
+                                           double fallTolerance, List<Entity> enemies,
+                                           FriendsCluster friendsCluster);
 
     @Override
     public ArrayList<RankedPath> rankPaths(List<MovePath> movePaths, Game game, int maxRange,
@@ -88,15 +85,11 @@ public abstract class PathRanker implements IPathRanker {
         // Let's try to whittle down this list.
         List<MovePath> validPaths = validatePaths(movePaths, game, maxRange, fallTolerance);
         logger.debug("Validated " + validPaths.size() + " out of " + movePaths.size() + " possible paths.");
-
+        var self = movePaths.get(0).getEntity();
         // If the heat map of friendly activity has sufficient data, use the nearest hot
         // spot as
         // the anchor point
-        Coords allyCenter = owner.getFriendlyHotSpot(movePaths.get(0).getEntity().getPosition());
-        if (allyCenter == null) {
-            allyCenter = calcAllyCenter(movePaths.get(0).getEntity().getId(), friends, game);
-        }
-
+        FriendsCluster friendsCluster = getFriendsCluster(game, friends, self);
         ArrayList<RankedPath> returnPaths = new ArrayList<>(validPaths.size());
 
         try {
@@ -109,7 +102,7 @@ public abstract class PathRanker implements IPathRanker {
             for (MovePath path : validPaths) {
                 count = count.add(BigDecimal.ONE);
 
-                RankedPath rankedPath = rankPath(path, game, maxRange, fallTolerance, enemies, allyCenter);
+                RankedPath rankedPath = rankPath(path, game, maxRange, fallTolerance, enemies, friendsCluster);
 
                 returnPaths.add(rankedPath);
 
@@ -149,6 +142,18 @@ public abstract class PathRanker implements IPathRanker {
         return returnPaths;
     }
 
+    private FriendsCluster getFriendsCluster(Game game, List<Entity> friends, Entity self) {
+        FriendsCluster friendsCluster = FriendsCluster.empty();
+        // units falling back should not try to stay hugging their friends and instead go to the exit
+        if (!owner.isFallingBack(self)) {
+            friendsCluster = owner.getFriendsCluster(self.getPosition());
+            if (friendsCluster.isEmpty()) {
+                friendsCluster = calcFriendsCluster(self, friends, game);
+            }
+        }
+        return friendsCluster;
+    }
+
     private List<MovePath> validatePaths(List<MovePath> startingPathList, Game game, int maxRange,
             double fallTolerance) {
         if (startingPathList.isEmpty()) {
@@ -165,7 +170,8 @@ public abstract class PathRanker implements IPathRanker {
 
         List<MovePath> returnPaths = new ArrayList<>(startingPathList.size());
         boolean inRange = maxRange >= startingTargetDistance;
-
+        // small optimization - if there is no target around, this method wont return anything other than null
+        boolean hasNoEnemyInSight = closestTarget == null;
         boolean isAirborneAeroOnGroundMap = mover.isAirborneAeroOnGroundMap();
         boolean needToUnjamRAC = mover.canUnjamRAC();
         int walkMP = mover.getWalkMP();
@@ -197,7 +203,7 @@ public abstract class PathRanker implements IPathRanker {
                 // Skip this part if I'm an aero on the ground map, as it's kind of irrelevant
                 // also skip this part if I'm attempting to retreat, as engagement is not the
                 // point here
-                if (!isAirborneAeroOnGroundMap && !getOwner().wantsToFallBack(mover)) {
+                if (!isAirborneAeroOnGroundMap && !getOwner().wantsToFallBack(mover) && !hasNoEnemyInSight) {
                     Targetable closestToEnd = findClosestEnemy(mover, finalCoords, game);
                     String validation = validRange(finalCoords, closestToEnd, startingTargetDistance, maxRange,
                             inRange);
@@ -535,12 +541,117 @@ public abstract class PathRanker implements IPathRanker {
         return false;
     }
 
+    public static int maxFriendDistancePerRole(UnitRole unitRole) {
+        return switch (unitRole) {
+            case UNDETERMINED -> 10;
+            case NONE -> 10;
+            case AMBUSHER -> 7;
+            case BRAWLER -> 7;
+            case JUGGERNAUT -> 5;
+            case MISSILE_BOAT -> 10;
+            case SCOUT -> 12;
+            case SKIRMISHER -> 7;
+            case SNIPER -> 6;
+            case STRIKER -> 8;
+            case ATTACK_FIGHTER -> 10;
+            case DOGFIGHTER -> 7;
+            case FAST_DOGFIGHTER -> 7;
+            case FIRE_SUPPORT -> 7;
+            case INTERCEPTOR -> 7;
+            case TRANSPORT -> 5;
+        };
+    }
+
+    public static FriendsCluster calcFriendsCluster(Entity self, @Nullable List<Entity> friends, Game game) {
+        if ((friends == null) || (friends.size() <= 1)) {
+            return FriendsCluster.empty();
+        }
+
+        int maxFriendDistance = maxFriendDistancePerRole(self.getRole());
+
+        int maxFriends = 6;
+
+        PriorityQueue<Entity> friendsQueue = new PriorityQueue<>(maxFriends, (a, b) -> {
+            int aDist = a.getPosition().distance(self.getPosition());
+            int bDist = b.getPosition().distance(self.getPosition());
+            return Integer.compare(aDist, bDist);
+        });
+
+        int xTotal = 0;
+        int yTotal = 0;
+        int friendOnBoardCount = 0;
+        int maxUnitSeparation = (int) Math.round((self.getMaxWeaponRange() / 3.0 * 2));
+        int formationRunSpeed = self.getRunMP();
+        int friendMaxSeparation;
+        for (Entity friend : friends) {
+            if (friend.getId() == self.getId()) {
+                continue;
+            }
+
+            // Skip any friends not on the board.
+            if (friend.isOffBoard()) {
+                continue;
+            }
+
+            Coords friendPosition = friend.getPosition();
+            if ((friendPosition == null) || !game.getBoard().contains(friendPosition)) {
+                continue;
+            }
+
+            // Ground follows ground, air follows air
+            if (self.isGround() != friend.isGround()) {
+                continue;
+            }
+
+            // Infantry is on its own for now
+            if (self.isInfantry() || friend.isInfantry()) {
+                continue;
+            }
+
+            if (friendPosition.distance(self.getPosition()) > maxFriendDistance) {
+                continue;
+            }
+
+            friendsQueue.add(friend);
+            if (friendsQueue.size() > maxFriends) {
+                friendsQueue.poll();
+            }
+        }
+
+        for (var friend : friendsQueue) {
+            // Minimum of 3 to make sure the formation can move. It may become more sparse as the turns go by
+            // but they will stay moving as a formation.
+            formationRunSpeed = Math.min(formationRunSpeed, Math.max(friend.getRunMP(), 3));
+
+            // The max unit separation is the minimum of the max weapon range of all units
+            // to keep every unit in cover of their friends
+            friendMaxSeparation = Math.max(5, (int) Math.round((friend.getMaxWeaponRange() / 3.0 * 2)));
+            maxUnitSeparation = Math.min(maxUnitSeparation, friendMaxSeparation);
+            Coords friendPosition = friend.getPosition();
+            xTotal += friendPosition.getX();
+            yTotal += friendPosition.getY();
+            friendOnBoardCount++;
+        }
+
+        if (friendOnBoardCount == 0) {
+            return FriendsCluster.empty();
+        }
+
+        int xCenter = Math.round((float) xTotal / friendOnBoardCount);
+        int yCenter = Math.round((float) yTotal / friendOnBoardCount);
+        Coords center = new Coords(xCenter, yCenter);
+
+        if (!game.getBoard().contains(center)) {
+            logger.error("Center of ally group " + center.toFriendlyString() + " not within board boundaries.");
+            return FriendsCluster.empty();
+        }
+
+        return new FriendsCluster(center, friendOnBoardCount, formationRunSpeed, maxUnitSeparation);
+    }
+
     public static @Nullable Coords calcAllyCenter(int myId, @Nullable List<Entity> friends, Game game) {
-        if ((friends == null) || friends.isEmpty()) {
+        if ((friends == null) || (friends.size() <= 1)) {
             return null;
-        } else if (friends.size() == 1) {
-            // Nobody here but me...
-            return friends.get(0).getPosition();
         }
 
         int xTotal = 0;

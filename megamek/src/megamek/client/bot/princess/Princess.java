@@ -3409,6 +3409,11 @@ public class Princess extends BotClient {
         return friendlyHeatMap.getHotSpot(testPosition, true);
     }
 
+    public FriendsCluster getFriendsCluster(Coords testPosition) {
+        var hotSpot = friendlyHeatMap.getHotSpot(testPosition, true);
+        return new FriendsCluster(hotSpot, -1, -1, -1);
+    }
+
     /**
      * Set up heat maps to track enemy unit positions over time
      */
