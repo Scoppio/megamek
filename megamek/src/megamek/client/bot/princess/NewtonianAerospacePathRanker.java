@@ -30,8 +30,8 @@ public class NewtonianAerospacePathRanker extends BasicPathRanker {
 
     public static final int REMAINS_ON_BOARD = -1;
 
-    public NewtonianAerospacePathRanker(Princess owningPrincess) {
-        super(owningPrincess);
+    public NewtonianAerospacePathRanker(Princess owningPrincess, PathEnumerator pathEnumerator) {
+        super(owningPrincess, pathEnumerator);
     }
 
     /**

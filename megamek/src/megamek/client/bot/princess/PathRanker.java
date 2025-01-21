@@ -22,6 +22,7 @@ package megamek.client.bot.princess;
 import megamek.client.bot.princess.UnitBehavior.BehaviorType;
 import megamek.client.ui.Messages;
 import megamek.client.ui.SharedUtility;
+import megamek.codeUtilities.MathUtility;
 import megamek.codeUtilities.StringUtility;
 import megamek.common.*;
 import megamek.common.annotations.Nullable;
@@ -56,7 +57,21 @@ public abstract class PathRanker implements IPathRanker {
     public enum PathRankerType {
         Basic,
         Infantry,
-        NewtonianAerospace
+        Ambusher,
+        Brawler,
+        Juggernaut,
+        MissileBoat,
+        Scout,
+        Skirmisher,
+        Sniper,
+        Striker,
+        NewtonianAerospace,
+        AttackFighter,
+        DogFighter,
+        FastDogFighter,
+        FireSupport,
+        Interceptor,
+        Transport,
     }
 
     private final Princess owner;
@@ -90,7 +105,7 @@ public abstract class PathRanker implements IPathRanker {
         // spot as
         // the anchor point
         FriendsCluster friendsCluster = getFriendsCluster(game, friends, self);
-        ArrayList<RankedPath> returnPaths = new ArrayList<>(validPaths.size());
+        TreeSet<RankedPath> returnPaths = new TreeSet<>((a, b) -> Double.compare(b.getRank(), a.getRank())); // yes, they are inverted, this is on purpose.
 
         try {
             final BigDecimal numberPaths = new BigDecimal(validPaths.size());
@@ -103,9 +118,7 @@ public abstract class PathRanker implements IPathRanker {
                 count = count.add(BigDecimal.ONE);
 
                 RankedPath rankedPath = rankPath(path, game, maxRange, fallTolerance, enemies, friendsCluster);
-
                 returnPaths.add(rankedPath);
-
                 // we want to keep track of if any of the paths we've considered have some kind
                 // of damage potential
                 pathsHaveExpectedDamage |= (rankedPath.getExpectedDamage() > 0);
@@ -136,20 +149,20 @@ public abstract class PathRanker implements IPathRanker {
             }
         } catch (Exception ignored) {
             logger.error(ignored, ignored.getMessage());
-            return returnPaths;
+            return new ArrayList<>(returnPaths);
         }
 
-        return returnPaths;
+        return new ArrayList<>(returnPaths);
     }
 
     private FriendsCluster getFriendsCluster(Game game, List<Entity> friends, Entity self) {
         FriendsCluster friendsCluster = FriendsCluster.empty();
         // units falling back should not try to stay hugging their friends and instead go to the exit
         if (!owner.isFallingBack(self)) {
-            friendsCluster = owner.getFriendsCluster(self.getPosition());
-            if (friendsCluster.isEmpty()) {
-                friendsCluster = calcFriendsCluster(self, friends, game);
-            }
+            // friendsCluster = owner.getFriendsCluster(self.getPosition());
+//            if (friendsCluster.isEmpty()) {
+            friendsCluster = calcFriendsCluster(self, friends, game);
+//            }
         }
         return friendsCluster;
     }
@@ -257,7 +270,7 @@ public abstract class PathRanker implements IPathRanker {
      */
     @Override
     public @Nullable RankedPath getBestPath(List<RankedPath> ps) {
-        return ps.isEmpty() ? null : Collections.max(ps);
+        return ps.isEmpty() ? null : ps.get(0);
     }
 
     /**
@@ -572,15 +585,16 @@ public abstract class PathRanker implements IPathRanker {
         int maxFriends = 6;
 
         PriorityQueue<Entity> friendsQueue = new PriorityQueue<>(maxFriends, (a, b) -> {
-            int aDist = a.getPosition().distance(self.getPosition());
-            int bDist = b.getPosition().distance(self.getPosition());
+            int aDist = MathUtility.clamp(a.getPosition().distance(self.getPosition()) - a.getRunMP(), 0, Integer.MAX_VALUE);
+            int bDist = MathUtility.clamp(b.getPosition().distance(self.getPosition()) - b.getRunMP(), 0, Integer.MAX_VALUE);
+
             return Integer.compare(aDist, bDist);
         });
 
         int xTotal = 0;
         int yTotal = 0;
         int friendOnBoardCount = 0;
-        int maxUnitSeparation = (int) Math.round((self.getMaxWeaponRange() / 3.0 * 2));
+        int maxUnitSeparation = Math.max((int) Math.round((self.getMaxWeaponRange() / 3.0 * 2)), 14);
         int formationRunSpeed = self.getRunMP();
         int friendMaxSeparation;
         for (Entity friend : friends) {
@@ -625,7 +639,7 @@ public abstract class PathRanker implements IPathRanker {
 
             // The max unit separation is the minimum of the max weapon range of all units
             // to keep every unit in cover of their friends
-            friendMaxSeparation = Math.max(5, (int) Math.round((friend.getMaxWeaponRange() / 3.0 * 2)));
+            friendMaxSeparation = MathUtility.clamp(friend.getMaxWeaponRange() * 2, 14, Integer.MAX_VALUE);
             maxUnitSeparation = Math.min(maxUnitSeparation, friendMaxSeparation);
             Coords friendPosition = friend.getPosition();
             xTotal += friendPosition.getX();

@@ -69,7 +69,7 @@ public class FireControl {
     static final double COMMANDER_UTILITY = 0.5;
     static final double SUB_COMMANDER_UTILITY = 0.25;
     static final double STRATEGIC_TARGET_UTILITY = 0.5;
-    static final double PRIORITY_TARGET_UTILITY = 0.25;
+    static final double PRIORITY_TARGET_UTILITY = 2.0;
 
     static final String TH_WOODS = "woods";
     static final String TH_SMOKE = "smoke";

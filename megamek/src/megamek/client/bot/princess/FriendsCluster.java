@@ -37,7 +37,7 @@ public record FriendsCluster(Coords midpoint, int units, int formationRunMP, int
 
     public double finalUnitSeparation(Coords coords) {
         var dist = distance(coords);
-        return MathUtility.clamp(dist - (unitSeparation + formationRunMP), 0, dist);
+        return Math.abs(unitSeparation + formationRunMP - dist);
     }
 }
 

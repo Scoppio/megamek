@@ -30,9 +30,8 @@ import megamek.common.options.OptionsConstants;
 
 public class InfantryPathRanker extends BasicPathRanker {
 
-    public InfantryPathRanker(Princess princess) {
-        super(princess);
-
+    public InfantryPathRanker(Princess princess, PathEnumerator pathEnumerator) {
+        super(princess, pathEnumerator);
         setPathEnumerator(princess.getPrecognition().getPathEnumerator());
     }
 

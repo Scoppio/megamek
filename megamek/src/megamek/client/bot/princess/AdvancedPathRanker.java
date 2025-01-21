@@ -33,11 +33,8 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.*;
 
-/**
- * A very "basic" path ranker
- */
-public class BasicPathRanker extends PathRanker {
-    private final static MMLogger logger = MMLogger.create(BasicPathRanker.class);
+public class AdvancedPathRanker extends PathRanker {
+    private final static MMLogger logger = MMLogger.create(AdvancedPathRanker.class);
 
     // this is a value used to indicate how much we value the unit being at its
     // destination
@@ -60,16 +57,9 @@ public class BasicPathRanker extends PathRanker {
 
     protected int blackIce = -1;
 
-    public BasicPathRanker(Princess owningPrincess) {
+    public AdvancedPathRanker(Princess owningPrincess) {
         super(owningPrincess);
         bestDamageByEnemies = new TreeMap<>();
-        logger.debug("Using %s behavior.", getOwner().getBehaviorSettings().getDescription());
-    }
-
-    public BasicPathRanker(Princess owningPrincess, PathEnumerator pathEnumerator) {
-        super(owningPrincess);
-        bestDamageByEnemies = new TreeMap<>();
-        this.pathEnumerator = pathEnumerator;
         logger.debug("Using %s behavior.", getOwner().getBehaviorSettings().getDescription());
     }
 
@@ -96,29 +86,6 @@ public class BasicPathRanker extends PathRanker {
         }
         return box.getClosestCoordsTo(location);
     }
-
-
-     @Override
-    public RankedPath getBestPath(List<RankedPath> ps) {
-        if (ps.isEmpty()) {
-            return null;
-        }
-        double maxDifference = 10;
-        List<RankedPath> topPaths = new ArrayList<>(5);
-        double topRank = ps.get(0).getRank();
-        for (var rankedPath : ps) {
-            if (Math.abs(rankedPath.getRank() - topRank) < maxDifference) {
-                topPaths.add(rankedPath);
-                if (topPaths.size() == 5) {
-                    break;
-                }
-            } else {
-                break;
-            }
-        }
-        return topPaths.stream().max(Comparator.comparingDouble(a -> a.getPath().getHexesMoved())).orElse(null);
-     }
-
 
     boolean isInMyLoS(Entity unit, HexLine leftBounds, HexLine rightBounds) {
         return (leftBounds.judgeArea(pathEnumerator.getUnitMovableAreas().get(unit.getId())) > 0)
@@ -179,7 +146,7 @@ public class BasicPathRanker extends PathRanker {
         }
 
         int range = closest.distance(finalCoords);
-        returnResponse.setDistance(range);
+
         // I would prefer if the enemy must end its move in my line of fire if so, I can
         // guess that I may do some damage to it (cover notwithstanding). At the very
         // least, I can force the enemy to take cover on its move.
@@ -234,7 +201,7 @@ public class BasicPathRanker extends PathRanker {
         return super.getMovePathSuccessProbability(movePath, msg);
     }
 
-    protected double calculateFallMod(double successProbability, StringBuilder formula) {
+    private double calculateFallMod(double successProbability, StringBuilder formula) {
         double pilotingFailure = (1 - successProbability);
         double fallShame = getOwner().getBehaviorSettings().getFallShameValue();
         double fallMod = pilotingFailure * (pilotingFailure == 1 ? -UNIT_DESTRUCTION_FACTOR : fallShame);
@@ -369,7 +336,7 @@ public class BasicPathRanker extends PathRanker {
         EntityEvaluationResponse returnResponse = new EntityEvaluationResponse();
 
         int distance = enemy.getPosition().distance(path.getFinalCoords());
-        returnResponse.setDistance(distance);
+
         // How much damage can they do to me?
         double theirDamagePotential = calculateDamagePotential(enemy,
                 new EntityState(enemy), path, new EntityState(path), distance, game);
@@ -432,7 +399,7 @@ public class BasicPathRanker extends PathRanker {
     }
 
     // todo account for damaged locations and face those away from enemy.
-    protected double calculateFacingMod(Entity movingUnit, Game game, final MovePath path,
+    private double calculateFacingMod(Entity movingUnit, Game game, final MovePath path,
             StringBuilder formula) {
 
         Targetable closest = findClosestEnemy(movingUnit, movingUnit.getPosition(), game, false);
@@ -542,16 +509,19 @@ public class BasicPathRanker extends PathRanker {
             if (enemy instanceof MekWarrior) {
                 continue;
             }
+
             // Skip units not actually on the board.
             if (enemy.isOffBoard() || (enemy.getPosition() == null)
                     || !game.getBoard().contains(enemy.getPosition())) {
                 continue;
             }
+
             // Skip broken enemies
             if (getOwner().getHonorUtil().isEnemyBroken(enemy.getId(), enemy.getOwnerId(),
                     getOwner().getForcedWithdrawal())) {
                 continue;
             }
+
             EntityEvaluationResponse eval;
 
             if (evaluateAsMoved(enemy)) {
@@ -579,7 +549,7 @@ public class BasicPathRanker extends PathRanker {
 
         // if we're not in the air, we may get hit by friendly artillery
         if (!path.getEntity().isAirborne() && !path.getEntity().isAirborneVTOLorWIGE()) {
-            double friendlyArtilleryDamage;
+            double friendlyArtilleryDamage = 0;
             Map<Coords, Double> artyDamage = getOwner().getPathRankerState().getIncomingFriendlyArtilleryDamage();
 
             if (!artyDamage.containsKey(path.getFinalCoords())) {
@@ -647,9 +617,7 @@ public class BasicPathRanker extends PathRanker {
         // board
         // on the subsequent turn.
         utility -= utility * calculateOffBoardMod(pathCopy);
-        utility += pathCopy.getHexesMoved();
 
-        formula.append(" + hexes moved[").append(pathCopy.getHexesMoved()).append("]");
         RankedPath rankedPath = new RankedPath(utility, pathCopy, formula.toString());
         rankedPath.setExpectedDamage(maximumDamageDone);
         return rankedPath;

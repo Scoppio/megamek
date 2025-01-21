@@ -29,11 +29,21 @@ public class EntityEvaluationResponse {
     private double estimatedEnemyDamage;
     private double myEstimatedDamage;
     private double myEstimatedPhysicalDamage;
+    private int distance;
 
     public EntityEvaluationResponse() {
         estimatedEnemyDamage = 0;
         myEstimatedDamage = 0;
         myEstimatedPhysicalDamage = 0;
+        distance = 0;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
     }
 
     public double getEstimatedEnemyDamage() {
@@ -95,13 +105,10 @@ public class EntityEvaluationResponse {
     @Override
     public int hashCode() {
         int result;
-        long temp;
-        temp = Double.doubleToLongBits(estimatedEnemyDamage);
-        result = (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(myEstimatedDamage);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(myEstimatedPhysicalDamage);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = Double.hashCode(estimatedEnemyDamage);
+        result = 31 * result + Double.hashCode(myEstimatedDamage);
+        result = 31 * result + Double.hashCode(myEstimatedPhysicalDamage);
+        result = 31 * result + Double.hashCode(distance);
         return result;
     }
 
@@ -110,6 +117,7 @@ public class EntityEvaluationResponse {
         DecimalFormat format = new DecimalFormat("0.000");
         return "Enemy: " + format.format(estimatedEnemyDamage)
                + "\tMe: " + format.format(myEstimatedDamage)
-               + "\tPhysical: " + format.format(myEstimatedPhysicalDamage);
+               + "\tPhysical: " + format.format(myEstimatedPhysicalDamage)
+               + "\tDistance: " + format.format(distance);
     }
 }

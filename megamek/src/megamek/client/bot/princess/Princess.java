@@ -19,15 +19,6 @@
  */
 package megamek.client.bot.princess;
 
-import java.io.File;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-
-import org.apache.logging.log4j.Level;
-
 import megamek.client.bot.BotClient;
 import megamek.client.bot.ChatProcessor;
 import megamek.client.bot.PhysicalCalculator;
@@ -41,12 +32,7 @@ import megamek.codeUtilities.StringUtility;
 import megamek.common.*;
 import megamek.common.BulldozerMovePath.MPCostComparator;
 import megamek.common.MovePath.MoveStepType;
-import megamek.common.actions.ArtilleryAttackAction;
-import megamek.common.actions.DisengageAction;
-import megamek.common.actions.EntityAction;
-import megamek.common.actions.FindClubAction;
-import megamek.common.actions.SearchlightAttackAction;
-import megamek.common.actions.WeaponAttackAction;
+import megamek.common.actions.*;
 import megamek.common.annotations.Nullable;
 import megamek.common.containers.PlayerIDandList;
 import megamek.common.enums.AimingMode;
@@ -65,6 +51,14 @@ import megamek.common.weapons.AmmoWeapon;
 import megamek.common.weapons.StopSwarmAttack;
 import megamek.common.weapons.Weapon;
 import megamek.logging.MMLogger;
+import org.apache.logging.log4j.Level;
+
+import java.io.File;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class Princess extends BotClient {
     private static final MMLogger logger = MMLogger.create(Princess.class);
@@ -234,9 +228,52 @@ public class Princess extends BotClient {
             return pathRankers.get(PathRankerType.Infantry);
         } else if (entity.isAero() && game.useVectorMove()) {
             return pathRankers.get(PathRankerType.NewtonianAerospace);
+        } else {
+            switch (entity.getRole()) {
+                case AMBUSHER -> {
+                    return pathRankers.get(PathRankerType.Ambusher);
+                }
+                case BRAWLER -> {
+                    return pathRankers.get(PathRankerType.Brawler);
+                }
+                case JUGGERNAUT -> {
+                    return pathRankers.get(PathRankerType.Juggernaut);
+                }
+                case MISSILE_BOAT -> {
+                    return pathRankers.get(PathRankerType.MissileBoat);
+                }
+                case SKIRMISHER -> {
+                    return pathRankers.get(PathRankerType.Skirmisher);
+                }
+                case SNIPER -> {
+                    return pathRankers.get(PathRankerType.Sniper);
+                }
+                case STRIKER -> {
+                    return pathRankers.get(PathRankerType.Striker);
+                }
+                case ATTACK_FIGHTER -> {
+                    return pathRankers.get(PathRankerType.AttackFighter);
+                }
+                case DOGFIGHTER -> {
+                    return pathRankers.get(PathRankerType.DogFighter);
+                }
+                case FAST_DOGFIGHTER -> {
+                    return pathRankers.get(PathRankerType.FastDogFighter);
+                }
+                case FIRE_SUPPORT -> {
+                    return pathRankers.get(PathRankerType.FireSupport);
+                }
+                case INTERCEPTOR -> {
+                    return pathRankers.get(PathRankerType.Interceptor);
+                }
+                case TRANSPORT -> {
+                    return pathRankers.get(PathRankerType.Transport);
+                }
+                default -> {
+                    return pathRankers.get(PathRankerType.Basic);
+                }
+            }
         }
-
-        return pathRankers.get(PathRankerType.Basic);
     }
 
     IPathRanker getPathRanker(PathRankerType pathRankerType) {
@@ -2715,18 +2752,25 @@ public class Princess extends BotClient {
         initializeFireControls();
 
         pathRankers = new HashMap<>();
+        pathRankers.put(PathRankerType.Basic, new BasicPathRanker(this, precognition.getPathEnumerator()));
+        pathRankers.put(PathRankerType.Infantry, new InfantryPathRanker(this, precognition.getPathEnumerator()));
+        pathRankers.put(PathRankerType.NewtonianAerospace, new NewtonianAerospacePathRanker(this, precognition.getPathEnumerator()));
 
-        BasicPathRanker basicPathRanker = new BasicPathRanker(this);
-        basicPathRanker.setPathEnumerator(precognition.getPathEnumerator());
-        pathRankers.put(PathRankerType.Basic, basicPathRanker);
+        pathRankers.put(PathRankerType.Ambusher, new BasicPathRanker(this, precognition.getPathEnumerator()));
+        pathRankers.put(PathRankerType.Brawler, new BasicPathRanker(this, precognition.getPathEnumerator()));
+        pathRankers.put(PathRankerType.Juggernaut, new BasicPathRanker(this, precognition.getPathEnumerator()));
+        pathRankers.put(PathRankerType.MissileBoat, new BasicPathRanker(this, precognition.getPathEnumerator()));
+        pathRankers.put(PathRankerType.Scout, new BasicPathRanker(this, precognition.getPathEnumerator()));
+        pathRankers.put(PathRankerType.Skirmisher, new BasicPathRanker(this, precognition.getPathEnumerator()));
+        pathRankers.put(PathRankerType.Sniper, new BasicPathRanker(this, precognition.getPathEnumerator()));
+        pathRankers.put(PathRankerType.Striker, new BasicPathRanker(this, precognition.getPathEnumerator()));
 
-        InfantryPathRanker infantryPathRanker = new InfantryPathRanker(this);
-        infantryPathRanker.setPathEnumerator(precognition.getPathEnumerator());
-        pathRankers.put(PathRankerType.Infantry, infantryPathRanker);
-
-        NewtonianAerospacePathRanker newtonianAerospacePathRanker = new NewtonianAerospacePathRanker(this);
-        newtonianAerospacePathRanker.setPathEnumerator(precognition.getPathEnumerator());
-        pathRankers.put(PathRankerType.NewtonianAerospace, newtonianAerospacePathRanker);
+        pathRankers.put(PathRankerType.AttackFighter, new NewtonianAerospacePathRanker(this, precognition.getPathEnumerator()));
+        pathRankers.put(PathRankerType.DogFighter, new NewtonianAerospacePathRanker(this, precognition.getPathEnumerator()));
+        pathRankers.put(PathRankerType.FastDogFighter, new NewtonianAerospacePathRanker(this, precognition.getPathEnumerator()));
+        pathRankers.put(PathRankerType.FireSupport, new NewtonianAerospacePathRanker(this, precognition.getPathEnumerator()));
+        pathRankers.put(PathRankerType.Interceptor, new NewtonianAerospacePathRanker(this, precognition.getPathEnumerator()));
+        pathRankers.put(PathRankerType.Transport, new NewtonianAerospacePathRanker(this, precognition.getPathEnumerator()));
     }
 
     /**
