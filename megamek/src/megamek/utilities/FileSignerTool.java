@@ -234,60 +234,67 @@ public class FileSignerTool {
      * Verify a file's signature.
      */
     public static boolean verifyFile(File file, File publicKeyFile) throws Exception {
-        // Read the file content
-
-        // Read public key
-        byte[] keyBytes = Files.readAllBytes(publicKeyFile.toPath());
-        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        PublicKey publicKey = keyFactory.generatePublic(keySpec);
-
-        return verifyFile(file, publicKey);
+        return verifyFile(readFileContent(file), readPublicKey(publicKeyFile));
     }
 
     /**
      * Verify a file's signature.
      */
     public static boolean verifyFile(File file, PublicKey publicKey) throws Exception {
-        // Read the file content
-        String content = Files.readString(file.toPath());
-        return verifyFile(content, publicKey);
+        return verifyFile(readFileContent(file), publicKey);
     }
 
     /**
      * Verify a file's signature.
      */
     public static boolean verifyFile(String content, PublicKey publicKey) throws Exception {
-        // Find signature
-        int signatureStartPos = content.lastIndexOf(SIGNATURE_START);
-        if (signatureStartPos == -1) {
-            // logger.debug("No signature found in the content");
-            return false;
-        }
-
-        int signatureEndPos = content.lastIndexOf(SIGNATURE_END);
-        if (signatureEndPos == -1 || signatureEndPos < signatureStartPos) {
-            // logger.debug("Invalid signature format");
-            return false;
-        }
-
-        // Extract signature
-        String encodedSignature = content.substring(
-            signatureStartPos + SIGNATURE_START.length(),
-            signatureEndPos
-        );
-
-        byte[] signatureBytes = Base64.getDecoder().decode(encodedSignature);
-
-        // Get content without signature
-        String contentWithoutSignature = content.substring(0, signatureStartPos);
-
-        // Verify the signature
-        Signature signature = Signature.getInstance(SIGNATURE_ALGORITHM);
-        signature.initVerify(publicKey);
-        signature.update(contentWithoutSignature.getBytes(StandardCharsets.UTF_8));
-
-        boolean isValid = signature.verify(signatureBytes);
-        return isValid;
+    // Find signature
+    int signatureStartPos = content.lastIndexOf(SIGNATURE_START);
+    if (signatureStartPos == -1) {
+        // logger.debug("No signature found in the content");
+        return false;
     }
+
+    int signatureEndPos = content.lastIndexOf(SIGNATURE_END);
+    if (signatureEndPos == -1 || signatureEndPos < signatureStartPos) {
+        // logger.debug("Invalid signature format");
+        return false;
+    }
+
+    // Extract signature
+    String encodedSignature = content.substring(
+        signatureStartPos + SIGNATURE_START.length(),
+        signatureEndPos
+    );
+
+    byte[] signatureBytes = Base64.getDecoder().decode(encodedSignature);
+
+    // Get content without signature
+    String contentWithoutSignature = content.substring(0, signatureStartPos);
+
+    // Verify the signature
+    Signature signature = Signature.getInstance(SIGNATURE_ALGORITHM);
+    signature.initVerify(publicKey);
+    signature.update(contentWithoutSignature.getBytes(StandardCharsets.UTF_8));
+
+    return signature.verify(signatureBytes);
+    }
+
+    /**
+     * Read file content as a String.
+     */
+    private static String readFileContent(File file) throws Exception {
+        return Files.readString(file.toPath());
+    }
+
+    /**
+     * Load a public key from a file.
+     */
+    private static PublicKey readPublicKey(File file) throws Exception {
+        byte[] keyBytes = Files.readAllBytes(file.toPath());
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        return keyFactory.generatePublic(keySpec);
+    }
+
 }
