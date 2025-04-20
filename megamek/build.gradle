@@ -189,6 +189,15 @@ tasks.register('officialUnitList', JavaExec) {
     args = ['-oul', "${projectDir}/docs/OfficialUnitList.txt"]
 }
 
+tasks.register('createWeaponYamlFiles', JavaExec) {
+    dependsOn jar
+    description = 'Creates YAML weapon definition files from the code.'
+    group = 'utility'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'megamek.utilities.CreateWeaponYamlFiles'
+    args = project.hasProperty('outputDir') ? [project.outputDir] : []
+}
+
 tasks.register('unitFilesZip', Zip) {
     dependsOn copyFiles
     description = 'Creates zip archives of all the unit file folders.'

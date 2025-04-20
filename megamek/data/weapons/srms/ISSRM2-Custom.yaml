@@ -1,0 +1,49 @@
+type: srm
+name: SRM 2 (Custom)
+internalName: ISSRM2-Custom
+lookupNames:
+  - IS SRM-2 (Custom)
+  - ISSRM2-Custom
+  - IS SRM 2 (Custom)
+heat: 2
+rackSize: 2
+shortRange: 3
+mediumRange: 6
+longRange: 9
+extremeRange: 12
+tonnage: 1.0
+criticals: 1
+bv: 21
+cost: 10000
+shortAV: 2
+maxRange: RANGE_SHORT
+rulesRefs: "229, TM"
+flags:
+  - NO_FIRES
+techBase: ALL
+techRating: C
+introLevel: true
+unofficial: false
+availability:
+  - C
+  - C
+  - C
+  - C
+isAdvancement:
+  introDate: 2365
+  productionDate: 2370
+  commonDate: 2400
+  extinctionDate: -1
+  reintroductionDate: -1
+  approximate: false
+clanAdvancement:
+  introDate: 2365
+  productionDate: 2370
+  commonDate: 2400
+  extinctionDate: 2836
+  reintroductionDate: -1
+  approximate: false
+prototypeFactions:
+  - TH
+productionFactions:
+  - TH

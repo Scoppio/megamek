@@ -758,4 +758,8 @@ public class TechAdvancement implements ITechnology {
     public boolean isMixedTech() {
         return techBase == TECH_BASE_ALL;
     }
+
+    public int[] getAvailability() {
+        return availability;
+    }
 }

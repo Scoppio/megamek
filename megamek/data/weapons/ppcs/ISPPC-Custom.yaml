@@ -1,0 +1,55 @@
+type: ppc
+name: PPC (Custom)
+internalName: ISPPC-Custom
+lookupNames:
+  - Particle Cannon (Custom)
+  - IS PPC (Custom)
+  - ISPPC-Custom
+sortingName: PPC C
+heat: 10
+damage: 10
+minimumRange: 3
+shortRange: 6
+mediumRange: 12
+longRange: 18
+extremeRange: 24
+waterShortRange: 4
+waterMediumRange: 7
+waterLongRange: 10
+waterExtremeRange: 15
+tonnage: 7.0
+criticals: 3
+bv: 176
+cost: 200000
+shortAV: 10
+medAV: 10
+maxRange: RANGE_MED
+explosive: true
+rulesRefs: "234, TM"
+techBase: ALL
+techRating: D
+introLevel: true
+unofficial: false
+availability:
+  - C
+  - C
+  - C
+  - C
+isAdvancement:
+  introDate: 2440
+  productionDate: 2460
+  commonDate: 2500
+  extinctionDate: -1
+  reintroductionDate: -1
+  approximate: true
+clanAdvancement:
+  introDate: 2440
+  productionDate: 2460
+  commonDate: 2500
+  extinctionDate: 2825
+  reintroductionDate: -1
+  approximate: true
+prototypeFactions:
+  - TH
+productionFactions:
+  - TH
