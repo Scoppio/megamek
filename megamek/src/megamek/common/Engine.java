@@ -14,6 +14,9 @@
  */
 package megamek.common;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -1027,7 +1030,9 @@ public class Engine implements Serializable, ITechnology {
     /**
      * @param year The game year
      * @return the tech type (tech level + tech base) for the current engine.
+     * @deprecated it's not used anywhere
      */
+    @Deprecated(since="0.50.06", forRemoval=true)
     public int getTechType(int year) {
         boolean isLarge = hasFlag(LARGE_ENGINE);
         boolean isClan = hasFlag(CLAN_ENGINE);
@@ -1371,5 +1376,53 @@ public class Engine implements Serializable, ITechnology {
     @Override
     public SimpleTechLevel getStaticTechLevel() {
         return getTechAdvancement().getStaticTechLevel();
+    }
+
+    @Override
+    public String toString() {
+        return "Engine{" +
+                     "engineValid=" +
+                     engineValid +
+                     ", engineRating=" +
+                     engineRating +
+                     ", engineType=" +
+                     engineType +
+                     ", engineFlags=" +
+                     engineFlags +
+                     ", baseChassisHeatSinks=" +
+                     baseChassisHeatSinks +
+                     ", problem=" +
+                     problem +
+                     '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        Engine engine = (Engine) o;
+
+        return new EqualsBuilder().append(engineValid, engine.engineValid)
+                     .append(engineRating, engine.engineRating)
+                     .append(engineType, engine.engineType)
+                     .append(engineFlags, engine.engineFlags)
+                     .append(baseChassisHeatSinks, engine.baseChassisHeatSinks)
+                     .append(problem, engine.problem)
+                     .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).append(engineValid)
+                     .append(engineRating)
+                     .append(engineType)
+                     .append(engineFlags)
+                     .append(baseChassisHeatSinks)
+                     .append(problem)
+                     .toHashCode();
     }
 } // End class Engine
